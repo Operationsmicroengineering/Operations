@@ -9,19 +9,18 @@
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* لوحة الألوان الرسمية والعملية الجديدة */
   :root {
     --bg: #0b0f19;
     --surface: #131a26;
     --surface2: #1c2534;
     --border: rgba(255, 255, 255, 0.05);
-    --accent: #2563eb;       /* أزرق رسمي corporate */
-    --accent2: #0ea5e9;      /* أزرق فاتح للمواقع */
-    --text: #f1f5f9;         /* أبيض مريح للعين */
-    --muted: #94a3b8;        /* رمادي للنصوص الثانوية */
-    --danger: #ef4444;       /* أحمر هادئ للمخالفات أو غير النشط */
-    --success: #10b981;      /* أخضر مريح لحالة العمل */
-    --warning: #f59e0b;      /* برتقالي هادئ للمشاريع */
+    --accent: #2563eb;
+    --accent2: #0ea5e9;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --danger: #ef4444;
+    --success: #10b981;
+    --warning: #f59e0b;
   }
 
   body {
@@ -32,7 +31,6 @@
     overflow-x: hidden;
   }
 
-  /* LOGIN PAGE STYLES */
   .login-container {
     display: flex;
     align-items: center;
@@ -113,7 +111,6 @@
     text-align: center;
   }
 
-  /* DASHBOARD STYLES */
   #dashboardSection { display: none; }
 
   nav {
@@ -139,7 +136,6 @@
 
   main { padding: 2rem; max-width: 1400px; margin: 0 auto; }
 
-  /* STATS */
   .stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -164,7 +160,6 @@
   .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
   .stat-value { font-size: 26px; font-weight: 700; color: var(--text); }
 
-  /* TOOLBAR */
   .toolbar {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -193,7 +188,6 @@
   select { padding: 8px 14px; }
   input[type="text"]:focus, select:focus { border-color: var(--accent); }
 
-  /* TABLE */
   .table-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -234,7 +228,6 @@
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: var(--surface2); }
 
-  /* BADGES */
   .badge {
     display: inline-block;
     font-size: 11px;
@@ -246,7 +239,6 @@
   .badge-inactive { background: rgba(239, 68, 68, 0.12); color: var(--danger); }
   .badge-shift { background: rgba(148, 163, 184, 0.1); color: var(--muted); border: 1px solid rgba(255,255,255,0.03); }
 
-  /* AVATAR */
   .avatar {
     width: 28px; height: 28px;
     border-radius: 4px;
@@ -264,7 +256,6 @@
   }
   .name-cell { display: flex; align-items: center; }
 
-  /* LOADING */
   .loading { text-align: center; padding: 4rem; color: var(--muted); font-size: 14px; }
   .spinner {
     width: 32px; height: 32px;
@@ -277,7 +268,6 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .empty { text-align: center; padding: 4rem; color: var(--muted); font-size: 14px; }
 
-  /* FOOTER */
   .table-footer {
     padding: 0.75rem 1.5rem;
     border-top: 1px solid var(--border);
@@ -436,11 +426,9 @@
 </div>
 
 <script>
-  // بيانات تسجيل الدخول
   const AUTH_USER = 'admin';
   const AUTH_PASS = 'admin123';
 
-  // الـ URL والـ KEY الخاص بـ Supabase (بدون أي مسافات بالمنتصف)
   const SUPABASE_URL = 'https://dibhtnnkhakcygzpenwg.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTgyMjExMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
   const TABLE = 'employees';
