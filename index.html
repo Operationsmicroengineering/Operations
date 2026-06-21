@@ -230,43 +230,96 @@
 
   main { padding: 2rem; max-width: 1440px; margin: 0 auto; }
 
+  /* ---- stats ----
+     Each stat is now its own elevated card (not a fused strip):
+     icon chip up top in the metric's own tint, a big tabular
+     number, a trailing micro-label, and a soft lift on hover.
+     This reads as a real metrics row instead of a table header. */
   .stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 1px;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
     margin-bottom: 2rem;
-    background: var(--line);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: var(--shadow-card);
   }
   .stat {
     background: var(--bg-1);
-    padding: 1.4rem 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.35rem 1.5rem 1.5rem;
     position: relative;
-    transition: background 0.15s;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   }
-  .stat:hover { background: var(--bg-2); }
+  .stat::after {
+    content: '';
+    position: absolute;
+    top: -18px; left: -18px;
+    width: 84px; height: 84px;
+    border-radius: 50%;
+    background: var(--tint, var(--signal-dim));
+    opacity: 0.5;
+    filter: blur(2px);
+  }
+  .stat:hover {
+    transform: translateY(-2px);
+    border-color: var(--tint-line, var(--signal-line));
+    box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 16px 36px rgba(0,0,0,0.4);
+  }
+  .stat-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.1rem;
+    position: relative;
+    z-index: 1;
+  }
+  .stat-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--tint, var(--signal-dim));
+    color: var(--tint-fg, var(--signal));
+    border: 1px solid var(--tint-line, var(--signal-line));
+    flex-shrink: 0;
+  }
+  .stat-trend {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-2);
+    letter-spacing: 0.3px;
+  }
   .stat-label {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     letter-spacing: 1px;
     color: var(--text-2);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-weight: 600;
     text-transform: uppercase;
+    position: relative;
+    z-index: 1;
   }
   .stat-value {
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 800;
     color: var(--text-0);
-    letter-spacing: -0.5px;
+    letter-spacing: -0.6px;
     font-variant-numeric: tabular-nums;
+    position: relative;
+    z-index: 1;
+    line-height: 1;
   }
   .stat-value.accent-signal { color: var(--signal); }
   .stat-value.accent-ok { color: var(--ok); }
   .stat-value.accent-bad { color: var(--bad); }
+
+  .stat[data-tone="signal"] { --tint: var(--signal-dim); --tint-line: var(--signal-line); --tint-fg: var(--signal); }
+  .stat[data-tone="ok"] { --tint: var(--ok-dim); --tint-line: rgba(61,214,140,0.3); --tint-fg: var(--ok); }
+  .stat[data-tone="bad"] { --tint: var(--bad-dim); --tint-line: rgba(240,85,107,0.3); --tint-fg: var(--bad); }
+  .stat[data-tone="neutral"] { --tint: var(--bg-2); --tint-line: var(--line); --tint-fg: var(--text-1); }
 
   .toolbar {
     background: var(--bg-1);
@@ -515,23 +568,48 @@
     <div class="error-banner" id="errorBanner"></div>
 
     <div class="stats">
-      <div class="stat">
+      <div class="stat" data-tone="neutral">
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+        </div>
         <div class="stat-label">Total staff</div>
         <div class="stat-value" id="statTotal">—</div>
       </div>
-      <div class="stat">
+      <div class="stat" data-tone="ok">
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+        </div>
         <div class="stat-label">Working</div>
         <div class="stat-value accent-ok" id="statActive">—</div>
       </div>
-      <div class="stat">
+      <div class="stat" data-tone="bad">
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          </div>
+        </div>
         <div class="stat-label">Inactive</div>
         <div class="stat-value accent-bad" id="statInactive">—</div>
       </div>
-      <div class="stat">
+      <div class="stat" data-tone="signal">
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+        </div>
         <div class="stat-label">Projects</div>
         <div class="stat-value accent-signal" id="statProjects">—</div>
       </div>
-      <div class="stat">
+      <div class="stat" data-tone="neutral">
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+        </div>
         <div class="stat-label">Locations</div>
         <div class="stat-value" id="statLocations">—</div>
       </div>
