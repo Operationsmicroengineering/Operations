@@ -1,626 +1,282 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Operations Dashboard</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+// ===== أداة تنضيف ضد XSS =====
+// أي نص جاي من قاعدة البيانات لازم يتمرر هنا قبل ما يتحط جوه HTML
+function escapeHTML(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+const AUTH_USER = 'admin';
+const AUTH_PASS = 'admin123';
+const SUPABASE_URL = 'https://dibhtnnkhakcygzpenwg.supabase.co';
+const SUPABASE_KEY = 'YOUR_KEY_HERE';
+const TABLE = 'employees';
 
-  /* لوحة الألوان الرسمية والعملية الجديدة (Corporate Dark Blue) */
-  :root {
-    --bg: #0b0f19;           /* الخلفية العميقة */
-    --surface: #131a26;      /* الأسطح والكروت */
-    --surface2: #1c2534;     /* خلفية الهيدر والصفوف عند الـ hover */
-    --border: rgba(255, 255, 255, 0.05);
-    --accent: #2563eb;       /* الأزرق الرسمي Corporate */
-    --accent2: #0ea5e9;      /* الأزرق الفاتح للمواقع */
-    --text: #f1f5f9;         /* الأبيض المريح للنصوص الأساسية */
-    --muted: #94a3b8;        /* الرمادي للنصوص الثانوية والدور */
-    --danger: #ef4444;       /* الأحمر الهادئ للمخالفات وغير النشط */
-    --success: #10b981;      /* الأخضر المريح لحالة العمل والنشط */
-    --warning: #f59e0b;      /* البرتقالي الهادئ للمشاريع */
-  }
+let allData = [];
+let sortCol = '';
+let sortAsc = true;
+let pollTimer = null;
 
-  body {
-    font-family: 'Cairo', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
+window.onload = function () {
+  if (sessionStorage.getItem('isLoggedIn') === 'true') {
+    showDashboard();
   }
+};
 
-  /* LOGIN PAGE STYLES */
-  .login-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
-  }
-  .login-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    width: 100%;
-    max-width: 400px;
-    padding: 2.5rem;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-  }
-  .login-header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  .login-header h1 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 8px;
-  }
-  .login-header h1 span { color: var(--accent); font-weight: 600; }
-  .login-header p {
-    font-size: 14px;
-    color: var(--muted);
-  }
-  .form-group {
-    margin-bottom: 1.25rem;
-  }
-  .form-group label {
-    display: block;
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .form-control {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'Cairo', sans-serif;
-    font-size: 14px;
-    padding: 10px 14px;
-    outline: none;
-    transition: border-color 0.2s;
-    width: 100%;
-  }
-  .form-control:focus { border-color: var(--accent); }
-  .login-btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-    width: 100%;
-    margin-top: 1rem;
-  }
-  .login-btn:hover { background: #1d4ed8; }
-  .login-error {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    color: var(--danger);
-    font-size: 13px;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    display: none;
-    text-align: center;
-  }
+window.addEventListener('beforeunload', stopPolling);
 
-  /* DASHBOARD STYLES */
-  #dashboardSection { display: none; }
+function handleLogin(event) {
+  event.preventDefault();
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value;
+  const errorDiv = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
 
-  nav {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .nav-brand {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .nav-brand span { color: var(--accent); }
-  .nav-left { display: flex; align-items: center; gap: 15px; }
-  .nav-info { font-size: 13px; color: var(--muted); }
+  btn.disabled = true;
 
-  main { padding: 2rem; max-width: 1400px; margin: 0 auto; }
-
-  /* STATS */
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-  .stat {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .stat::before {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 4px; height: 100%;
-    background: var(--accent-color, var(--accent));
-  }
-  .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
-  .stat-value { font-size: 28px; font-weight: 700; color: var(--text); }
-
-  /* TOOLBAR */
-  .toolbar {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-  .search-wrap { position: relative; flex: 1; min-width: 200px; }
-  .search-wrap svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
-  input[type="text"], select {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'Cairo', sans-serif;
-    font-size: 14px;
-    padding: 8px 40px 8px 14px;
-    outline: none;
-    transition: border-color 0.2s;
-    width: 100%;
-  }
-  select { padding: 8px 14px; }
-  input[type="text"]:focus, select:focus { border-color: var(--accent); }
-
-  /* TABLE */
-  .table-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  .table-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .table-title { font-size: 15px; font-weight: 600; }
-  .table-count { font-size: 13px; color: var(--accent); background: rgba(37, 99, 235, 0.1); padding: 3px 10px; border-radius: 99px; font-weight: 600; }
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; min-width: 700px; }
-  thead tr { background: var(--surface2); }
-  th {
-    padding: 12px 16px;
-    text-align: right;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--muted);
-    cursor: pointer;
-    user-select: none;
-    white-space: nowrap;
-    border-bottom: 1px solid var(--border);
-  }
-  th:hover { color: var(--text); }
-  td {
-    padding: 13px 16px;
-    font-size: 14px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-    white-space: nowrap;
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--surface2); }
-
-  /* BADGES */
-  .badge {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 99px;
-  }
-  .badge-active { background: rgba(16, 185, 129, 0.12); color: var(--success); }
-  .badge-inactive { background: rgba(239, 68, 68, 0.12); color: var(--danger); }
-  .badge-shift { background: rgba(37, 99, 235, 0.12); color: var(--accent); }
-
-  /* AVATAR */
-  .avatar {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 700;
-    color: white;
-    margin-left: 10px;
-    vertical-align: middle;
-    flex-shrink: 0;
-  }
-  .name-cell { display: flex; align-items: center; }
-
-  /* LOADING */
-  .loading { text-align: center; padding: 4rem; color: var(--muted); font-size: 15px; }
-  .spinner {
-    width: 36px; height: 36px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 1rem;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .empty { text-align: center; padding: 4rem; color: var(--muted); font-size: 15px; }
-
-  /* FOOTER */
-  .table-footer {
-    padding: 0.75rem 1.5rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 7px 14px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
-  .btn-danger {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-danger:hover { border-color: var(--danger); color: var(--danger); }
-
-  .error-banner {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    border-radius: 8px;
-    padding: 1rem 1.5rem;
-    color: var(--danger);
-    font-size: 14px;
-    margin-bottom: 1.5rem;
-    display: none;
-  }
-</style>
-</head>
-<body>
-
-<div class="login-container" id="loginSection">
-  <div class="login-card">
-    <div class="login-header">
-      <h1>Operations <span>Dashboard</span></h1>
-      <p>الرجاء تسجيل الدخول للمتابعة</p>
-    </div>
-    <div class="login-error" id="loginError">اسم المستخدم أو كلمة المرور غير صحيحة</div>
-    <form id="loginForm" onsubmit="handleLogin(event)">
-      <div class="form-group">
-        <label for="username">اسم المستخدم</label>
-        <input type="text" id="username" class="form-control" placeholder="ادخل اسم المستخدم" required>
-      </div>
-      <div class="form-group">
-        <label for="password">كلمة المرور</label>
-        <input type="password" id="password" class="form-control" placeholder="ادخل كلمة المرور" required>
-      </div>
-      <button type="submit" class="login-btn">تسجيل الدخول</button>
-    </form>
-  </div>
-</div>
-
-<div id="dashboardSection">
-  <nav>
-    <div class="nav-brand">Operations <span>Dashboard</span></div>
-    <div class="nav-left">
-      <div class="nav-info" id="lastSync">جاري التحميل...</div>
-      <button class="btn-danger" onclick="handleLogout()">تسجيل الخروج</button>
-    </div>
-  </nav>
-
-  <main>
-    <div class="error-banner" id="errorBanner"></div>
-
-    <div class="stats">
-      <div class="stat" style="--accent-color: var(--accent)">
-        <div class="stat-label">إجمالي الموظفين</div>
-        <div class="stat-value" id="statTotal">—</div>
-      </div>
-      <div class="stat" style="--accent-color: var(--success)">
-        <div class="stat-label">نشط (Working)</div>
-        <div class="stat-value" id="statActive">—</div>
-      </div>
-      <div class="stat" style="--accent-color: var(--danger)">
-        <div class="stat-label">غير نشط</div>
-        <div class="stat-value" id="statInactive">—</div>
-      </div>
-      <div class="stat" style="--accent-color: var(--warning)">
-        <div class="stat-label">المشاريع</div>
-        <div class="stat-value" id="statProjects">—</div>
-      </div>
-      <div class="stat" style="--accent-color: var(--accent2)">
-        <div class="stat-label">المواقع</div>
-        <div class="stat-value" id="statLocations">—</div>
-      </div>
-    </div>
-
-    <div class="toolbar">
-      <div class="search-wrap">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="searchInput" placeholder="ابحث بالاسم أو الرقم القومي..." oninput="applyFilters()">
-      </div>
-      <select id="shiftFilter" onchange="applyFilters()">
-        <option value="">كل الشيفتات</option>
-      </select>
-      <select id="projectFilter" onchange="applyFilters()">
-        <option value="">كل المشاريع</option>
-      </select>
-      <select id="statusFilter" onchange="applyFilters()">
-        <option value="">كل الحالات</option>
-        <option value="active">نشط</option>
-        <option value="inactive">غير نشط</option>
-      </select>
-      <button class="btn-ghost" onclick="loadData()">↻ تحديث</button>
-    </div>
-
-    <div class="table-card">
-      <div class="table-header">
-        <span class="table-title">بيانات الموظفين</span>
-        <span class="table-count" id="rowCount">—</span>
-      </div>
-      <div class="table-wrap">
-        <div class="loading" id="loadingState">
-          <div class="spinner"></div>
-          جاري تحميل البيانات...
-        </div>
-        <table id="empTable" style="display:none">
-          <thead>
-            <tr>
-              <th onclick="sortBy('National ID')">الرقم القومي ↕</th>
-              <th onclick="sortBy('Name')">الاسم ↕</th>
-              <th onclick="sortBy('Shift')">الشيفت ↕</th>
-              <th onclick="sortBy('Project')">المشروع ↕</th>
-              <th onclick="sortBy('Role')">الدور ↕</th>
-              <th onclick="sortBy('Status')">الحالة ↕</th>
-              <th onclick="sortBy('Location')">الموقع ↕</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty" id="emptyState" style="display:none">لا توجد نتائج مطابقة</div>
-      </div>
-      <div class="table-footer">
-        <span id="footerInfo">—</span>
-        <span id="footerTime">—</span>
-      </div>
-    </div>
-  </main>
-</div>
-
-<script>
-  const AUTH_USER = 'admin';
-  const AUTH_PASS = 'admin123';
-
-  const SUPABASE_URL = 'https://dibhtnnkhakcygzpenwg.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
-  const TABLE = 'employees';
-
-  let allData = [];
-  let sortCol = '';
-  let sortAsc = true;
-
-  window.onload = function() {
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-      showDashboard();
-    }
-  }
-
-  function handleLogin(event) {
-    event.preventDefault();
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    const errorDiv = document.getElementById('loginError');
-
-    if (user === AUTH_USER && pass === AUTH_PASS) {
-      localStorage.setItem('isLoggedIn', 'true');
-      errorDiv.style.display = 'none';
-      showDashboard();
-    } else {
-      errorDiv.style.display = 'block';
-    }
-  }
-
-  function handleLogout() {
-    localStorage.removeItem('isLoggedIn');
-    document.getElementById('dashboardSection').style.display = 'none';
-    document.getElementById('loginSection').style.display = 'flex';
-    document.getElementById('username').value = '';
+  if (user === AUTH_USER && pass === AUTH_PASS) {
+    // sessionStorage بدل localStorage: الجلسة بتنتهي تلقائيًا
+    // بمجرد إغلاق التاب، مش هتفضل محفوظة على الجهاز للأبد
+    sessionStorage.setItem('isLoggedIn', 'true');
+    errorDiv.style.display = 'none';
+    document.getElementById('password').value = '';
+    showDashboard();
+  } else {
+    errorDiv.style.display = 'block';
     document.getElementById('password').value = '';
   }
 
-  function showDashboard() {
-    document.getElementById('loginSection').style.display = 'none';
-    document.getElementById('dashboardSection').style.display = 'block';
-    loadData();
-  }
+  btn.disabled = false;
+}
 
-  async function loadData() {
-    if (localStorage.getItem('isLoggedIn') !== 'true') return;
+function handleLogout() {
+  stopPolling();
+  sessionStorage.removeItem('isLoggedIn');
+  allData = [];
+  sortCol = '';
+  sortAsc = true;
+  document.getElementById('dashboardSection').style.display = 'none';
+  document.getElementById('loginSection').style.display = 'flex';
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
 
-    document.getElementById('loadingState').style.display = 'block';
-    document.getElementById('empTable').style.display = 'none';
-    document.getElementById('emptyState').style.display = 'none';
-    document.getElementById('errorBanner').style.display = 'none';
-    document.getElementById('lastSync').textContent = 'جاري التحميل...';
+function showDashboard() {
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('dashboardSection').style.display = 'block';
+  loadData();
+  startPolling();
+}
 
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&limit=5000&order=Name.asc`, {
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Prefer': 'count=exact'
-        }
-      });
-
-      if (!res.ok) throw new Error(`خطأ ${res.status}: ${res.statusText}`);
-
-      allData = await res.json();
-      populateFilters();
-      applyFilters();
-
-      const now = new Date();
-      document.getElementById('lastSync').textContent = `آخر تحديث: ${now.toLocaleTimeString('ar-EG')}`;
-
-    } catch (err) {
-      document.getElementById('loadingState').style.display = 'none';
-      const banner = document.getElementById('errorBanner');
-      banner.style.display = 'block';
-      banner.textContent = 'تعذر تحميل البيانات: ' + err.message;
-      document.getElementById('lastSync').textContent = 'فشل التحميل';
+function startPolling() {
+  stopPolling(); // يمنع تكرار أكتر من مؤقت شغال في نفس الوقت
+  pollTimer = setInterval(() => {
+    if (sessionStorage.getItem('isLoggedIn') === 'true') {
+      loadData();
+    } else {
+      stopPolling();
     }
+  }, 60000);
+}
+
+function stopPolling() {
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
   }
+}
 
-  function populateFilters() {
-    const shifts = [...new Set(allData.map(r => r.Shift).filter(Boolean))].sort();
-    const projects = [...new Set(allData.map(r => r.Project).filter(Boolean))].sort();
+async function loadData() {
+  if (sessionStorage.getItem('isLoggedIn') !== 'true') return;
 
-    const shiftSel = document.getElementById('shiftFilter');
-    shiftSel.innerHTML = '<option value="">كل الشيفتات</option>';
-    shifts.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; shiftSel.appendChild(o); });
+  document.getElementById('loadingState').style.display = 'block';
+  document.getElementById('empTable').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('errorBanner').style.display = 'none';
+  document.getElementById('lastSync').textContent = 'جاري التحميل...';
 
-    const projSel = document.getElementById('projectFilter');
-    projSel.innerHTML = '<option value="">كل المشاريع</option>';
-    projects.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; projSel.appendChild(o); });
-  }
-
-  function applyFilters() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const shift = document.getElementById('shiftFilter').value;
-    const project = document.getElementById('projectFilter').value;
-    const status = document.getElementById('statusFilter').value;
-
-    let data = allData.filter(r => {
-      const matchSearch = !search ||
-        (r.Name || '').toLowerCase().includes(search) ||
-        (r['National ID'] || '').toString().includes(search);
-      const matchShift = !shift || r.Shift === shift;
-      const matchProject = !project || r.Project === project;
-      const matchStatus = !status ||
-        (status === 'active' && isActive(r.Status)) ||
-        (status === 'inactive' && !isActive(r.Status));
-      return matchSearch && matchShift && matchProject && matchStatus;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&limit=5000&order=Name.asc`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        Prefer: 'count=exact'
+      }
     });
 
-    if (sortCol) {
-      data.sort((a, b) => {
-        const va = (a[sortCol] || '').toString();
-        const vb = (b[sortCol] || '').toString();
-        return sortAsc ? va.localeCompare(vb, 'ar') : vb.localeCompare(va, 'ar');
-      });
-    }
+    if (!res.ok) throw new Error(`خطأ ${res.status}: ${res.statusText}`);
 
-    updateStats(data);
-    renderTable(data);
-  }
+    const json = await res.json();
+    allData = Array.isArray(json) ? json : [];
+    populateFilters();
+    applyFilters();
 
-  function isActive(status) {
-    if (!status) return false;
-    const s = status.toLowerCase();
-    return s.includes('working') || s.includes('active') || s.includes('نشط');
-  }
-
-  function updateStats(filtered) {
-    document.getElementById('statTotal').textContent = allData.length;
-    document.getElementById('statActive').textContent = allData.filter(r => isActive(r.Status)).length;
-    document.getElementById('statInactive').textContent = allData.filter(r => !isActive(r.Status)).length;
-    document.getElementById('statProjects').textContent = new Set(allData.map(r => r.Project).filter(Boolean)).size;
-    document.getElementById('statLocations').textContent = new Set(allData.map(r => r.Location).filter(Boolean)).size;
-    document.getElementById('rowCount').textContent = filtered.length + ' موظف';
-    document.getElementById('footerInfo').textContent = `عرض ${filtered.length} من ${allData.length} موظف`;
-    document.getElementById('footerTime').textContent = new Date().toLocaleDateString('ar-EG');
-  }
-
-  function renderTable(data) {
+    const now = new Date();
+    document.getElementById('lastSync').textContent = `آخر تحديث: ${now.toLocaleTimeString('ar-EG')}`;
+  } catch (err) {
     document.getElementById('loadingState').style.display = 'none';
+    const banner = document.getElementById('errorBanner');
+    banner.style.display = 'block';
+    banner.textContent = 'تعذر تحميل البيانات: ' + escapeHTML(err.message);
+    document.getElementById('lastSync').textContent = 'فشل التحميل';
+  }
+}
 
-    if (data.length === 0) {
-      document.getElementById('empTable').style.display = 'none';
-      document.getElementById('emptyState').style.display = 'block';
-      return;
-    }
+function populateFilters() {
+  const shifts = [...new Set(allData.map(r => r.Shift).filter(Boolean))].sort();
+  const projects = [...new Set(allData.map(r => r.Project).filter(Boolean))].sort();
 
-    document.getElementById('emptyState').style.display = 'none';
-    document.getElementById('empTable').style.display = 'table';
+  const shiftSel = document.getElementById('shiftFilter');
+  const prevShift = shiftSel.value;
+  shiftSel.innerHTML = '<option value="">كل الشيفتات</option>';
+  shifts.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s;
+    o.textContent = s;
+    shiftSel.appendChild(o);
+  });
+  if (shifts.includes(prevShift)) shiftSel.value = prevShift;
 
-    const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = data.map(r => {
-      const initials = (r.Name || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
+  const projSel = document.getElementById('projectFilter');
+  const prevProject = projSel.value;
+  projSel.innerHTML = '<option value="">كل المشاريع</option>';
+  projects.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p;
+    o.textContent = p;
+    projSel.appendChild(o);
+  });
+  if (projects.includes(prevProject)) projSel.value = prevProject;
+}
+
+function applyFilters() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const shift = document.getElementById('shiftFilter').value;
+  const project = document.getElementById('projectFilter').value;
+  const status = document.getElementById('statusFilter').value;
+
+  let data = allData.filter(r => {
+    const matchSearch =
+      !search ||
+      (r.Name || '').toLowerCase().includes(search) ||
+      (r['National ID'] || '').toString().includes(search);
+    const matchShift = !shift || r.Shift === shift;
+    const matchProject = !project || r.Project === project;
+    const matchStatus =
+      !status ||
+      (status === 'active' && isActive(r.Status)) ||
+      (status === 'inactive' && !isActive(r.Status));
+    return matchSearch && matchShift && matchProject && matchStatus;
+  });
+
+  if (sortCol) {
+    data = data.slice().sort((a, b) => {
+      const rawA = a[sortCol];
+      const rawB = b[sortCol];
+
+      // ترتيب رقمي صحيح لو القيمتين أرقام (بدل المقارنة كنص دايمًا)
+      const numA = Number(rawA);
+      const numB = Number(rawB);
+      const bothNumeric =
+        rawA !== null && rawA !== undefined && rawA !== '' &&
+        rawB !== null && rawB !== undefined && rawB !== '' &&
+        !Number.isNaN(numA) && !Number.isNaN(numB);
+
+      let cmp;
+      if (bothNumeric) {
+        cmp = numA - numB;
+      } else {
+        const va = (rawA ?? '').toString();
+        const vb = (rawB ?? '').toString();
+        cmp = va.localeCompare(vb, 'ar');
+      }
+      return sortAsc ? cmp : -cmp;
+    });
+  }
+
+  updateSortIndicators();
+  updateStats(data);
+  renderTable(data);
+}
+
+function updateSortIndicators() {
+  document.querySelectorAll('#empTable th').forEach(th => {
+    th.classList.toggle('sorted', th.dataset.col === sortCol);
+  });
+}
+
+function isActive(status) {
+  if (!status) return false;
+  const s = status.toLowerCase();
+  return s.includes('working') || s.includes('active') || s.includes('نشط');
+}
+
+function updateStats(filtered) {
+  document.getElementById('statTotal').textContent = allData.length;
+  document.getElementById('statActive').textContent = allData.filter(r => isActive(r.Status)).length;
+  document.getElementById('statInactive').textContent = allData.filter(r => !isActive(r.Status)).length;
+  document.getElementById('statProjects').textContent = new Set(allData.map(r => r.Project).filter(Boolean)).size;
+  document.getElementById('statLocations').textContent = new Set(allData.map(r => r.Location).filter(Boolean)).size;
+  document.getElementById('rowCount').textContent = filtered.length + ' موظف';
+  document.getElementById('footerInfo').textContent = `عرض ${filtered.length} من ${allData.length} موظف`;
+  document.getElementById('footerTime').textContent = new Date().toLocaleDateString('ar-EG');
+}
+
+function renderTable(data) {
+  document.getElementById('loadingState').style.display = 'none';
+
+  if (data.length === 0) {
+    document.getElementById('empTable').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('empTable').style.display = 'table';
+
+  const tbody = document.getElementById('tableBody');
+  // كل القيم بتتمرر على escapeHTML قبل الإدراج، عشان نقفل ثغرة XSS
+  tbody.innerHTML = data
+    .map(r => {
+      const safeName = escapeHTML(r.Name || '—');
+      const rawName = (r.Name || '?').toString();
+      const initials = escapeHTML(rawName.split(' ').map(w => w[0]).slice(0, 2).join(''));
       const active = isActive(r.Status);
+      const safeId = escapeHTML(r['National ID'] || '—');
+      const safeShift = escapeHTML(r.Shift || '—');
+      const safeProject = escapeHTML(r.Project || '—');
+      const safeRole = escapeHTML(r.Role || '—');
+      const safeStatus = escapeHTML(r.Status || '—');
+      const safeLocation = escapeHTML(r.Location || '—');
+
       return `<tr>
-        <td style="font-family: monospace; color: var(--muted); font-size: 13px">${r['National ID'] || '—'}</td>
+        <td style="font-family: monospace; color: var(--muted); font-size: 12px">${safeId}</td>
         <td>
           <div class="name-cell">
             <div class="avatar">${initials}</div>
-            <span>${r.Name || '—'}</span>
+            <span>${safeName}</span>
           </div>
         </td>
-        <td><span class="badge badge-shift">${r.Shift || '—'}</span></td>
-        <td>${r.Project || '—'}</td>
-        <td style="color: var(--muted)">${r.Role || '—'}</td>
-        <td><span class="badge ${active ? 'badge-active' : 'badge-inactive'}">${r.Status || '—'}</span></td>
-        <td style="color: var(--muted)">${r.Location || '—'}</td>
+        <td><span class="badge badge-shift">${safeShift}</span></td>
+        <td>${safeProject}</td>
+        <td style="color: var(--muted)">${safeRole}</td>
+        <td><span class="badge ${active ? 'badge-active' : 'badge-inactive'}">${safeStatus}</span></td>
+        <td style="color: var(--muted)">${safeLocation}</td>
       </tr>`;
-    }).join('');
-  }
+    })
+    .join('');
+}
 
-  function sortBy(col) {
-    if (sortCol === col) sortAsc = !sortAsc;
-    else { sortCol = col; sortAsc = true; }
-    applyFilters();
+function sortBy(col) {
+  if (sortCol === col) sortAsc = !sortAsc;
+  else {
+    sortCol = col;
+    sortAsc = true;
   }
-
-  setInterval(() => {
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-      loadData();
-    }
-  }, 60000);
-</script>
-</body>
-</html>
+  applyFilters();
+}
