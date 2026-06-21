@@ -699,6 +699,16 @@
       .replaceAll("'", '&#39;');
   }
 
+  // توحيد قيم الشيفت: أي قيمة بتتطابق مع تانية بتجاهل حالة الحروف
+  // (mapping = Mapping = MAPPING) بتتجمع كخيار واحد، وبتتعرض بصيغة
+  // Title Case (أول حرف كبير، الباقي صغير) في الفلتر وفي الجدول.
+  function normalizeShift(value) {
+    if (value === null || value === undefined) return '';
+    const trimmed = String(value).trim();
+    if (!trimmed) return '';
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+  }
+
   window.onload = function() {
     if (sessionStorage.getItem('isLoggedIn') === 'true') {
       showDashboard();
@@ -805,7 +815,18 @@
   }
 
   function populateFilters() {
-    const shifts = [...new Set(allData.map(r => r.Shift).filter(Boolean))].sort();
+    // تجميع قيم الشيفت بتجاهل حالة الحروف: نخزن أول قيمة شفناها لكل
+    // نسخة موحدة (lowercase) كمفتاح، عشان نعرضها بصيغة Title Case واحدة
+    // بدل ما تتكرر (mapping / Mapping / MAPPING) كخيارات منفصلة.
+    const shiftMap = new Map();
+    allData.forEach(r => {
+      const normalized = normalizeShift(r.Shift);
+      if (!normalized) return;
+      const key = normalized.toLowerCase();
+      if (!shiftMap.has(key)) shiftMap.set(key, normalized);
+    });
+    const shifts = [...shiftMap.values()].sort();
+
     const projects = [...new Set(allData.map(r => r.Project).filter(Boolean))].sort();
 
     const shiftSel = document.getElementById('shiftFilter');
@@ -831,7 +852,7 @@
       const matchSearch = !search ||
         (r.Name || '').toLowerCase().includes(search) ||
         (r['National ID'] || '').toString().includes(search);
-      const matchShift = !shift || r.Shift === shift;
+      const matchShift = !shift || normalizeShift(r.Shift) === shift;
       const matchProject = !project || r.Project === project;
       const matchStatus = !status ||
         (status === 'active' && isActive(r.Status)) ||
@@ -909,7 +930,7 @@
       const initials = escapeHTML(rawName.split(' ').map(w => w[0]).slice(0, 2).join(''));
       const active = isActive(r.Status);
       const safeId = escapeHTML(r['National ID'] || '—');
-      const safeShift = escapeHTML(r.Shift || '—');
+      const safeShift = escapeHTML(normalizeShift(r.Shift) || '—');
       const safeProject = escapeHTML(r.Project || '—');
       const safeRole = escapeHTML(r.Role || '—');
       const safeStatus = escapeHTML(r.Status || '—');
