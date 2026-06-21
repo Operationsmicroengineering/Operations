@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Operations Dashboard</title>
+<title>Operations Dashboard - Login</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
 
@@ -28,7 +28,92 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
+    overflow-x: hidden;
   }
+
+  /* LOGIN PAGE STYLES */
+  .login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .login-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .login-header h1 span { color: var(--text); font-weight: 400; }
+  .login-header p {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .form-control {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .form-control:focus { border-color: var(--accent); }
+  .login-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    width: 100%;
+    margin-top: 1rem;
+  }
+  .login-btn:hover { opacity: 0.9; }
+  .login-error {
+    background: rgba(255,107,107,0.1);
+    border: 1px solid rgba(255,107,107,0.3);
+    color: var(--danger);
+    font-size: 13px;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: none;
+    text-align: center;
+  }
+
+  /* DASHBOARD STYLES (HIDDEN BY DEFAULT) */
+  #dashboardSection { display: none; }
 
   /* TOP NAV */
   nav {
@@ -50,6 +135,7 @@
     letter-spacing: 0.5px;
   }
   .nav-brand span { color: var(--text); font-weight: 400; }
+  .nav-left { display: flex; align-items: center; gap: 15px; }
   .nav-info { font-size: 13px; color: var(--muted); }
 
   /* MAIN */
@@ -211,19 +297,6 @@
     font-size: 12px;
     color: var(--muted);
   }
-  .btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-  .btn:hover { opacity: 0.85; }
   .btn-ghost {
     background: transparent;
     color: var(--muted);
@@ -236,6 +309,18 @@
     transition: all 0.2s;
   }
   .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(255,107,107,0.2);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-danger:hover { background: rgba(255,107,107,0.1); }
 
   /* ERROR */
   .error-banner {
@@ -252,90 +337,120 @@
 </head>
 <body>
 
-<nav>
-  <div class="nav-brand">Operations <span>Dashboard</span></div>
-  <div class="nav-info" id="lastSync">جاري التحميل...</div>
-</nav>
-
-<main>
-  <div class="error-banner" id="errorBanner"></div>
-
-  <div class="stats">
-    <div class="stat" style="--accent-color: #4f7cff">
-      <div class="stat-label">إجمالي الموظفين</div>
-      <div class="stat-value" id="statTotal">—</div>
+<div class="login-container" id="loginSection">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Operations <span>Dashboard</span></h1>
+      <p>الرجاء تسجيل الدخول للمتابعة</p>
     </div>
-    <div class="stat" style="--accent-color: #00d4aa">
-      <div class="stat-label">نشط (Working)</div>
-      <div class="stat-value" id="statActive">—</div>
-    </div>
-    <div class="stat" style="--accent-color: #ff6b6b">
-      <div class="stat-label">غير نشط</div>
-      <div class="stat-value" id="statInactive">—</div>
-    </div>
-    <div class="stat" style="--accent-color: #ffa94d">
-      <div class="stat-label">المشاريع</div>
-      <div class="stat-value" id="statProjects">—</div>
-    </div>
-    <div class="stat" style="--accent-color: #cc5de8">
-      <div class="stat-label">المواقع</div>
-      <div class="stat-value" id="statLocations">—</div>
-    </div>
-  </div>
-
-  <div class="toolbar">
-    <div class="search-wrap">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" id="searchInput" placeholder="ابحث بالاسم أو الرقم القومي..." oninput="applyFilters()">
-    </div>
-    <select id="shiftFilter" onchange="applyFilters()">
-      <option value="">كل الشيفتات</option>
-    </select>
-    <select id="projectFilter" onchange="applyFilters()">
-      <option value="">كل المشاريع</option>
-    </select>
-    <select id="statusFilter" onchange="applyFilters()">
-      <option value="">كل الحالات</option>
-      <option value="active">نشط</option>
-      <option value="inactive">غير نشط</option>
-    </select>
-    <button class="btn-ghost" onclick="loadData()">↻ تحديث</button>
-  </div>
-
-  <div class="table-card">
-    <div class="table-header">
-      <span class="table-title">بيانات الموظفين</span>
-      <span class="table-count" id="rowCount">—</span>
-    </div>
-    <div class="table-wrap">
-      <div class="loading" id="loadingState">
-        <div class="spinner"></div>
-        جاري تحميل البيانات...
+    <div class="login-error" id="loginError">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="username">اسم المستخدم</label>
+        <input type="text" id="username" class="form-control" placeholder="ادخل اسم المستخدم" required>
       </div>
-      <table id="empTable" style="display:none">
-        <thead>
-          <tr>
-            <th onclick="sortBy('National ID')">الرقم القومي ↕</th>
-            <th onclick="sortBy('Name')">الاسم ↕</th>
-            <th onclick="sortBy('Shift')">الشيفت ↕</th>
-            <th onclick="sortBy('Project')">المشروع ↕</th>
-            <th onclick="sortBy('Role')">الدور ↕</th>
-            <th onclick="sortBy('Status')">الحالة ↕</th>
-            <th onclick="sortBy('Location')">الموقع ↕</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-      <div class="empty" id="emptyState" style="display:none">لا توجد نتائج مطابقة</div>
-    </div>
-    <div class="table-footer">
-      <span id="footerInfo">—</span>
-      <span id="footerTime">—</span>
-    </div>
+      <div class="form-group">
+        <label for="password">كلمة المرور</label>
+        <input type="password" id="password" class="form-control" placeholder="ادخل كلمة المرور" required>
+      </div>
+      <button type="submit" class="login-btn">تسجيل الدخول</button>
+    </form>
   </div>
-</main>
+</div>
+
+<div id="dashboardSection">
+  <nav>
+    <div class="nav-brand">Operations <span>Dashboard</span></div>
+    <div class="nav-left">
+      <div class="nav-info" id="lastSync">جاري التحميل...</div>
+      <button class="btn-danger" onclick="handleLogout()">تسجيل الخروج</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="error-banner" id="errorBanner"></div>
+
+    <div class="stats">
+      <div class="stat" style="--accent-color: #4f7cff">
+        <div class="stat-label">إجمالي الموظفين</div>
+        <div class="stat-value" id="statTotal">—</div>
+      </div>
+      <div class="stat" style="--accent-color: #00d4aa">
+        <div class="stat-label">نشط (Working)</div>
+        <div class="stat-value" id="statActive">—</div>
+      </div>
+      <div class="stat" style="--accent-color: #ff6b6b">
+        <div class="stat-label">غير نشط</div>
+        <div class="stat-value" id="statInactive">—</div>
+      </div>
+      <div class="stat" style="--accent-color: #ffa94d">
+        <div class="stat-label">المشاريع</div>
+        <div class="stat-value" id="statProjects">—</div>
+      </div>
+      <div class="stat" style="--accent-color: #cc5de8">
+        <div class="stat-label">المواقع</div>
+        <div class="stat-value" id="statLocations">—</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="ابحث بالاسم أو الرقم القومي..." oninput="applyFilters()">
+      </div>
+      <select id="shiftFilter" onchange="applyFilters()">
+        <option value="">كل الشيفتات</option>
+      </select>
+      <select id="projectFilter" onchange="applyFilters()">
+        <option value="">كل المشاريع</option>
+      </select>
+      <select id="statusFilter" onchange="applyFilters()">
+        <option value="">كل الحالات</option>
+        <option value="active">نشط</option>
+        <option value="inactive">غير نشط</option>
+      </select>
+      <button class="btn-ghost" onclick="loadData()">↻ تحديث</button>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">بيانات الموظفين</span>
+        <span class="table-count" id="rowCount">—</span>
+      </div>
+      <div class="table-wrap">
+        <div class="loading" id="loadingState">
+          <div class="spinner"></div>
+          جاري تحميل البيانات...
+        </div>
+        <table id="empTable" style="display:none">
+          <thead>
+            <tr>
+              <th onclick="sortBy('National ID')">الرقم القومي ↕</th>
+              <th onclick="sortBy('Name')">الاسم ↕</th>
+              <th onclick="sortBy('Shift')">الشيفت ↕</th>
+              <th onclick="sortBy('Project')">المشروع ↕</th>
+              <th onclick="sortBy('Role')">الدور ↕</th>
+              <th onclick="sortBy('Status')">الحالة ↕</th>
+              <th onclick="sortBy('Location')">الموقع ↕</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="empty" id="emptyState" style="display:none">لا توجد نتائج مطابقة</div>
+      </div>
+      <div class="table-footer">
+        <span id="footerInfo">—</span>
+        <span id="footerTime">—</span>
+      </div>
+    </div>
+  </main>
+</div>
 
 <script>
+  // بيانات الدخول الثابتة (تقدر تغيرها من هنا)
+  const AUTH_USER = 'admin';
+  const AUTH_PASS = 'admin123';
+
   const SUPABASE_URL = 'https://dibhtnnkhakcygzpenwg.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
   const TABLE = 'employees';
@@ -344,7 +459,45 @@
   let sortCol = '';
   let sortAsc = true;
 
+  // فحص حالة تسجيل الدخول عند فتح الصفحة
+  window.onload = function() {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      showDashboard();
+    }
+  }
+
+  function handleLogin(event) {
+    event.preventDefault();
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    const errorDiv = document.getElementById('loginError');
+
+    if (user === AUTH_USER && pass === AUTH_PASS) {
+      localStorage.setItem('isLoggedIn', 'true');
+      errorDiv.style.display = 'none';
+      showDashboard();
+    } else {
+      errorDiv.style.display = 'block';
+    }
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('isLoggedIn');
+    document.getElementById('dashboardSection').style.display = 'none';
+    document.getElementById('loginSection').style.display = 'flex';
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+  }
+
+  function showDashboard() {
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('dashboardSection').style.display = 'block';
+    loadData();
+  }
+
   async function loadData() {
+    if (localStorage.getItem('isLoggedIn') !== 'true') return;
+
     document.getElementById('loadingState').style.display = 'block';
     document.getElementById('empTable').style.display = 'none';
     document.getElementById('emptyState').style.display = 'none';
@@ -352,7 +505,6 @@
     document.getElementById('lastSync').textContent = 'جاري التحميل...';
 
     try {
-      // تم تعديل طلب الـ API لطلب حد أقصى 5000 وترتيب صحيح بالـ Name لكي لا يضرب خطأ 400
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&limit=5000&order=Name.asc`, {
         headers: {
           'apikey': SUPABASE_KEY,
@@ -422,7 +574,6 @@
     renderTable(data);
   }
 
-  // دالة الفحص تم تحديثها لتقرأ كلمة working أو نشط بناءً على قيم الجدول الحقيقية
   function isActive(status) {
     if (!status) return false;
     const s = status.toLowerCase();
@@ -479,8 +630,12 @@
     applyFilters();
   }
 
-  loadData();
-  setInterval(loadData, 60000);
+  // التحديث التلقائي يعمل فقط لو المستخدم مسجل دخول بالفعل
+  setInterval(() => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      loadData();
+    }
+  }, 60000);
 </script>
 </body>
 </html>
