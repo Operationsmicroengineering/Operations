@@ -535,4 +535,93 @@
     const search = document.getElementById('searchInput').value.toLowerCase();
     const shift = document.getElementById('shiftFilter').value;
     const project = document.getElementById('projectFilter').value;
-    const status =
+    const status = document.getElementById('statusFilter').value;
+
+    let data = allData.filter(r => {
+      const matchSearch = !search ||
+        (r.Name || '').toLowerCase().includes(search) ||
+        (r['National ID'] || '').toString().includes(search);
+      const matchShift = !shift || r.Shift === shift;
+      const matchProject = !project || r.Project === project;
+      const matchStatus = !status ||
+        (status === 'active' && isActive(r.Status)) ||
+        (status === 'inactive' && !isActive(r.Status));
+      return matchSearch && matchShift && matchProject && matchStatus;
+    });
+
+    if (sortCol) {
+      data.sort((a, b) => {
+        const va = (a[sortCol] || '').toString();
+        const vb = (b[sortCol] || '').toString();
+        return sortAsc ? va.localeCompare(vb, 'ar') : vb.localeCompare(va, 'ar');
+      });
+    }
+
+    updateStats(data);
+    renderTable(data);
+  }
+
+  function isActive(status) {
+    if (!status) return false;
+    const s = status.toLowerCase();
+    return s.includes('working') || s.includes('active') || s.includes('نشط');
+  }
+
+  function updateStats(filtered) {
+    document.getElementById('statTotal').textContent = allData.length;
+    document.getElementById('statActive').textContent = allData.filter(r => isActive(r.Status)).length;
+    document.getElementById('statInactive').textContent = allData.filter(r => !isActive(r.Status)).length;
+    document.getElementById('statProjects').textContent = new Set(allData.map(r => r.Project).filter(Boolean)).size;
+    document.getElementById('statLocations').textContent = new Set(allData.map(r => r.Location).filter(Boolean)).size;
+    document.getElementById('rowCount').textContent = filtered.length + ' موظف';
+    document.getElementById('footerInfo').textContent = `عرض ${filtered.length} من ${allData.length} موظف`;
+    document.getElementById('footerTime').textContent = new Date().toLocaleDateString('ar-EG');
+  }
+
+  function renderTable(data) {
+    document.getElementById('loadingState').style.display = 'none';
+
+    if (data.length === 0) {
+      document.getElementById('empTable').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('empTable').style.display = 'table';
+
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = data.map(r => {
+      const initials = (r.Name || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
+      const active = isActive(r.Status);
+      return `<tr>
+        <td style="font-family: monospace; color: var(--muted); font-size: 12px">${r['National ID'] || '—'}</td>
+        <td>
+          <div class="name-cell">
+            <div class="avatar">${initials}</div>
+            <span>${r.Name || '—'}</span>
+          </div>
+        </td>
+        <td><span class="badge badge-shift">${r.Shift || '—'}</span></td>
+        <td>${r.Project || '—'}</td>
+        <td style="color: var(--muted)">${r.Role || '—'}</td>
+        <td><span class="badge ${active ? 'badge-active' : 'badge-inactive'}">${r.Status || '—'}</span></td>
+        <td style="color: var(--muted)">${r.Location || '—'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function sortBy(col) {
+    if (sortCol === col) sortAsc = !sortAsc;
+    else { sortCol = col; sortAsc = true; }
+    applyFilters();
+  }
+
+  setInterval(() => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      loadData();
+    }
+  }, 60000);
+</script>
+</body>
+</html>
