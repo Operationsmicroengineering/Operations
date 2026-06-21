@@ -266,7 +266,7 @@
       <div class="stat-value" id="statTotal">—</div>
     </div>
     <div class="stat" style="--accent-color: #00d4aa">
-      <div class="stat-label">نشط</div>
+      <div class="stat-label">نشط (Working)</div>
       <div class="stat-value" id="statActive">—</div>
     </div>
     <div class="stat" style="--accent-color: #ff6b6b">
@@ -315,13 +315,13 @@
       <table id="empTable" style="display:none">
         <thead>
           <tr>
-            <th onclick="sortBy('national_id')">الرقم القومي ↕</th>
-            <th onclick="sortBy('name')">الاسم ↕</th>
-            <th onclick="sortBy('shift')">الشيفت ↕</th>
-            <th onclick="sortBy('project')">المشروع ↕</th>
-            <th onclick="sortBy('role')">الدور ↕</th>
-            <th onclick="sortBy('status')">الحالة ↕</th>
-            <th onclick="sortBy('location')">الموقع ↕</th>
+            <th onclick="sortBy('National ID')">الرقم القومي ↕</th>
+            <th onclick="sortBy('Name')">الاسم ↕</th>
+            <th onclick="sortBy('Shift')">الشيفت ↕</th>
+            <th onclick="sortBy('Project')">المشروع ↕</th>
+            <th onclick="sortBy('Role')">الدور ↕</th>
+            <th onclick="sortBy('Status')">الحالة ↕</th>
+            <th onclick="sortBy('Location')">الموقع ↕</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -352,11 +352,12 @@
     document.getElementById('lastSync').textContent = 'جاري التحميل...';
 
     try {
-      // تم إزالة البارامتر الخاص بالترتيب تماماً لتفادي خطأ 400 بشكل قطعي
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*`, {
+      // تم تعديل طلب الـ API لطلب حد أقصى 5000 وترتيب صحيح بالـ Name لكي لا يضرب خطأ 400
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&limit=5000&order=Name.asc`, {
         headers: {
           'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Prefer': 'count=exact'
         }
       });
 
@@ -379,8 +380,8 @@
   }
 
   function populateFilters() {
-    const shifts = [...new Set(allData.map(r => r.shift).filter(Boolean))].sort();
-    const projects = [...new Set(allData.map(r => r.project).filter(Boolean))].sort();
+    const shifts = [...new Set(allData.map(r => r.Shift).filter(Boolean))].sort();
+    const projects = [...new Set(allData.map(r => r.Project).filter(Boolean))].sort();
 
     const shiftSel = document.getElementById('shiftFilter');
     shiftSel.innerHTML = '<option value="">كل الشيفتات</option>';
@@ -399,13 +400,13 @@
 
     let data = allData.filter(r => {
       const matchSearch = !search ||
-        (r.name || '').toLowerCase().includes(search) ||
-        (r.national_id || '').toString().includes(search);
-      const matchShift = !shift || r.shift === shift;
-      const matchProject = !project || r.project === project;
+        (r.Name || '').toLowerCase().includes(search) ||
+        (r['National ID'] || '').toString().includes(search);
+      const matchShift = !shift || r.Shift === shift;
+      const matchProject = !project || r.Project === project;
       const matchStatus = !status ||
-        (status === 'active' && isActive(r.status)) ||
-        (status === 'inactive' && !isActive(r.status));
+        (status === 'active' && isActive(r.Status)) ||
+        (status === 'inactive' && !isActive(r.Status));
       return matchSearch && matchShift && matchProject && matchStatus;
     });
 
@@ -421,18 +422,19 @@
     renderTable(data);
   }
 
+  // دالة الفحص تم تحديثها لتقرأ كلمة working أو نشط بناءً على قيم الجدول الحقيقية
   function isActive(status) {
     if (!status) return false;
     const s = status.toLowerCase();
-    return s.includes('active') || s.includes('نشط');
+    return s.includes('working') || s.includes('active') || s.includes('نشط');
   }
 
   function updateStats(filtered) {
     document.getElementById('statTotal').textContent = allData.length;
-    document.getElementById('statActive').textContent = allData.filter(r => isActive(r.status)).length;
-    document.getElementById('statInactive').textContent = allData.filter(r => !isActive(r.status)).length;
-    document.getElementById('statProjects').textContent = new Set(allData.map(r => r.project).filter(Boolean)).size;
-    document.getElementById('statLocations').textContent = new Set(allData.map(r => r.location).filter(Boolean)).size;
+    document.getElementById('statActive').textContent = allData.filter(r => isActive(r.Status)).length;
+    document.getElementById('statInactive').textContent = allData.filter(r => !isActive(r.Status)).length;
+    document.getElementById('statProjects').textContent = new Set(allData.map(r => r.Project).filter(Boolean)).size;
+    document.getElementById('statLocations').textContent = new Set(allData.map(r => r.Location).filter(Boolean)).size;
     document.getElementById('rowCount').textContent = filtered.length + ' موظف';
     document.getElementById('footerInfo').textContent = `عرض ${filtered.length} من ${allData.length} موظف`;
     document.getElementById('footerTime').textContent = new Date().toLocaleDateString('ar-EG');
@@ -452,21 +454,21 @@
 
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = data.map(r => {
-      const initials = (r.name || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
-      const active = isActive(r.status);
+      const initials = (r.Name || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
+      const active = isActive(r.Status);
       return `<tr>
-        <td style="font-family: monospace; color: var(--muted); font-size: 13px">${r.national_id || '—'}</td>
+        <td style="font-family: monospace; color: var(--muted); font-size: 13px">${r['National ID'] || '—'}</td>
         <td>
           <div class="name-cell">
             <div class="avatar">${initials}</div>
-            <span>${r.name || '—'}</span>
+            <span>${r.Name || '—'}</span>
           </div>
         </td>
-        <td><span class="badge badge-shift">${r.shift || '—'}</span></td>
-        <td>${r.project || '—'}</td>
-        <td style="color: var(--muted)">${r.role || '—'}</td>
-        <td><span class="badge ${active ? 'badge-active' : 'badge-inactive'}">${r.status || '—'}</span></td>
-        <td style="color: var(--muted)">${r.location || '—'}</td>
+        <td><span class="badge badge-shift">${r.Shift || '—'}</span></td>
+        <td>${r.Project || '—'}</td>
+        <td style="color: var(--muted)">${r.Role || '—'}</td>
+        <td><span class="badge ${active ? 'badge-active' : 'badge-inactive'}">${r.Status || '—'}</span></td>
+        <td style="color: var(--muted)">${r.Location || '—'}</td>
       </tr>`;
     }).join('');
   }
