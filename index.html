@@ -16,16 +16,20 @@
     --bg-3: #181d27;
     --line: #20262f;
     --line-soft: #181d25;
+
     --text-0: #eef1f6;
     --text-1: #9aa4b2;
     --text-2: #5b6472;
+
     --signal: #4fd1e8;
     --signal-dim: rgba(79, 209, 232, 0.12);
     --signal-line: rgba(79, 209, 232, 0.3);
+
     --ok: #3dd68c;
     --ok-dim: rgba(61, 214, 140, 0.12);
     --bad: #f0556b;
     --bad-dim: rgba(240, 85, 107, 0.12);
+
     --shadow-card: 0 1px 0 rgba(255,255,255,0.02) inset, 0 10px 30px rgba(0,0,0,0.35);
     --shadow-pop: 0 20px 60px rgba(0,0,0,0.5);
   }
@@ -42,134 +46,480 @@
     color: var(--text-0);
     min-height: 100vh;
     overflow-x: hidden;
-    background-image: radial-gradient(ellipse 900px 500px at 50% -10%, rgba(79,209,232,0.05), transparent 60%);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(79,209,232,0.05), transparent 60%);
     background-repeat: no-repeat;
   }
 
   ::selection { background: var(--signal-dim); color: var(--text-0); }
-  :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; border-radius: 4px; }
+
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
   .mono { font-family: 'JetBrains Mono', monospace; }
 
-  .login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
-  .login-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; width: 100%; max-width: 396px; padding: 2.75rem 2.25rem 2rem; box-shadow: var(--shadow-pop); position: relative; }
-  .login-mark { width: 42px; height: 42px; border-radius: 9px; background: linear-gradient(160deg, var(--signal) 0%, #2a8fa8 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: #04181d; box-shadow: 0 8px 24px rgba(79, 209, 232, 0.25); }
+  .login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .login-card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 396px;
+    padding: 2.75rem 2.25rem 2rem;
+    box-shadow: var(--shadow-pop);
+    position: relative;
+  }
+  .login-mark {
+    width: 42px; height: 42px;
+    border-radius: 9px;
+    background: linear-gradient(160deg, var(--signal) 0%, #2a8fa8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    color: #04181d;
+    box-shadow: 0 8px 24px rgba(79, 209, 232, 0.25);
+  }
   .login-header { text-align: center; margin-bottom: 2.25rem; }
-  .login-header .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 2px; color: var(--signal); font-weight: 600; display: block; margin-bottom: 10px; text-transform: uppercase; }
-  .login-header h1 { font-size: 20px; font-weight: 700; color: var(--text-0); letter-spacing: -0.3px; }
-  .login-header p { font-size: 13px; color: var(--text-1); margin-top: 7px; }
+  .login-header .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 2px;
+    color: var(--signal);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .login-header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-0);
+    letter-spacing: -0.3px;
+  }
+  .login-header p {
+    font-size: 13px;
+    color: var(--text-1);
+    margin-top: 7px;
+  }
   .form-group { margin-bottom: 1.1rem; }
-  .form-group label { display: block; font-size: 12px; color: var(--text-1); font-weight: 500; margin-bottom: 7px; letter-spacing: 0.2px; }
-  .form-control { background: var(--bg-0); border: 1px solid var(--line); border-radius: 6px; color: var(--text-0); font-family: 'Inter', sans-serif; font-size: 14px; padding: 11px 14px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-1);
+    font-weight: 500;
+    margin-bottom: 7px;
+    letter-spacing: 0.2px;
+  }
+  .form-control {
+    background: var(--bg-0);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text-0);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
+  }
   .form-control::placeholder { color: var(--text-2); }
-  .form-control:focus { border-color: var(--signal-line); box-shadow: 0 0 0 3px var(--signal-dim); }
-  .login-btn { background: var(--signal); color: #04181d; border: none; border-radius: 6px; padding: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: filter 0.15s, transform 0.1s; width: 100%; margin-top: 0.5rem; }
+  .form-control:focus {
+    border-color: var(--signal-line);
+    box-shadow: 0 0 0 3px var(--signal-dim);
+  }
+  .login-btn {
+    background: var(--signal);
+    color: #04181d;
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1px;
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.1s;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
   .login-btn:hover { filter: brightness(1.08); }
   .login-btn:active { transform: translateY(1px); }
   .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .login-error { background: var(--bad-dim); border: 1px solid rgba(240, 85, 107, 0.3); color: var(--bad); font-size: 13px; font-weight: 500; padding: 11px 14px; border-radius: 6px; margin-bottom: 1.1rem; display: none; text-align: center; }
-  .login-note { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-2); text-align: center; margin-top: 1.75rem; line-height: 1.7; border-top: 1px solid var(--line-soft); padding-top: 1rem; letter-spacing: 0.3px; }
+  .login-error {
+    background: var(--bad-dim);
+    border: 1px solid rgba(240, 85, 107, 0.3);
+    color: var(--bad);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 11px 14px;
+    border-radius: 6px;
+    margin-bottom: 1.1rem;
+    display: none;
+    text-align: center;
+  }
+  .login-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-2);
+    text-align: center;
+    margin-top: 1.75rem;
+    line-height: 1.7;
+    border-top: 1px solid var(--line-soft);
+    padding-top: 1rem;
+    letter-spacing: 0.3px;
+  }
 
   #dashboardSection { display: none; }
 
-  nav { background: rgba(12, 15, 21, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); padding: 0 2rem; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  nav {
+    background: rgba(12, 15, 21, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
   .nav-brand { display: flex; align-items: center; gap: 11px; }
-  .nav-mark { width: 30px; height: 30px; border-radius: 7px; background: linear-gradient(160deg, var(--signal) 0%, #2a8fa8 100%); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; color: #04181d; flex-shrink: 0; }
+  .nav-mark {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    background: linear-gradient(160deg, var(--signal) 0%, #2a8fa8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 11px;
+    color: #04181d;
+    flex-shrink: 0;
+  }
   .nav-brand-text { display: flex; flex-direction: column; line-height: 1.25; }
   .nav-brand-text .title { font-size: 14.5px; font-weight: 700; color: var(--text-0); letter-spacing: -0.1px; }
-  .nav-brand-text .subtitle { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 1.4px; color: var(--signal); font-weight: 600; }
-  .nav-left { display: flex; align-items: center; gap: 14px; }
-  .nav-info { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-1); }
-  .nav-user { font-size: 12.5px; color: var(--text-1); padding-right: 14px; border-right: 1px solid var(--line); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nav-brand-text .subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 1.4px;
+    color: var(--signal);
+    font-weight: 600;
+  }
+  .nav-left { display: flex; align-items: center; gap: 16px; }
+  .nav-info {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-1);
+  }
 
   main { padding: 2rem; max-width: 1440px; margin: 0 auto; }
 
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 2rem; }
-  .stat { background: var(--bg-1); border: 1px solid var(--line); border-radius: 12px; padding: 1.35rem 1.5rem 1.5rem; position: relative; overflow: hidden; box-shadow: var(--shadow-card); transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
-  .stat::after { content: ''; position: absolute; top: -18px; left: -18px; width: 84px; height: 84px; border-radius: 50%; background: var(--tint, var(--signal-dim)); opacity: 0.5; filter: blur(2px); }
-  .stat:hover { transform: translateY(-2px); border-color: var(--tint-line, var(--signal-line)); box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 16px 36px rgba(0,0,0,0.4); }
-  .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; position: relative; z-index: 1; }
-  .stat-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--tint, var(--signal-dim)); color: var(--tint-fg, var(--signal)); border: 1px solid var(--tint-line, var(--signal-line)); flex-shrink: 0; }
-  .stat-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--text-2); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; position: relative; z-index: 1; }
-  .stat-value { font-size: 32px; font-weight: 800; color: var(--text-0); letter-spacing: -0.6px; font-variant-numeric: tabular-nums; position: relative; z-index: 1; line-height: 1; }
+  /* ---- stats ----
+     Each stat is now its own elevated card (not a fused strip):
+     icon chip up top in the metric's own tint, a big tabular
+     number, a trailing micro-label, and a soft lift on hover.
+     This reads as a real metrics row instead of a table header. */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
+    margin-bottom: 2rem;
+  }
+  .stat {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.35rem 1.5rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .stat::after {
+    content: '';
+    position: absolute;
+    top: -18px; left: -18px;
+    width: 84px; height: 84px;
+    border-radius: 50%;
+    background: var(--tint, var(--signal-dim));
+    opacity: 0.5;
+    filter: blur(2px);
+  }
+  .stat:hover {
+    transform: translateY(-2px);
+    border-color: var(--tint-line, var(--signal-line));
+    box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 16px 36px rgba(0,0,0,0.4);
+  }
+  .stat-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.1rem;
+    position: relative;
+    z-index: 1;
+  }
+  .stat-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--tint, var(--signal-dim));
+    color: var(--tint-fg, var(--signal));
+    border: 1px solid var(--tint-line, var(--signal-line));
+    flex-shrink: 0;
+  }
+  .stat-trend {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-2);
+    letter-spacing: 0.3px;
+  }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-2);
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+  .stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-0);
+    letter-spacing: -0.6px;
+    font-variant-numeric: tabular-nums;
+    position: relative;
+    z-index: 1;
+    line-height: 1;
+  }
   .stat-value.accent-signal { color: var(--signal); }
   .stat-value.accent-ok { color: var(--ok); }
   .stat-value.accent-bad { color: var(--bad); }
+
   .stat[data-tone="signal"] { --tint: var(--signal-dim); --tint-line: var(--signal-line); --tint-fg: var(--signal); }
   .stat[data-tone="ok"] { --tint: var(--ok-dim); --tint-line: rgba(61,214,140,0.3); --tint-fg: var(--ok); }
   .stat[data-tone="bad"] { --tint: var(--bad-dim); --tint-line: rgba(240,85,107,0.3); --tint-fg: var(--bad); }
   .stat[data-tone="neutral"] { --tint: var(--bg-2); --tint-line: var(--line); --tint-fg: var(--text-1); }
 
-  .toolbar { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; padding: 1rem; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 1.5rem; box-shadow: var(--shadow-card); }
+  .toolbar {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-card);
+  }
   .search-wrap { position: relative; flex: 1; min-width: 220px; }
   .search-wrap svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-2); pointer-events: none; }
-  input[type="text"], input[type="email"], input[type="search"], select { background: var(--bg-0); border: 1px solid var(--line); border-radius: 6px; color: var(--text-0); font-family: 'Inter', sans-serif; font-size: 13.5px; padding: 9px 14px 9px 38px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+  input[type="text"], select {
+    background: var(--bg-0);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text-0);
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    padding: 9px 14px 9px 38px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
+  }
   select { padding: 9px 14px; cursor: pointer; }
-  input::placeholder { color: var(--text-2); }
-  input:focus, select:focus { border-color: var(--signal-line); box-shadow: 0 0 0 3px var(--signal-dim); }
+  input[type="text"]::placeholder { color: var(--text-2); }
+  input[type="text"]:focus, select:focus {
+    border-color: var(--signal-line);
+    box-shadow: 0 0 0 3px var(--signal-dim);
+  }
 
-  .btn-primary { background: var(--signal); color: #04181d; border: none; border-radius: 6px; padding: 9px 18px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: filter 0.15s; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
-  .btn-primary:hover { filter: brightness(1.08); }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .table-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-card); }
-  .table-header { padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+  .table-card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+  }
+  .table-header {
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
   .table-title { font-size: 14px; font-weight: 700; color: var(--text-0); letter-spacing: -0.1px; }
-  .table-count { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--signal); background: var(--signal-dim); border: 1px solid var(--signal-line); padding: 3px 11px; border-radius: 20px; font-weight: 600; }
+  .table-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--signal);
+    background: var(--signal-dim);
+    border: 1px solid var(--signal-line);
+    padding: 3px 11px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
   .table-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; min-width: 780px; }
   thead tr { background: var(--bg-2); }
-  th { padding: 12px 16px; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.8px; text-transform: uppercase; font-weight: 600; color: var(--text-2); cursor: pointer; user-select: none; white-space: nowrap; border-bottom: 1px solid var(--line); transition: color 0.15s; }
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--text-2);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--line);
+    transition: color 0.15s;
+  }
   th:hover { color: var(--text-0); }
   th.sorted { color: var(--signal); }
-  td { padding: 13px 16px; font-size: 13.5px; border-bottom: 1px solid var(--line-soft); color: var(--text-0); white-space: nowrap; }
+  td {
+    padding: 13px 16px;
+    font-size: 13.5px;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--text-0);
+    white-space: nowrap;
+  }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: var(--bg-2); }
 
-  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.2px; }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.2px;
+  }
   .badge-active { background: var(--ok-dim); color: var(--ok); }
   .badge-inactive { background: var(--bad-dim); color: var(--bad); }
-  .badge-shift { background: var(--bg-2); color: var(--text-1); border: 1px solid var(--line); font-family: 'JetBrains Mono', monospace; font-weight: 500; border-radius: 5px; }
+  .badge-shift {
+    background: var(--bg-2);
+    color: var(--text-1);
+    border: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    border-radius: 5px;
+  }
 
-  .avatar { width: 28px; height: 28px; border-radius: 7px; background: var(--bg-2); border: 1px solid var(--line); color: var(--signal); display: inline-flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700; margin-right: 11px; vertical-align: middle; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+  .avatar {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    color: var(--signal);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10.5px;
+    font-weight: 700;
+    margin-right: 11px;
+    vertical-align: middle;
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
   .name-cell { display: flex; align-items: center; }
   .name-cell span { font-weight: 600; }
 
   .loading { text-align: center; padding: 5rem; color: var(--text-1); font-size: 14px; }
-  .spinner { width: 28px; height: 28px; border: 2px solid var(--line); border-top-color: var(--signal); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.1rem; }
+  .spinner {
+    width: 28px; height: 28px;
+    border: 2px solid var(--line);
+    border-top-color: var(--signal);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1.1rem;
+  }
   @keyframes spin { to { transform: rotate(360deg); } }
   .empty { text-align: center; padding: 5rem; color: var(--text-1); font-size: 14px; }
   .empty svg { margin-bottom: 1rem; color: var(--text-2); }
 
-  .table-footer { padding: 0.85rem 1.5rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-1); }
+  .table-footer {
+    padding: 0.85rem 1.5rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-1);
+  }
 
-  .btn-ghost { background: var(--bg-0); color: var(--text-1); border: 1px solid var(--line); border-radius: 6px; padding: 8px 16px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 7px; }
+  .btn-ghost {
+    background: var(--bg-0);
+    color: var(--text-1);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
   .btn-ghost:hover { border-color: var(--signal-line); color: var(--text-0); background: var(--bg-2); }
   .btn-ghost svg { transition: transform 0.3s; }
   .btn-ghost:hover svg { transform: rotate(180deg); }
 
-  .btn-danger { background: transparent; color: var(--text-1); border: 1px solid var(--line); border-radius: 6px; padding: 7px 14px; font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-danger {
+    background: transparent;
+    color: var(--text-1);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
   .btn-danger:hover { border-color: var(--bad); color: var(--bad); background: var(--bad-dim); }
 
-  .error-banner { background: var(--bad-dim); border: 1px solid rgba(240, 85, 107, 0.3); border-radius: 10px; padding: 1rem 1.5rem; color: var(--bad); font-size: 14px; font-weight: 500; margin-bottom: 1.5rem; display: none; }
-  .success-banner { background: var(--ok-dim); border: 1px solid rgba(61, 214, 140, 0.3); border-radius: 10px; padding: 1rem 1.5rem; color: var(--ok); font-size: 14px; font-weight: 500; margin-bottom: 1.5rem; display: none; }
-
-  .modal-overlay { position: fixed; inset: 0; background: rgba(4, 6, 9, 0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
-  .modal-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 12px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-pop); }
-  .modal-header { padding: 1.3rem 1.6rem; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
-  .modal-title { font-size: 15px; font-weight: 700; color: var(--text-0); }
-  .modal-close { background: var(--bg-2); border: 1px solid var(--line); color: var(--text-1); width: 28px; height: 28px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .modal-close:hover { color: var(--text-0); border-color: var(--bad); }
-  .modal-body { padding: 1.5rem 1.6rem; }
-  .modal-footer { padding: 1.1rem 1.6rem; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .form-error { background: var(--bad-dim); border: 1px solid rgba(240, 85, 107, 0.3); color: var(--bad); font-size: 12.5px; font-weight: 500; padding: 9px 12px; border-radius: 6px; margin-bottom: 1rem; display: none; }
+  .error-banner {
+    background: var(--bad-dim);
+    border: 1px solid rgba(240, 85, 107, 0.3);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    color: var(--bad);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    display: none;
+  }
 
   @media (max-width: 640px) {
     main { padding: 1.25rem; }
     nav { padding: 0 1.25rem; }
     .nav-brand-text .subtitle { display: none; }
-    .nav-user { display: none; }
-    .form-row { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -183,19 +533,19 @@
       <h1>Sign in to continue</h1>
       <p>Access restricted to authorized personnel</p>
     </div>
-    <div class="login-error" id="loginError">Invalid email or password</div>
+    <div class="login-error" id="loginError">Invalid username or password</div>
     <form id="loginForm" onsubmit="handleLogin(event)">
       <div class="form-group">
-        <label for="loginEmail">Email</label>
-        <input type="email" id="loginEmail" class="form-control" placeholder="you@company.com" autocomplete="username" required>
+        <label for="username">Username</label>
+        <input type="text" id="username" class="form-control" placeholder="Enter your username" autocomplete="username" required>
       </div>
       <div class="form-group">
-        <label for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" autocomplete="current-password" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="Enter your password" autocomplete="current-password" required>
       </div>
       <button type="submit" class="login-btn" id="loginBtn">Sign in</button>
     </form>
-    <div class="login-note">AUTHENTICATED VIA SUPABASE AUTH · SESSION-SCOPED ACCESS</div>
+    <div class="login-note">SESSION-BASED ACCESS · NOT FOR PRODUCTION-GRADE AUTH</div>
   </div>
 </div>
 
@@ -209,7 +559,6 @@
       </div>
     </div>
     <div class="nav-left">
-      <span class="nav-user mono" id="navUserEmail"></span>
       <div class="nav-info mono" id="lastSync">Loading...</div>
       <button class="btn-danger" onclick="handleLogout()">Sign out</button>
     </div>
@@ -217,31 +566,50 @@
 
   <main>
     <div class="error-banner" id="errorBanner"></div>
-    <div class="success-banner" id="successBanner"></div>
 
     <div class="stats">
       <div class="stat" data-tone="neutral">
-        <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div></div>
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+        </div>
         <div class="stat-label">Total staff</div>
         <div class="stat-value" id="statTotal">—</div>
       </div>
       <div class="stat" data-tone="ok">
-        <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div>
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+        </div>
         <div class="stat-label">Working</div>
         <div class="stat-value accent-ok" id="statActive">—</div>
       </div>
       <div class="stat" data-tone="bad">
-        <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div></div>
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          </div>
+        </div>
         <div class="stat-label">Inactive</div>
         <div class="stat-value accent-bad" id="statInactive">—</div>
       </div>
       <div class="stat" data-tone="signal">
-        <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div></div>
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+        </div>
         <div class="stat-label">Projects</div>
         <div class="stat-value accent-signal" id="statProjects">—</div>
       </div>
       <div class="stat" data-tone="neutral">
-        <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div></div>
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+        </div>
         <div class="stat-label">Locations</div>
         <div class="stat-value" id="statLocations">—</div>
       </div>
@@ -252,8 +620,12 @@
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" id="searchInput" placeholder="Search by name or national ID..." oninput="applyFilters()">
       </div>
-      <select id="shiftFilter" onchange="applyFilters()"><option value="">All shifts</option></select>
-      <select id="projectFilter" onchange="applyFilters()"><option value="">All projects</option></select>
+      <select id="shiftFilter" onchange="applyFilters()">
+        <option value="">All shifts</option>
+      </select>
+      <select id="projectFilter" onchange="applyFilters()">
+        <option value="">All projects</option>
+      </select>
       <select id="statusFilter" onchange="applyFilters()">
         <option value="">All statuses</option>
         <option value="active">Active</option>
@@ -263,10 +635,6 @@
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>
         Refresh
       </button>
-      <button class="btn-primary" onclick="openAddModal()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add employee
-      </button>
     </div>
 
     <div class="table-card">
@@ -275,7 +643,10 @@
         <span class="table-count" id="rowCount">—</span>
       </div>
       <div class="table-wrap">
-        <div class="loading" id="loadingState"><div class="spinner"></div>Loading data...</div>
+        <div class="loading" id="loadingState">
+          <div class="spinner"></div>
+          Loading data...
+        </div>
         <table id="empTable" style="display:none">
           <thead>
             <tr>
@@ -303,219 +674,172 @@
   </main>
 </div>
 
-<!-- Add Employee Modal -->
-<div class="modal-overlay" id="addModalOverlay">
-  <div class="modal-card">
-    <div class="modal-header">
-      <span class="modal-title">Add employee</span>
-      <button class="modal-close" onclick="closeAddModal()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <form id="addEmployeeForm" onsubmit="handleAddEmployee(event)">
-      <div class="modal-body">
-        <div class="form-error" id="addFormError"></div>
-        <div class="form-group">
-          <label for="addName">Full name</label>
-          <input type="text" id="addName" class="form-control" placeholder="e.g. Youssef Magdy Ibrahim" required>
-        </div>
-        <div class="form-group">
-          <label for="addNationalId">National ID</label>
-          <input type="text" id="addNationalId" class="form-control" placeholder="e.g. 30111052401772" required>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="addShift">Shift</label>
-            <input type="text" id="addShift" class="form-control" placeholder="e.g. Overnight" required>
-          </div>
-          <div class="form-group">
-            <label for="addRole">Role</label>
-            <input type="text" id="addRole" class="form-control" placeholder="e.g. Labeler" required>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="addProject">Project</label>
-            <input type="text" id="addProject" class="form-control" placeholder="e.g. GT" required>
-          </div>
-          <div class="form-group">
-            <label for="addStatus">Status</label>
-            <select id="addStatus" class="form-control" required>
-              <option value="working">Working</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="addLocation">Location</label>
-          <input type="text" id="addLocation" class="form-control" placeholder="e.g. Nasr City A106" required>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-ghost" onclick="closeAddModal()">Cancel</button>
-        <button type="submit" class="btn-primary" id="addSubmitBtn">Add employee</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <script>
-  const SUPABASE_URL = 'https://dibhtnnkhakcygzpenwg.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
-  const TABLE = 'employees';
-  const SESSION_KEY = 'supabaseSession';
+  // SECURITY TODO (deferred by agreement): replace this with real
+  // server-side auth via Supabase Auth + RLS.
+  const AUTH_USER = 'admin';
+  const AUTH_PASS = 'admin123';
 
-  // رابط Google Apps Script Web App — بيستقبل الموظف الجديد ويضيفه في الشيت فوراً
-  const SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzNaerzshno8ZvIpP9dRQGxas0Q3jX57ohH5_KzRoaUXHidf_kuSmdaJ7sOVSpE-HlJ/exec';
+  const SUPABASE_URL = 'https://dibhtnnkhakcygzpenwg.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
+  const TABLE = 'employees';
 
   let allData = [];
   let sortCol = '';
   let sortAsc = true;
   let pollTimer = null;
-  let session = null;
 
   function escapeHTML(value) {
     if (value === null || value === undefined) return '';
     return String(value)
-      .replaceAll('&', '&amp;').replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
   }
 
+  // توحيد قيم الشيفت: أي قيمة بتتطابق مع تانية بتجاهل حالة الحروف
+  // (mapping = Mapping = MAPPING) بتتجمع كخيار واحد، وبتتعرض بصيغة
+  // Title Case (أول حرف كبير، الباقي صغير) في الفلتر وفي الجدول.
   function normalizeShift(value) {
-    if (!value) return '';
-    const t = String(value).trim();
-    return t ? t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() : '';
+    if (value === null || value === undefined) return '';
+    const trimmed = String(value).trim();
+    if (!trimmed) return '';
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
   }
 
-  function getSession() {
-    if (session) return session;
-    try { const r = sessionStorage.getItem(SESSION_KEY); return r ? (session = JSON.parse(r)) : null; } catch { return null; }
+  window.onload = function() {
+    if (sessionStorage.getItem('isLoggedIn') === 'true') {
+      showDashboard();
+    }
   }
 
-  function saveSession(s) { session = s; sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
-  function clearSession() { session = null; sessionStorage.removeItem(SESSION_KEY); }
-
-  function authHeaders(extra) {
-    const s = getSession();
-    return { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${s ? s.access_token : SUPABASE_ANON_KEY}`, ...extra };
-  }
-
-  window.onload = function() { if (getSession()) showDashboard(); }
   window.addEventListener('beforeunload', stopPolling);
 
-  async function handleLogin(event) {
+  function handleLogin(event) {
     event.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value;
     const errorDiv = document.getElementById('loginError');
     const btn = document.getElementById('loginBtn');
+
     btn.disabled = true;
-    errorDiv.style.display = 'none';
-    try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-        method: 'POST',
-        headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (!res.ok || !data.access_token) throw new Error(data.error_description || 'Invalid email or password');
-      saveSession({ access_token: data.access_token, refresh_token: data.refresh_token, user: { email: data.user?.email || email } });
-      document.getElementById('loginPassword').value = '';
+
+    if (user === AUTH_USER && pass === AUTH_PASS) {
+      sessionStorage.setItem('isLoggedIn', 'true');
+      errorDiv.style.display = 'none';
+      document.getElementById('password').value = '';
       showDashboard();
-    } catch (err) {
-      errorDiv.textContent = err.message;
+    } else {
       errorDiv.style.display = 'block';
-      document.getElementById('loginPassword').value = '';
-    } finally { btn.disabled = false; }
+      document.getElementById('password').value = '';
+    }
+
+    btn.disabled = false;
   }
 
-  async function handleLogout() {
+  function handleLogout() {
     stopPolling();
-    try { if (getSession()) await fetch(`${SUPABASE_URL}/auth/v1/logout`, { method: 'POST', headers: authHeaders() }); } catch {}
-    clearSession(); allData = []; sortCol = ''; sortAsc = true;
+    sessionStorage.removeItem('isLoggedIn');
+    allData = [];
+    sortCol = '';
+    sortAsc = true;
     document.getElementById('dashboardSection').style.display = 'none';
     document.getElementById('loginSection').style.display = 'flex';
-    document.getElementById('loginEmail').value = '';
-    document.getElementById('loginPassword').value = '';
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
     document.getElementById('loginError').style.display = 'none';
   }
 
   function showDashboard() {
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('dashboardSection').style.display = 'block';
-    const s = getSession();
-    document.getElementById('navUserEmail').textContent = s?.user?.email || '';
-    loadData(); startPolling();
+    loadData();
+    startPolling();
   }
 
   function startPolling() {
     stopPolling();
-    pollTimer = setInterval(() => { getSession() ? loadData() : stopPolling(); }, 60000);
+    pollTimer = setInterval(() => {
+      if (sessionStorage.getItem('isLoggedIn') === 'true') {
+        loadData();
+      } else {
+        stopPolling();
+      }
+    }, 60000);
   }
 
-  function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
-
-  function showError(msg) {
-    const b = document.getElementById('errorBanner');
-    b.style.display = 'block'; b.textContent = msg;
-    document.getElementById('successBanner').style.display = 'none';
-  }
-
-  function showSuccess(msg) {
-    const b = document.getElementById('successBanner');
-    b.style.display = 'block'; b.textContent = msg;
-    document.getElementById('errorBanner').style.display = 'none';
-    setTimeout(() => { b.style.display = 'none'; }, 4000);
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
   }
 
   async function loadData() {
-    if (!getSession()) return;
+    if (sessionStorage.getItem('isLoggedIn') !== 'true') return;
+
     document.getElementById('loadingState').style.display = 'block';
     document.getElementById('empTable').style.display = 'none';
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('errorBanner').style.display = 'none';
     document.getElementById('lastSync').textContent = 'Loading...';
+
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&limit=5000&order=Name.asc`, {
-        headers: authHeaders({ 'Prefer': 'count=exact' })
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Prefer': 'count=exact'
+        }
       });
-      if (res.status === 401) {
-        clearSession();
-        document.getElementById('dashboardSection').style.display = 'none';
-        document.getElementById('loginSection').style.display = 'flex';
-        document.getElementById('loginError').textContent = 'Session expired. Please sign in again.';
-        document.getElementById('loginError').style.display = 'block';
-        return;
-      }
+
       if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+
       const json = await res.json();
       allData = Array.isArray(json) ? json : [];
-      populateFilters(); applyFilters();
-      document.getElementById('lastSync').textContent = `Updated ${new Date().toLocaleTimeString('en-US')}`;
+      populateFilters();
+      applyFilters();
+
+      const now = new Date();
+      document.getElementById('lastSync').textContent = `Updated ${now.toLocaleTimeString('en-US')}`;
+
     } catch (err) {
       document.getElementById('loadingState').style.display = 'none';
-      showError('Failed to load data: ' + escapeHTML(err.message));
+      const banner = document.getElementById('errorBanner');
+      banner.style.display = 'block';
+      banner.textContent = 'Failed to load data: ' + escapeHTML(err.message);
       document.getElementById('lastSync').textContent = 'Sync failed';
     }
   }
 
   function populateFilters() {
+    // تجميع قيم الشيفت بتجاهل حالة الحروف: نخزن أول قيمة شفناها لكل
+    // نسخة موحدة (lowercase) كمفتاح، عشان نعرضها بصيغة Title Case واحدة
+    // بدل ما تتكرر (mapping / Mapping / MAPPING) كخيارات منفصلة.
     const shiftMap = new Map();
-    allData.forEach(r => { const n = normalizeShift(r.Shift); if (n && !shiftMap.has(n.toLowerCase())) shiftMap.set(n.toLowerCase(), n); });
+    allData.forEach(r => {
+      const normalized = normalizeShift(r.Shift);
+      if (!normalized) return;
+      const key = normalized.toLowerCase();
+      if (!shiftMap.has(key)) shiftMap.set(key, normalized);
+    });
     const shifts = [...shiftMap.values()].sort();
+
     const projects = [...new Set(allData.map(r => r.Project).filter(Boolean))].sort();
 
     const shiftSel = document.getElementById('shiftFilter');
-    const prev = shiftSel.value;
+    const prevShift = shiftSel.value;
     shiftSel.innerHTML = '<option value="">All shifts</option>';
     shifts.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; shiftSel.appendChild(o); });
-    if (shifts.includes(prev)) shiftSel.value = prev;
+    if (shifts.includes(prevShift)) shiftSel.value = prevShift;
 
     const projSel = document.getElementById('projectFilter');
-    const prevP = projSel.value;
+    const prevProject = projSel.value;
     projSel.innerHTML = '<option value="">All projects</option>';
     projects.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; projSel.appendChild(o); });
-    if (projects.includes(prevP)) projSel.value = prevP;
+    if (projects.includes(prevProject)) projSel.value = prevProject;
   }
 
   function applyFilters() {
@@ -525,28 +849,49 @@
     const status = document.getElementById('statusFilter').value;
 
     let data = allData.filter(r => {
-      const matchSearch = !search || (r.Name||'').toLowerCase().includes(search) || (r['National ID']||'').toString().includes(search);
+      const matchSearch = !search ||
+        (r.Name || '').toLowerCase().includes(search) ||
+        (r['National ID'] || '').toString().includes(search);
       const matchShift = !shift || normalizeShift(r.Shift) === shift;
       const matchProject = !project || r.Project === project;
-      const matchStatus = !status || (status === 'active' && isActive(r.Status)) || (status === 'inactive' && !isActive(r.Status));
+      const matchStatus = !status ||
+        (status === 'active' && isActive(r.Status)) ||
+        (status === 'inactive' && !isActive(r.Status));
       return matchSearch && matchShift && matchProject && matchStatus;
     });
 
     if (sortCol) {
       data = data.slice().sort((a, b) => {
-        const rA = a[sortCol], rB = b[sortCol];
-        const nA = Number(rA), nB = Number(rB);
-        const isNum = rA != null && rA !== '' && rB != null && rB !== '' && !isNaN(nA) && !isNaN(nB);
-        const cmp = isNum ? nA - nB : (rA??'').toString().localeCompare((rB??'').toString(), 'en');
+        const rawA = a[sortCol];
+        const rawB = b[sortCol];
+
+        const numA = Number(rawA);
+        const numB = Number(rawB);
+        const bothNumeric = rawA !== null && rawA !== undefined && rawA !== '' &&
+                             rawB !== null && rawB !== undefined && rawB !== '' &&
+                             !Number.isNaN(numA) && !Number.isNaN(numB);
+
+        let cmp;
+        if (bothNumeric) {
+          cmp = numA - numB;
+        } else {
+          const va = (rawA ?? '').toString();
+          const vb = (rawB ?? '').toString();
+          cmp = va.localeCompare(vb, 'en');
+        }
         return sortAsc ? cmp : -cmp;
       });
     }
 
-    updateSortIndicators(); updateStats(data); renderTable(data);
+    updateSortIndicators();
+    updateStats(data);
+    renderTable(data);
   }
 
   function updateSortIndicators() {
-    document.querySelectorAll('#empTable th').forEach(th => th.classList.toggle('sorted', th.dataset.col === sortCol));
+    document.querySelectorAll('#empTable th').forEach(th => {
+      th.classList.toggle('sorted', th.dataset.col === sortCol);
+    });
   }
 
   function isActive(status) {
@@ -568,108 +913,50 @@
 
   function renderTable(data) {
     document.getElementById('loadingState').style.display = 'none';
+
     if (data.length === 0) {
       document.getElementById('empTable').style.display = 'none';
       document.getElementById('emptyState').style.display = 'block';
       return;
     }
+
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('empTable').style.display = 'table';
-    document.getElementById('tableBody').innerHTML = data.map(r => {
+
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = data.map(r => {
       const safeName = escapeHTML(r.Name || '—');
-      const initials = escapeHTML((r.Name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+      const rawName = (r.Name || '?').toString();
+      const initials = escapeHTML(rawName.split(' ').map(w => w[0]).slice(0, 2).join(''));
       const active = isActive(r.Status);
+      const safeId = escapeHTML(r['National ID'] || '—');
+      const safeShift = escapeHTML(normalizeShift(r.Shift) || '—');
+      const safeProject = escapeHTML(r.Project || '—');
+      const safeRole = escapeHTML(r.Role || '—');
+      const safeStatus = escapeHTML(r.Status || '—');
+      const safeLocation = escapeHTML(r.Location || '—');
+
       return `<tr>
-        <td class="mono" style="color:var(--text-1);font-size:12px">${escapeHTML(r['National ID']||'—')}</td>
-        <td><div class="name-cell"><div class="avatar">${initials}</div><span>${safeName}</span></div></td>
-        <td><span class="badge badge-shift">${escapeHTML(normalizeShift(r.Shift)||'—')}</span></td>
-        <td>${escapeHTML(r.Project||'—')}</td>
-        <td style="color:var(--text-1)">${escapeHTML(r.Role||'—')}</td>
-        <td><span class="badge ${active?'badge-active':'badge-inactive'}">${escapeHTML(r.Status||'—')}</span></td>
-        <td style="color:var(--text-1)">${escapeHTML(r.Location||'—')}</td>
+        <td class="mono" style="color: var(--text-1); font-size: 12px">${safeId}</td>
+        <td>
+          <div class="name-cell">
+            <div class="avatar">${initials}</div>
+            <span>${safeName}</span>
+          </div>
+        </td>
+        <td><span class="badge badge-shift">${safeShift}</span></td>
+        <td>${safeProject}</td>
+        <td style="color: var(--text-1)">${safeRole}</td>
+        <td><span class="badge ${active ? 'badge-active' : 'badge-inactive'}">${safeStatus}</span></td>
+        <td style="color: var(--text-1)">${safeLocation}</td>
       </tr>`;
     }).join('');
   }
 
   function sortBy(col) {
-    if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = true; }
+    if (sortCol === col) sortAsc = !sortAsc;
+    else { sortCol = col; sortAsc = true; }
     applyFilters();
-  }
-
-  // ── Add Employee ──
-
-  function openAddModal() {
-    document.getElementById('addFormError').style.display = 'none';
-    document.getElementById('addEmployeeForm').reset();
-    document.getElementById('addModalOverlay').style.display = 'flex';
-  }
-
-  function closeAddModal() { document.getElementById('addModalOverlay').style.display = 'none'; }
-
-  document.getElementById('addModalOverlay').addEventListener('click', e => { if (e.target.id === 'addModalOverlay') closeAddModal(); });
-
-  // بيبعت بيانات الموظف الجديد للشيت مباشرة (fire-and-forget)
-  // mode: no-cors لأن Apps Script Web App مش بيرجع CORS headers
-  // بنستخدم no-cors فالاستجابة بتبقى opaque (مش قادرين نقراها)
-  // بس الطلب بيوصل وبيتنفذ على الشيت بالظبط
-  async function syncToSheet(payload) {
-    try {
-      await fetch(SHEET_WEBAPP_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    } catch (err) {
-      console.warn('Sheet sync failed (non-critical):', err.message);
-    }
-  }
-
-  async function handleAddEmployee(event) {
-    event.preventDefault();
-    if (!getSession()) { showError('Session expired. Please sign in again.'); closeAddModal(); return; }
-
-    const errorDiv = document.getElementById('addFormError');
-    const submitBtn = document.getElementById('addSubmitBtn');
-    errorDiv.style.display = 'none';
-
-    const payload = {
-      'Name': document.getElementById('addName').value.trim(),
-      'National ID': document.getElementById('addNationalId').value.trim(),
-      'Shift': document.getElementById('addShift').value.trim(),
-      'Role': document.getElementById('addRole').value.trim(),
-      'Project': document.getElementById('addProject').value.trim(),
-      'Status': document.getElementById('addStatus').value,
-      'Location': document.getElementById('addLocation').value.trim()
-    };
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Adding...';
-
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
-        method: 'POST',
-        headers: authHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }),
-        body: JSON.stringify(payload)
-      });
-
-      if (res.status === 401 || res.status === 403) throw new Error('Not authorized to add employees.');
-      if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.message || `Error ${res.status}`); }
-
-      // ✅ ضُيف في Supabase — دلوقتي ابعته للشيت فوراً
-      await syncToSheet(payload);
-
-      closeAddModal();
-      showSuccess(`${payload['Name'] || 'Employee'} was added successfully.`);
-      await loadData();
-
-    } catch (err) {
-      errorDiv.textContent = err.message || 'Failed to add employee.';
-      errorDiv.style.display = 'block';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Add employee';
-    }
   }
 </script>
 </body>
