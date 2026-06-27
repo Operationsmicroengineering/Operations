@@ -509,8 +509,12 @@
     document.getElementById('errorBanner').style.display = 'none';
     document.getElementById('lastSync').textContent = 'Loading...';
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&limit=5000&order=Name.asc`, { headers: authHeaders({'Prefer':'count=exact'}) });
-      if (res.status === 401) {
+      allData = await fetchAllRows();
+      populateFilters(); applyFilters();
+      document.getElementById('lastSync').textContent = `Updated ${new Date().toLocaleTimeString('en-US')}`;
+    } catch (ex) {
+      document.getElementById('loadingState').style.display = 'none';
+      if (ex.code === 'UNAUTHORIZED') {
         clearSession();
         document.getElementById('dashboardSection').style.display = 'none';
         document.getElementById('loginSection').style.display = 'flex';
@@ -518,16 +522,32 @@
         document.getElementById('loginError').style.display = 'block';
         return;
       }
-      if (!res.ok) throw new Error(`Error ${res.status}`);
-      allData = await res.json();
-      if (!Array.isArray(allData)) allData = [];
-      populateFilters(); applyFilters();
-      document.getElementById('lastSync').textContent = `Updated ${new Date().toLocaleTimeString('en-US')}`;
-    } catch (ex) {
-      document.getElementById('loadingState').style.display = 'none';
       showError('Failed to load: ' + escapeHTML(ex.message));
       document.getElementById('lastSync').textContent = 'Sync failed';
     }
+  }
+
+  // Supabase/PostgREST caps each request at its configured "Max Rows" (often 1000),
+  // even if a higher `limit` is requested. This pages through the table using the
+  // Range header so every row gets pulled regardless of table size.
+  async function fetchAllRows() {
+    const PAGE_SIZE = 1000;
+    let from = 0;
+    let collected = [];
+    while (true) {
+      const to = from + PAGE_SIZE - 1;
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=Name.asc`, {
+        headers: authHeaders({ 'Range-Unit': 'items', 'Range': `${from}-${to}` })
+      });
+      if (res.status === 401) { const err = new Error('Session expired.'); err.code = 'UNAUTHORIZED'; throw err; }
+      if (!res.ok && res.status !== 206) throw new Error(`Error ${res.status}`);
+      const page = await res.json();
+      if (!Array.isArray(page) || page.length === 0) break;
+      collected = collected.concat(page);
+      if (page.length < PAGE_SIZE) break; // last page reached
+      from += PAGE_SIZE;
+    }
+    return collected;
   }
 
   function populateFilters() {
