@@ -40,6 +40,7 @@
   :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; border-radius: 4px; }
   .mono { font-family: 'JetBrains Mono', monospace; }
 
+  /* ── Login ── */
   .login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
   .login-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; width: 100%; max-width: 396px; padding: 2.75rem 2.25rem 2rem; box-shadow: var(--shadow-pop); }
   .login-mark { width: 42px; height: 42px; border-radius: 9px; background: linear-gradient(160deg, var(--signal) 0%, #2a8fa8 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: #04181d; box-shadow: 0 8px 24px rgba(79,209,232,0.25); }
@@ -61,6 +62,7 @@
 
   #dashboardSection { display: none; }
 
+  /* ── Nav ── */
   nav { background: rgba(12,15,21,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); padding: 0 2rem; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
   .nav-brand { display: flex; align-items: center; gap: 11px; }
   .nav-mark { width: 30px; height: 30px; border-radius: 7px; background: linear-gradient(160deg, var(--signal) 0%, #2a8fa8 100%); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; color: #04181d; flex-shrink: 0; }
@@ -73,6 +75,7 @@
 
   main { padding: 2rem; max-width: 1440px; margin: 0 auto; }
 
+  /* ── Stats ── */
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 2rem; }
   .stat { background: var(--bg-1); border: 1px solid var(--line); border-radius: 12px; padding: 1.35rem 1.5rem 1.5rem; position: relative; overflow: hidden; box-shadow: var(--shadow-card); transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
   .stat::after { content: ''; position: absolute; top: -18px; left: -18px; width: 84px; height: 84px; border-radius: 50%; background: var(--tint, var(--signal-dim)); opacity: 0.5; filter: blur(2px); }
@@ -89,6 +92,7 @@
   .stat[data-tone="bad"] { --tint: var(--bad-dim); --tint-line: rgba(240,85,107,0.3); --tint-fg: var(--bad); }
   .stat[data-tone="neutral"] { --tint: var(--bg-2); --tint-line: var(--line); --tint-fg: var(--text-1); }
 
+  /* ── Toolbar ── */
   .toolbar { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; padding: 1rem; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 1.5rem; box-shadow: var(--shadow-card); }
   .search-wrap { position: relative; flex: 1; min-width: 220px; }
   .search-wrap svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-2); pointer-events: none; }
@@ -101,6 +105,7 @@
   .btn-primary:hover { filter: brightness(1.08); }
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
+  /* ── Table ── */
   .table-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-card); }
   .table-header { padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
   .table-title { font-size: 14px; font-weight: 700; color: var(--text-0); letter-spacing: -0.1px; }
@@ -126,12 +131,9 @@
   .name-cell { display: flex; align-items: center; }
   .name-cell span { font-weight: 600; }
 
-  /* Action buttons cell */
   .action-cell { display: flex; align-items: center; gap: 6px; }
-
   .btn-edit { background: var(--bg-2); color: var(--text-1); border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; }
   .btn-edit:hover { border-color: var(--signal-line); color: var(--signal); background: var(--signal-dim); }
-
   .btn-delete-row { background: transparent; color: var(--text-2); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; }
   .btn-delete-row:hover { border-color: var(--bad); color: var(--bad); background: var(--bad-dim); }
 
@@ -147,11 +149,8 @@
   .btn-ghost:hover { border-color: var(--signal-line); color: var(--text-0); background: var(--bg-2); }
   .btn-ghost svg { transition: transform 0.3s; }
   .btn-ghost:hover svg { transform: rotate(180deg); }
-
   .btn-danger { background: transparent; color: var(--text-1); border: 1px solid var(--line); border-radius: 6px; padding: 7px 14px; font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
   .btn-danger:hover { border-color: var(--bad); color: var(--bad); background: var(--bad-dim); }
-
-  /* Confirm delete button (modal footer) */
   .btn-confirm-delete { background: var(--bad); color: #fff; border: none; border-radius: 6px; padding: 9px 18px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: filter 0.15s; display: inline-flex; align-items: center; gap: 7px; }
   .btn-confirm-delete:hover { filter: brightness(1.1); }
   .btn-confirm-delete:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -159,6 +158,7 @@
   .error-banner { background: var(--bad-dim); border: 1px solid rgba(240,85,107,0.3); border-radius: 10px; padding: 1rem 1.5rem; color: var(--bad); font-size: 14px; font-weight: 500; margin-bottom: 1.5rem; display: none; }
   .success-banner { background: var(--ok-dim); border: 1px solid rgba(61,214,140,0.3); border-radius: 10px; padding: 1rem 1.5rem; color: var(--ok); font-size: 14px; font-weight: 500; margin-bottom: 1.5rem; display: none; }
 
+  /* ── Modals ── */
   .modal-overlay { position: fixed; inset: 0; background: rgba(4,6,9,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
   .modal-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 12px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-pop); }
   .modal-header { padding: 1.3rem 1.6rem; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
@@ -169,8 +169,6 @@
   .modal-footer { padding: 1.1rem 1.6rem; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .form-error { background: var(--bad-dim); border: 1px solid rgba(240,85,107,0.3); color: var(--bad); font-size: 12.5px; font-weight: 500; padding: 9px 12px; border-radius: 6px; margin-bottom: 1rem; display: none; }
-
-  /* Delete confirmation modal specifics */
   .delete-modal-card { max-width: 400px; }
   .delete-warning-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--bad-dim); border: 1px solid rgba(240,85,107,0.3); display: flex; align-items: center; justify-content: center; color: var(--bad); margin: 0 auto 1.25rem; }
   .delete-modal-body { text-align: center; padding: 1.75rem 1.6rem 1.5rem; }
@@ -202,6 +200,9 @@
   .sheet-card:hover .sheet-open { color: var(--signal); transform: translate(2px,-2px); }
   .sheets-empty { text-align: center; padding: 4rem; color: var(--text-1); font-size: 14px; }
 
+  /* ── Sheet source badge ── */
+  .source-badge { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--ok); background: var(--ok-dim); border: 1px solid rgba(61,214,140,0.25); padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; }
+
   @media (max-width: 640px) {
     main { padding: 1.25rem; }
     nav { padding: 0 1.25rem; }
@@ -214,6 +215,7 @@
 </head>
 <body>
 
+<!-- ═══════════════════════════════ LOGIN ═══════════════════════════════ -->
 <div class="login-container" id="loginSection">
   <div class="login-card">
     <div class="login-mark">OT</div>
@@ -234,10 +236,11 @@
       </div>
       <button type="submit" class="login-btn" id="loginBtn">Sign in</button>
     </form>
-    <div class="login-note">AUTHENTICATED VIA SUPABASE AUTH · SESSION-SCOPED ACCESS</div>
+    <div class="login-note">AUTHENTICATED VIA SUPABASE AUTH · DATA FROM GOOGLE SHEETS</div>
   </div>
 </div>
 
+<!-- ═══════════════════════════════ DASHBOARD ═══════════════════════════ -->
 <div id="dashboardSection">
   <nav>
     <div class="nav-brand">
@@ -259,100 +262,103 @@
     </div>
     <div class="nav-left">
       <span class="nav-user mono" id="navUserEmail"></span>
+      <span class="source-badge">GOOGLE SHEETS</span>
       <div class="nav-info mono" id="lastSync">Loading...</div>
       <button class="btn-danger" onclick="handleLogout()">Sign out</button>
     </div>
   </nav>
 
   <main>
+    <!-- ── Staff View ── -->
     <div id="staffView">
-    <div class="error-banner" id="errorBanner"></div>
-    <div class="success-banner" id="successBanner"></div>
+      <div class="error-banner" id="errorBanner"></div>
+      <div class="success-banner" id="successBanner"></div>
 
-    <div class="stats">
-      <div class="stat" data-tone="neutral">
-        <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div></div>
-        <div class="stat-label">Total staff</div>
-        <div class="stat-value" id="statTotal">—</div>
-      </div>
-      <div class="stat" data-tone="ok">
-        <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div>
-        <div class="stat-label">Working</div>
-        <div class="stat-value accent-ok" id="statActive">—</div>
-      </div>
-      <div class="stat" data-tone="bad">
-        <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div></div>
-        <div class="stat-label">Inactive</div>
-        <div class="stat-value accent-bad" id="statInactive">—</div>
-      </div>
-      <div class="stat" data-tone="signal">
-        <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div></div>
-        <div class="stat-label">Projects</div>
-        <div class="stat-value accent-signal" id="statProjects">—</div>
-      </div>
-      <div class="stat" data-tone="neutral">
-        <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div></div>
-        <div class="stat-label">Locations</div>
-        <div class="stat-value" id="statLocations">—</div>
-      </div>
-    </div>
-
-    <div class="toolbar">
-      <div class="search-wrap">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="searchInput" placeholder="Search by name or national ID..." oninput="applyFilters()">
-      </div>
-      <select id="shiftFilter" onchange="applyFilters()"><option value="">All shifts</option></select>
-      <select id="projectFilter" onchange="applyFilters()"><option value="">All projects</option></select>
-      <select id="statusFilter" onchange="applyFilters()">
-        <option value="">All statuses</option>
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
-      </select>
-      <button class="btn-ghost" onclick="loadData()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>
-        Refresh
-      </button>
-      <button class="btn-primary" onclick="openAddModal()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add employee
-      </button>
-    </div>
-
-    <div class="table-card">
-      <div class="table-header">
-        <span class="table-title">Staff records</span>
-        <span class="table-count" id="rowCount">—</span>
-      </div>
-      <div class="table-wrap">
-        <div class="loading" id="loadingState"><div class="spinner"></div>Loading data...</div>
-        <table id="empTable" style="display:none">
-          <thead>
-            <tr>
-              <th data-col="National ID" onclick="sortBy('National ID')">National ID ↕</th>
-              <th data-col="Name" onclick="sortBy('Name')">Name ↕</th>
-              <th data-col="Shift" onclick="sortBy('Shift')">Shift ↕</th>
-              <th data-col="Project" onclick="sortBy('Project')">Project ↕</th>
-              <th data-col="Role" onclick="sortBy('Role')">Role ↕</th>
-              <th data-col="Status" onclick="sortBy('Status')">Status ↕</th>
-              <th data-col="Location" onclick="sortBy('Location')">Location ↕</th>
-              <th class="no-sort"></th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty" id="emptyState" style="display:none">
-          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <div>No matching records</div>
+      <div class="stats">
+        <div class="stat" data-tone="neutral">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div></div>
+          <div class="stat-label">Total staff</div>
+          <div class="stat-value" id="statTotal">—</div>
+        </div>
+        <div class="stat" data-tone="ok">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div>
+          <div class="stat-label">Working</div>
+          <div class="stat-value accent-ok" id="statActive">—</div>
+        </div>
+        <div class="stat" data-tone="bad">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div></div>
+          <div class="stat-label">Inactive</div>
+          <div class="stat-value accent-bad" id="statInactive">—</div>
+        </div>
+        <div class="stat" data-tone="signal">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div></div>
+          <div class="stat-label">Projects</div>
+          <div class="stat-value accent-signal" id="statProjects">—</div>
+        </div>
+        <div class="stat" data-tone="neutral">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div></div>
+          <div class="stat-label">Locations</div>
+          <div class="stat-value" id="statLocations">—</div>
         </div>
       </div>
-      <div class="table-footer">
-        <span id="footerInfo">—</span>
-        <span id="footerTime">—</span>
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="searchInput" placeholder="Search by name or national ID..." oninput="applyFilters()">
+        </div>
+        <select id="shiftFilter" onchange="applyFilters()"><option value="">All shifts</option></select>
+        <select id="projectFilter" onchange="applyFilters()"><option value="">All projects</option></select>
+        <select id="statusFilter" onchange="applyFilters()">
+          <option value="">All statuses</option>
+          <option value="working">Working</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <button class="btn-ghost" onclick="loadData()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>
+          Refresh
+        </button>
+        <button class="btn-primary" onclick="openAddModal()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add employee
+        </button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <span class="table-title">Staff records</span>
+          <span class="table-count" id="rowCount">—</span>
+        </div>
+        <div class="table-wrap">
+          <div class="loading" id="loadingState"><div class="spinner"></div>Loading from Google Sheets...</div>
+          <table id="empTable" style="display:none">
+            <thead>
+              <tr>
+                <th data-col="National ID" onclick="sortBy('National ID')">National ID ↕</th>
+                <th data-col="Name" onclick="sortBy('Name')">Name ↕</th>
+                <th data-col="Shift" onclick="sortBy('Shift')">Shift ↕</th>
+                <th data-col="Project" onclick="sortBy('Project')">Project ↕</th>
+                <th data-col="Role" onclick="sortBy('Role')">Role ↕</th>
+                <th data-col="Status" onclick="sortBy('Status')">Status ↕</th>
+                <th data-col="Location" onclick="sortBy('Location')">Location ↕</th>
+                <th class="no-sort"></th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+          <div class="empty" id="emptyState" style="display:none">
+            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <div>No matching records</div>
+          </div>
+        </div>
+        <div class="table-footer">
+          <span id="footerInfo">—</span>
+          <span id="footerTime">—</span>
+        </div>
       </div>
     </div>
-    </div>
 
+    <!-- ── Sheets View ── -->
     <div id="sheetsView" style="display:none">
       <div class="sheets-toolbar">
         <div class="search-wrap">
@@ -365,7 +371,7 @@
   </main>
 </div>
 
-<!-- Add Modal -->
+<!-- ═══════════════════════ ADD MODAL ═══════════════════════ -->
 <div class="modal-overlay" id="addModalOverlay">
   <div class="modal-card">
     <div class="modal-header">
@@ -411,7 +417,7 @@
   </div>
 </div>
 
-<!-- Edit Modal -->
+<!-- ═══════════════════════ EDIT MODAL ═══════════════════════ -->
 <div class="modal-overlay" id="editModalOverlay">
   <div class="modal-card">
     <div class="modal-header">
@@ -460,7 +466,7 @@
   </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
+<!-- ═══════════════════════ DELETE MODAL ═══════════════════════ -->
 <div class="modal-overlay" id="deleteModalOverlay">
   <div class="modal-card delete-modal-card">
     <div class="modal-header">
@@ -485,515 +491,493 @@
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://dibhtnnkhakcygzpenwg.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
-  const TABLE = 'employees';
-  const SESSION_KEY = 'supabaseSession';
-  const SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzNivfhm8mIZuYgkyg_cJcnppBDe7oAMvDci8uHLbDc-NUURyv9OBVU9GipdMPqPohazg/exec';
+// ════════════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════════════
 
-  let allData = [];
-  let sortCol = '';
-  let sortAsc = true;
-  let pollTimer = null;
-  let session = null;
-  let deleteTargetId = null;
-  let deleteTargetName = null;
+const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
+const SESSION_KEY       = 'supabaseSession';
 
-  function escapeHTML(v) {
-    if (v == null) return '';
-    return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
-  }
+// ⚠️ ضع هنا الـ URL بتاع Google Apps Script بعد ما تعمل Deploy
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWi3EDRVHeEDK60Lt2t21o8QyG69OiN75G6CHLXcBlpaSoGzkUABPJEjCVQvnblnuH1w/exec';
 
-  function normalizeShift(v) {
-    if (!v) return '';
-    const t = String(v).trim();
-    return t ? t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() : '';
-  }
+// ════════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════════
+let allData       = [];
+let sortCol       = '';
+let sortAsc       = true;
+let pollTimer     = null;
+let session       = null;
+let deleteTargetId   = null;
+let deleteTargetName = null;
 
-  function normalizeProject(v) {
-    if (!v) return '';
-    const t = String(v).trim();
-    return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
-  }
+// ════════════════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════════════════
+function escapeHTML(v) {
+  if (v == null) return '';
+  return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+}
+function normalizeShift(v)   { if (!v) return ''; const t = String(v).trim(); return t ? t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() : ''; }
+function normalizeProject(v) { if (!v) return ''; const t = String(v).trim(); return t ? t.charAt(0).toUpperCase() + t.slice(1) : ''; }
+function isActive(s)         { if (!s) return false; const v = s.toLowerCase(); return v.includes('working') || v.includes('active'); }
 
-  function getSession() {
-    if (session) return session;
-    try { const r = sessionStorage.getItem(SESSION_KEY); return r ? (session = JSON.parse(r)) : null; } catch { return null; }
-  }
-  function saveSession(s) { session = s; sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
-  function clearSession() { session = null; sessionStorage.removeItem(SESSION_KEY); }
-  function authHeaders(extra) {
-    const s = getSession();
-    return { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${s ? s.access_token : SUPABASE_ANON_KEY}`, ...extra };
-  }
+// ════════════════════════════════════════════════════════════════
+// AUTH (Supabase)
+// ════════════════════════════════════════════════════════════════
+function getSession()   { if (session) return session; try { const r = sessionStorage.getItem(SESSION_KEY); return r ? (session = JSON.parse(r)) : null; } catch { return null; } }
+function saveSession(s) { session = s; sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
+function clearSession() { session = null; sessionStorage.removeItem(SESSION_KEY); }
+function authHeaders(extra) {
+  const s = getSession();
+  return { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${s ? s.access_token : SUPABASE_ANON_KEY}`, ...extra };
+}
 
-  window.onload = function() { if (getSession()) showDashboard(); }
-  window.addEventListener('beforeunload', stopPolling);
+window.onload = function() { if (getSession()) showDashboard(); };
+window.addEventListener('beforeunload', stopPolling);
 
-  async function handleLogin(e) {
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-    const errEl = document.getElementById('loginError');
-    const btn = document.getElementById('loginBtn');
-    btn.disabled = true; errEl.style.display = 'none';
-    try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-        method: 'POST',
-        headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (!res.ok || !data.access_token) throw new Error(data.error_description || 'Invalid email or password');
-      saveSession({ access_token: data.access_token, refresh_token: data.refresh_token, user: { email: data.user?.email || email } });
-      document.getElementById('loginPassword').value = '';
-      showDashboard();
-    } catch (ex) {
-      errEl.textContent = ex.message; errEl.style.display = 'block';
-      document.getElementById('loginPassword').value = '';
-    } finally { btn.disabled = false; }
-  }
-
-  async function handleLogout() {
-    stopPolling();
-    try { if (getSession()) await fetch(`${SUPABASE_URL}/auth/v1/logout`, { method: 'POST', headers: authHeaders() }); } catch {}
-    clearSession(); allData = []; sortCol = ''; sortAsc = true;
-    document.getElementById('dashboardSection').style.display = 'none';
-    document.getElementById('loginSection').style.display = 'flex';
-    document.getElementById('loginEmail').value = '';
+async function handleLogin(e) {
+  e.preventDefault();
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl    = document.getElementById('loginError');
+  const btn      = document.getElementById('loginBtn');
+  btn.disabled = true; errEl.style.display = 'none';
+  try {
+    const res  = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.access_token) throw new Error(data.error_description || 'Invalid email or password');
+    saveSession({ access_token: data.access_token, refresh_token: data.refresh_token, user: { email: data.user?.email || email } });
     document.getElementById('loginPassword').value = '';
-    document.getElementById('loginError').style.display = 'none';
-  }
+    showDashboard();
+  } catch (ex) {
+    errEl.textContent = ex.message; errEl.style.display = 'block';
+    document.getElementById('loginPassword').value = '';
+  } finally { btn.disabled = false; }
+}
 
-  function showDashboard() {
-    document.getElementById('loginSection').style.display = 'none';
-    document.getElementById('dashboardSection').style.display = 'block';
-    document.getElementById('navUserEmail').textContent = getSession()?.user?.email || '';
-    loadData(); startPolling();
-  }
+async function handleLogout() {
+  stopPolling();
+  try { if (getSession()) await fetch(`${SUPABASE_URL}/auth/v1/logout`, { method: 'POST', headers: authHeaders() }); } catch {}
+  clearSession(); allData = []; sortCol = ''; sortAsc = true;
+  document.getElementById('dashboardSection').style.display = 'none';
+  document.getElementById('loginSection').style.display     = 'flex';
+  document.getElementById('loginEmail').value    = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
 
-  function startPolling() { stopPolling(); pollTimer = setInterval(() => { getSession() ? loadData() : stopPolling(); }, 60000); }
-  function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+function showDashboard() {
+  document.getElementById('loginSection').style.display    = 'none';
+  document.getElementById('dashboardSection').style.display = 'block';
+  document.getElementById('navUserEmail').textContent = getSession()?.user?.email || '';
+  loadData(); startPolling();
+}
 
-  function showError(msg) { const b = document.getElementById('errorBanner'); b.style.display='block'; b.textContent=msg; document.getElementById('successBanner').style.display='none'; }
-  function showSuccess(msg) { const b = document.getElementById('successBanner'); b.style.display='block'; b.textContent=msg; document.getElementById('errorBanner').style.display='none'; setTimeout(()=>b.style.display='none', 4000); }
+function startPolling() { stopPolling(); pollTimer = setInterval(() => { getSession() ? loadData() : stopPolling(); }, 60000); }
+function stopPolling()  { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
 
-  async function loadData() {
-    if (!getSession()) return;
-    document.getElementById('loadingState').style.display = 'block';
-    document.getElementById('empTable').style.display = 'none';
-    document.getElementById('emptyState').style.display = 'none';
-    document.getElementById('errorBanner').style.display = 'none';
-    document.getElementById('lastSync').textContent = 'Loading...';
-    try {
-      allData = await fetchAllRows();
-      populateFilters(); applyFilters();
-      document.getElementById('lastSync').textContent = `Updated ${new Date().toLocaleTimeString('en-US')}`;
-    } catch (ex) {
-      document.getElementById('loadingState').style.display = 'none';
-      if (ex.code === 'UNAUTHORIZED') {
-        clearSession();
-        document.getElementById('dashboardSection').style.display = 'none';
-        document.getElementById('loginSection').style.display = 'flex';
-        document.getElementById('loginError').textContent = 'Session expired.';
-        document.getElementById('loginError').style.display = 'block';
-        return;
-      }
-      showError('Failed to load: ' + escapeHTML(ex.message));
-      document.getElementById('lastSync').textContent = 'Sync failed';
-    }
-  }
-
-  async function fetchAllRows() {
-    const PAGE_SIZE = 1000;
-    let from = 0;
-    let collected = [];
-    while (true) {
-      const to = from + PAGE_SIZE - 1;
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=Name.asc`, {
-        headers: authHeaders({ 'Range-Unit': 'items', 'Range': `${from}-${to}` })
-      });
-      if (res.status === 401) { const err = new Error('Session expired.'); err.code = 'UNAUTHORIZED'; throw err; }
-      if (!res.ok && res.status !== 206) throw new Error(`Error ${res.status}`);
-      const page = await res.json();
-      if (!Array.isArray(page) || page.length === 0) break;
-      collected = collected.concat(page);
-      if (page.length < PAGE_SIZE) break;
-      from += PAGE_SIZE;
-    }
-    return collected;
-  }
-
-  function populateFilters() {
-    const sm = new Map();
-    allData.forEach(r => {
-      const n = normalizeShift(r.Shift);
-      if (n && !sm.has(n.toLowerCase())) sm.set(n.toLowerCase(), n);
-    });
-    const shifts = [...sm.values()].sort();
-
-    const pm = new Map();
-    allData.forEach(r => {
-      const p = (r.Project || '').trim();
-      if (p && !pm.has(p.toLowerCase())) pm.set(p.toLowerCase(), normalizeProject(p));
-    });
-    const projects = [...pm.values()].sort();
-
-    const ss = document.getElementById('shiftFilter'); const ps = ss.value;
-    ss.innerHTML = '<option value="">All shifts</option>';
-    shifts.forEach(s => { const o=document.createElement('option'); o.value=s; o.textContent=s; ss.appendChild(o); });
-    if (shifts.includes(ps)) ss.value = ps;
-
-    const sp = document.getElementById('projectFilter'); const pp = sp.value;
-    sp.innerHTML = '<option value="">All projects</option>';
-    projects.forEach(p => { const o=document.createElement('option'); o.value=p; o.textContent=p; sp.appendChild(o); });
-    if (projects.includes(pp)) sp.value = pp;
-  }
-
-  function applyFilters() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const shift = document.getElementById('shiftFilter').value;
-    const project = document.getElementById('projectFilter').value;
-    const status = document.getElementById('statusFilter').value;
-
-    let data = allData.filter(r => {
-      const ms = !search || (r.Name||'').toLowerCase().includes(search) || (r['National ID']||'').toString().includes(search);
-      const msh = !shift || normalizeShift(r.Shift) === shift;
-      const mp = !project || (r.Project||'').trim().toLowerCase() === project.toLowerCase();
-      const mst = !status || (status==='active'&&isActive(r.Status)) || (status==='inactive'&&!isActive(r.Status));
-      return ms && msh && mp && mst;
-    });
-
-    if (sortCol) {
-      data = data.slice().sort((a,b) => {
-        const rA=a[sortCol], rB=b[sortCol];
-        const nA=Number(rA), nB=Number(rB);
-        const isNum = rA!=null&&rA!==''&&rB!=null&&rB!==''&&!isNaN(nA)&&!isNaN(nB);
-        const cmp = isNum ? nA-nB : (rA??'').toString().localeCompare((rB??'').toString(),'en');
-        return sortAsc ? cmp : -cmp;
-      });
-    }
-
-    updateSortIndicators(); updateStats(data); renderTable(data);
-  }
-
-  function updateSortIndicators() { document.querySelectorAll('#empTable th').forEach(th => th.classList.toggle('sorted', th.dataset.col === sortCol)); }
-  function isActive(s) { if (!s) return false; const v=s.toLowerCase(); return v.includes('working')||v.includes('active'); }
-
-  function updateStats(filtered) {
-    document.getElementById('statTotal').textContent = allData.length;
-    document.getElementById('statActive').textContent = allData.filter(r=>isActive(r.Status)).length;
-    document.getElementById('statInactive').textContent = allData.filter(r=>!isActive(r.Status)).length;
-    document.getElementById('statProjects').textContent = new Set(allData.map(r=>(r.Project||'').trim().toLowerCase()).filter(Boolean)).size;
-    document.getElementById('statLocations').textContent = new Set(allData.map(r=>r.Location).filter(Boolean)).size;
-    document.getElementById('rowCount').textContent = filtered.length + ' staff';
-    document.getElementById('footerInfo').textContent = `Showing ${filtered.length} of ${allData.length} staff`;
-    document.getElementById('footerTime').textContent = new Date().toLocaleDateString('en-US');
-  }
-
-  function renderTable(data) {
+// ════════════════════════════════════════════════════════════════
+// DATA — Google Sheets via Apps Script
+// ════════════════════════════════════════════════════════════════
+async function loadData() {
+  if (!getSession()) return;
+  document.getElementById('loadingState').style.display  = 'block';
+  document.getElementById('empTable').style.display      = 'none';
+  document.getElementById('emptyState').style.display    = 'none';
+  document.getElementById('errorBanner').style.display   = 'none';
+  document.getElementById('lastSync').textContent        = 'Loading...';
+  try {
+    allData = await fetchFromSheet();
+    populateFilters(); applyFilters();
+    document.getElementById('lastSync').textContent = `Updated ${new Date().toLocaleTimeString('en-US')}`;
+  } catch (ex) {
     document.getElementById('loadingState').style.display = 'none';
-    if (data.length === 0) { document.getElementById('empTable').style.display='none'; document.getElementById('emptyState').style.display='block'; return; }
-    document.getElementById('emptyState').style.display = 'none';
-    document.getElementById('empTable').style.display = 'table';
-    document.getElementById('tableBody').innerHTML = data.map(r => {
-      const safeName = escapeHTML(r.Name||'—');
-      const initials = escapeHTML((r.Name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
-      const active = isActive(r.Status);
-      const nid = escapeHTML(r['National ID']||'');
-      return `<tr>
-        <td class="mono" style="color:var(--text-1);font-size:12px">${escapeHTML(r['National ID']||'—')}</td>
-        <td><div class="name-cell"><div class="avatar">${initials}</div><span>${safeName}</span></div></td>
-        <td><span class="badge badge-shift">${escapeHTML(normalizeShift(r.Shift)||'—')}</span></td>
-        <td>${escapeHTML(normalizeProject(r.Project)||'—')}</td>
-        <td style="color:var(--text-1)">${escapeHTML(r.Role||'—')}</td>
-        <td><span class="badge ${active?'badge-active':'badge-inactive'}">${escapeHTML(r.Status||'—')}</span></td>
-        <td style="color:var(--text-1)">${escapeHTML(r.Location||'—')}</td>
-        <td>
-          <div class="action-cell">
-            <button class="btn-edit" onclick="openEditModal('${nid}')">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              Edit
-            </button>
-            <button class="btn-delete-row" onclick="openDeleteModal('${nid}', '${escapeHTML(r.Name||'')}')">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-              Delete
-            </button>
-          </div>
-        </td>
-      </tr>`;
-    }).join('');
+    showError('Failed to load: ' + escapeHTML(ex.message));
+    document.getElementById('lastSync').textContent = 'Sync failed';
   }
+}
 
-  function sortBy(col) { if (sortCol===col) sortAsc=!sortAsc; else { sortCol=col; sortAsc=true; } applyFilters(); }
-
-  async function syncToSheet(action, payload) {
-    try {
-      await fetch(SHEET_WEBAPP_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...payload })
-      });
-    } catch(ex) { console.warn('Sheet sync failed:', ex.message); }
+async function fetchFromSheet() {
+  if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE') {
+    throw new Error('Please set APPS_SCRIPT_URL in the code first.');
   }
+  const res  = await fetch(APPS_SCRIPT_URL);
+  if (!res.ok) throw new Error(`Sheet fetch error: ${res.status}`);
+  const json = await res.json();
+  if (json.error) throw new Error(json.error);
+  return Array.isArray(json.rows) ? json.rows : [];
+}
 
-  // ── Dropdown options ──
-  function uniqueValues(field, normalizeFn) {
-    const map = new Map();
-    allData.forEach(r => {
-      let v = (r[field] || '').toString().trim();
-      if (!v) return;
-      if (normalizeFn) v = normalizeFn(v);
-      const key = v.toLowerCase();
-      if (!map.has(key)) map.set(key, v);
+async function callScript(action, payload) {
+  if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE') throw new Error('Apps Script URL not configured.');
+  const res  = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' }, // Apps Script needs text/plain for POST
+    body: JSON.stringify({ action, ...payload })
+  });
+  // no-cors workaround: Apps Script with CORS enabled returns JSON
+  let json;
+  try { json = await res.json(); } catch { return { success: true }; } // no-cors fallback
+  if (json && json.error) throw new Error(json.error);
+  return json;
+}
+
+// ════════════════════════════════════════════════════════════════
+// FILTERS & TABLE
+// ════════════════════════════════════════════════════════════════
+function showError(msg)   { const b = document.getElementById('errorBanner');   b.style.display='block'; b.textContent=msg; document.getElementById('successBanner').style.display='none'; }
+function showSuccess(msg) { const b = document.getElementById('successBanner'); b.style.display='block'; b.textContent=msg; document.getElementById('errorBanner').style.display='none'; setTimeout(()=>b.style.display='none', 4000); }
+
+function populateFilters() {
+  const sm = new Map();
+  allData.forEach(r => { const n = normalizeShift(r['Shift']); if (n && !sm.has(n.toLowerCase())) sm.set(n.toLowerCase(), n); });
+  const shifts = [...sm.values()].sort();
+
+  const pm = new Map();
+  allData.forEach(r => { const p = (r['Project']||'').trim(); if (p && !pm.has(p.toLowerCase())) pm.set(p.toLowerCase(), normalizeProject(p)); });
+  const projects = [...pm.values()].sort();
+
+  const ss = document.getElementById('shiftFilter'); const ps = ss.value;
+  ss.innerHTML = '<option value="">All shifts</option>';
+  shifts.forEach(s => { const o = document.createElement('option'); o.value=s; o.textContent=s; ss.appendChild(o); });
+  if (shifts.includes(ps)) ss.value = ps;
+
+  const sp = document.getElementById('projectFilter'); const pp = sp.value;
+  sp.innerHTML = '<option value="">All projects</option>';
+  projects.forEach(p => { const o = document.createElement('option'); o.value=p; o.textContent=p; sp.appendChild(o); });
+  if (projects.includes(pp)) sp.value = pp;
+}
+
+function applyFilters() {
+  const search  = document.getElementById('searchInput').value.toLowerCase();
+  const shift   = document.getElementById('shiftFilter').value;
+  const project = document.getElementById('projectFilter').value;
+  const status  = document.getElementById('statusFilter').value;
+
+  let data = allData.filter(r => {
+    const ms  = !search  || (r['Name']||'').toLowerCase().includes(search) || String(r['National ID']||'').includes(search);
+    const msh = !shift   || normalizeShift(r['Shift']) === shift;
+    const mp  = !project || (r['Project']||'').trim().toLowerCase() === project.toLowerCase();
+    const mst = !status  || (status==='working' && isActive(r['Status'])) || (status==='inactive' && !isActive(r['Status']));
+    return ms && msh && mp && mst;
+  });
+
+  if (sortCol) {
+    data = data.slice().sort((a, b) => {
+      const rA=a[sortCol], rB=b[sortCol];
+      const nA=Number(rA), nB=Number(rB);
+      const isNum = rA!=null&&rA!==''&&rB!=null&&rB!==''&&!isNaN(nA)&&!isNaN(nB);
+      const cmp   = isNum ? nA-nB : (rA??'').toString().localeCompare((rB??'').toString(),'en');
+      return sortAsc ? cmp : -cmp;
     });
-    return [...map.values()].sort((a, b) => a.localeCompare(b));
   }
 
-  function populateSelect(selectId, otherId, values, currentValue) {
-    const sel = document.getElementById(selectId);
-    const other = document.getElementById(otherId);
-    sel.innerHTML = values.map(v => `<option value="${escapeHTML(v)}">${escapeHTML(v)}</option>`).join('')
-      + '<option value="__other__">+ Add new...</option>';
-    other.style.display = 'none';
-    other.value = '';
-    if (currentValue) {
-      const match = values.find(v => v.toLowerCase() === currentValue.toLowerCase());
-      if (match) { sel.value = match; } else { sel.value = '__other__'; other.style.display = 'block'; other.value = currentValue; }
-    } else { sel.selectedIndex = 0; }
+  updateSortIndicators(); updateStats(data); renderTable(data);
+}
+
+function updateSortIndicators() { document.querySelectorAll('#empTable th').forEach(th => th.classList.toggle('sorted', th.dataset.col === sortCol)); }
+function sortBy(col) { if (sortCol===col) sortAsc=!sortAsc; else { sortCol=col; sortAsc=true; } applyFilters(); }
+
+function updateStats(filtered) {
+  document.getElementById('statTotal').textContent     = allData.length;
+  document.getElementById('statActive').textContent    = allData.filter(r=>isActive(r['Status'])).length;
+  document.getElementById('statInactive').textContent  = allData.filter(r=>!isActive(r['Status'])).length;
+  document.getElementById('statProjects').textContent  = new Set(allData.map(r=>(r['Project']||'').trim().toLowerCase()).filter(Boolean)).size;
+  document.getElementById('statLocations').textContent = new Set(allData.map(r=>r['Location']).filter(Boolean)).size;
+  document.getElementById('rowCount').textContent      = filtered.length + ' staff';
+  document.getElementById('footerInfo').textContent    = `Showing ${filtered.length} of ${allData.length} staff`;
+  document.getElementById('footerTime').textContent    = new Date().toLocaleDateString('en-US');
+}
+
+function renderTable(data) {
+  document.getElementById('loadingState').style.display = 'none';
+  if (data.length === 0) {
+    document.getElementById('empTable').style.display    = 'none';
+    document.getElementById('emptyState').style.display  = 'block';
+    return;
   }
-
-  function handleSelectOther(selectEl, otherId) {
-    document.getElementById(otherId).style.display = selectEl.value === '__other__' ? 'block' : 'none';
-  }
-
-  function getFieldValue(selectId, otherId) {
-    const sel = document.getElementById(selectId);
-    if (sel.value === '__other__') return document.getElementById(otherId).value.trim();
-    return sel.value.trim();
-  }
-
-  function populateModalDropdowns(prefix, current) {
-    populateSelect(`${prefix}Shift`, `${prefix}ShiftOther`, uniqueValues('Shift', normalizeShift), current ? normalizeShift(current.Shift) : '');
-    populateSelect(`${prefix}Role`, `${prefix}RoleOther`, uniqueValues('Role'), current ? current.Role : '');
-    populateSelect(`${prefix}Project`, `${prefix}ProjectOther`, uniqueValues('Project', normalizeProject), current ? normalizeProject(current.Project) : '');
-    populateSelect(`${prefix}Location`, `${prefix}LocationOther`, uniqueValues('Location'), current ? current.Location : '');
-  }
-
-  // ── Add ──
-  function openAddModal() {
-    document.getElementById('addFormError').style.display = 'none';
-    document.getElementById('addEmployeeForm').reset();
-    populateModalDropdowns('add', null);
-    document.getElementById('addModalOverlay').style.display = 'flex';
-  }
-  function closeAddModal() { document.getElementById('addModalOverlay').style.display='none'; }
-  document.getElementById('addModalOverlay').addEventListener('click', e => { if (e.target.id==='addModalOverlay') closeAddModal(); });
-
-  async function handleAddEmployee(e) {
-    e.preventDefault();
-    if (!getSession()) { showError('Session expired.'); closeAddModal(); return; }
-    const errDiv = document.getElementById('addFormError');
-    const btn = document.getElementById('addSubmitBtn');
-    errDiv.style.display = 'none';
-    const payload = {
-      'Name': document.getElementById('addName').value.trim(),
-      'National ID': document.getElementById('addNationalId').value.trim(),
-      'Shift': getFieldValue('addShift', 'addShiftOther'),
-      'Role': getFieldValue('addRole', 'addRoleOther'),
-      'Project': getFieldValue('addProject', 'addProjectOther'),
-      'Status': document.getElementById('addStatus').value,
-      'Location': getFieldValue('addLocation', 'addLocationOther')
-    };
-    if (!payload.Shift || !payload.Role || !payload.Project || !payload.Location) {
-      errDiv.textContent = 'Please fill in all fields.'; errDiv.style.display = 'block'; return;
-    }
-    btn.disabled=true; btn.textContent='Adding...';
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, { method:'POST', headers: authHeaders({'Content-Type':'application/json','Prefer':'return=minimal'}), body: JSON.stringify(payload) });
-      if (res.status===401||res.status===403) throw new Error('Not authorized.');
-      if (!res.ok) { const ex=await res.json().catch(()=>({})); throw new Error(ex.message||`Error ${res.status}`); }
-      await syncToSheet('add', payload);
-      closeAddModal();
-      showSuccess(`${payload['Name']||'Employee'} added successfully.`);
-      await loadData();
-    } catch(ex) { errDiv.textContent=ex.message; errDiv.style.display='block'; }
-    finally { btn.disabled=false; btn.textContent='Add employee'; }
-  }
-
-  // ── Edit ──
-  function openEditModal(nationalId) {
-    const emp = allData.find(r => String(r['National ID']) === String(nationalId));
-    if (!emp) return;
-    document.getElementById('editFormError').style.display = 'none';
-    document.getElementById('editNationalId').value = emp['National ID'] || '';
-    document.getElementById('editName').value = emp['Name'] || '';
-    populateModalDropdowns('edit', emp);
-    document.getElementById('editStatus').value = isActive(emp['Status']) ? 'working' : 'inactive';
-    document.getElementById('editModalOverlay').style.display = 'flex';
-  }
-
-  function closeEditModal() { document.getElementById('editModalOverlay').style.display = 'none'; }
-  document.getElementById('editModalOverlay').addEventListener('click', e => { if (e.target.id==='editModalOverlay') closeEditModal(); });
-
-  async function handleEditEmployee(e) {
-    e.preventDefault();
-    if (!getSession()) { showError('Session expired.'); closeEditModal(); return; }
-    const errDiv = document.getElementById('editFormError');
-    const btn = document.getElementById('editSubmitBtn');
-    errDiv.style.display = 'none';
-    const nationalId = document.getElementById('editNationalId').value;
-    const payload = {
-      'Name': document.getElementById('editName').value.trim(),
-      'Shift': getFieldValue('editShift', 'editShiftOther'),
-      'Role': getFieldValue('editRole', 'editRoleOther'),
-      'Project': getFieldValue('editProject', 'editProjectOther'),
-      'Status': document.getElementById('editStatus').value,
-      'Location': getFieldValue('editLocation', 'editLocationOther')
-    };
-    if (!payload.Shift || !payload.Role || !payload.Project || !payload.Location) {
-      errDiv.textContent = 'Please fill in all fields.'; errDiv.style.display = 'block'; return;
-    }
-    btn.disabled=true; btn.textContent='Saving...';
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?National ID=eq.${encodeURIComponent(nationalId)}`, {
-        method: 'PATCH',
-        headers: authHeaders({'Content-Type':'application/json','Prefer':'return=minimal'}),
-        body: JSON.stringify(payload)
-      });
-      if (res.status===401||res.status===403) throw new Error('Not authorized.');
-      if (!res.ok) { const ex=await res.json().catch(()=>({})); throw new Error(ex.message||`Error ${res.status}`); }
-      await syncToSheet('edit', { 'National ID': nationalId, ...payload });
-      closeEditModal();
-      showSuccess(`${payload['Name']||'Employee'} updated successfully.`);
-      await loadData();
-    } catch(ex) { errDiv.textContent=ex.message; errDiv.style.display='block'; }
-    finally { btn.disabled=false; btn.textContent='Save changes'; }
-  }
-
-  // ── Delete ──
-  function openDeleteModal(nationalId, name) {
-    deleteTargetId = nationalId;
-    deleteTargetName = name;
-    document.getElementById('deleteEmpName').textContent = name || 'this employee';
-    document.getElementById('deleteConfirmBtn').disabled = false;
-    document.getElementById('deleteConfirmBtn').textContent = 'Delete';
-    document.getElementById('deleteModalOverlay').style.display = 'flex';
-  }
-
-  function closeDeleteModal() {
-    document.getElementById('deleteModalOverlay').style.display = 'none';
-    deleteTargetId = null;
-    deleteTargetName = null;
-  }
-
-  document.getElementById('deleteModalOverlay').addEventListener('click', e => { if (e.target.id==='deleteModalOverlay') closeDeleteModal(); });
-
-  async function confirmDelete() {
-    if (!deleteTargetId) return;
-    if (!getSession()) { showError('Session expired.'); closeDeleteModal(); return; }
-    const btn = document.getElementById('deleteConfirmBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg> Deleting...';
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?National ID=eq.${encodeURIComponent(deleteTargetId)}`, {
-        method: 'DELETE',
-        headers: authHeaders({ 'Prefer': 'return=minimal' })
-      });
-      if (res.status === 401 || res.status === 403) throw new Error('Not authorized.');
-      if (!res.ok) { const ex = await res.json().catch(() => ({})); throw new Error(ex.message || `Error ${res.status}`); }
-      await syncToSheet('delete', { 'National ID': deleteTargetId });
-      const name = deleteTargetName;
-      closeDeleteModal();
-      showSuccess(`${name || 'Employee'} deleted successfully.`);
-      await loadData();
-    } catch(ex) {
-      closeDeleteModal();
-      showError('Delete failed: ' + ex.message);
-    }
-  }
-
-  // ── Sheets directory ──
-  const SHEETS_DATA = [
-    { category: 'Attendance', items: [
-      { name: 'GT Morning Attendance', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/11Ekahw8ZD6xJfFw0MVu8dKIETMP2mYXXDpV6YPaIHfk/edit?gid=1657040379' },
-      { name: 'GT Night Attendance', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1qWtkAMkB8aJMyGqNAivuhl8P2bmTfLpY6yLqu4nQPAQ/edit?gid=1218236832' },
-      { name: 'Over Night Attendance (Master Sheet)', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1SXlXRnAJk0f2tbNh20yZ_2EDa9bo7HQXaQ-CSlVpxKY/edit?pli=1&gid=999998182' },
-      { name: 'S.F Attendance', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1PPASHHRwPtyaN7_hiDTjVNihqGv9ZxXmN0_LfaNh32Q/edit?gid=735554126' },
-      { name: 'AVP Morning Attendance', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1xydLswJHJPS6Vry7P7XcjUMdTRJK1vQ-VatN4B4chLI/edit' },
-      { name: 'AVP Night Attendance', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1u8wcQg38rRIoE_tnmRi0xD_OCq2XwVQWQj3Eg2mXh4g/edit?gid=15901893' },
-      { name: 'AVP Overnight Attendance', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1-SIZHQfvsBkEvs_5KRjztTMbOHGDCpN0L38Qp0lvXWI/edit' },
-      { name: 'UAE Attendance', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1TEOmdfUsFy-p29WB9ttj79zMsbCV344r7uNSbouEWFs/edit?gid=507444073' },
-      { name: 'Mapping Overnight Attendance', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1NEX_9R-kZYlQT8FLks3_1XnDn9JDr8VCyrvNl7hyd44/edit?gid=59640710' },
-      { name: 'Labelerslist Attendance', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1J_BvZ6AHD4HcpTVf_iACyTJhcu0hx7ehczucAhN2QhM/edit?gid=1562394029' },
-      { name: 'Attendance delays OP', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1DUFehN3sGupWwkIyZO44IL1izYUSbXggtCUiUbxcxUs/edit?gid=0' },
-    ]},
-    { category: 'Forms', items: [
-      { name: 'Form.meti portal', type: 'form', url: 'https://docs.google.com/forms/d/e/1FAIpQLSd2Krysi6kd_KWap5iXtNzCY4S_0Pg_HPVHRi4egEAfIoQ8nA/viewform?fbzx=1749840446210905879' },
-      { name: 'Ticket IT Form', type: 'form', url: 'https://forms.office.com/pages/responsepage.aspx?id=aYQGDwXYz0CRSZQnl3spqBseVUc2XpLiUQiVakwohlUQzcyQjVEVFhIN0gxVzlFSzJaVzU1S0U3Ni4u&route=shorturl' },
-      { name: 'HR Coordination Form', type: 'form', url: 'https://docs.google.com/forms/d/1usvBwXC1kRc2QIF5hgu1fBJVVErhRlPvvj0CwX7GC5o/edit' },
-      { name: 'Official Documents Request Form', type: 'form', url: 'https://forms.office.com/pages/responsepage.aspx?id=aYQGDwXYz0CRSZQnl3spqleEX5dr1YZEmF92kQyPQQFUMU1MTU5TSjc0NEdETlhJSjNGWTlBS1JCUSQlQCN0PWcu&origin=QRCode&route=shorturl' },
-      { name: 'Job Application Form', type: 'form', url: 'https://forms.office.com/r/r7c0wmSYxB' },
-      { name: 'Training Feedback Form', type: 'form', url: 'https://docs.google.com/forms/d/e/1FAIpQLSdtzKD3ZI3z6s32rPbayAZf4gKOaCCfWvM1k5BZAq1wkY14CQ/viewform?pli=1' },
-      { name: 'Metiportal_Admin', type: 'form', url: 'https://portal-meti.microengineering.ca/' },
-    ]},
-    { category: 'Operations & Reports', items: [
-      { name: 'Yupikey sheet', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1RvdCM39Dz4-IT2k-w9sj0Ks7ExvdDACYGTceDDa41ks/edit?gid=282349957' },
-      { name: 'Onboarding', type: 'sheet', url: 'https://microengineeringgroup-my.sharepoint.com/:x:/r/personal/mohamed_ayman_microengineering_ca/_layouts/15/Doc.aspx?sourcedoc=%7BDF1DED35-1ED4-4803-A7DA-A14D4BE78AFA%7D&file=Labeling_Training_OnBoarding_Process.xlsx&action=default&mobileredirect=true' },
-      { name: 'Over Time Operation', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1R2045uoA6ICYqEuLB-wC2rsqbcM9lMbaFmM-nCw_Jko/edit?gid=682881054' },
-      { name: 'IT Issues Follow Up', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1YRA6octdldd3QTQtJiXX9bkueGPfR7-i9I4QHGQfUU0/edit?usp=drivesdk' },
-      { name: 'Labeler OverTime', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1W2zitOpu5hamNuGQVVfZr0gCNqtsNEVntVes-80CoBc/edit?gid=383404338' },
-      { name: 'Violation Report', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1pQ6hxfVJmkaS0VtxyWhAG40Dj2HOY053SMgYm3OTdUg/edit?gid=0' },
-      { name: 'الأوراق المسلمة', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1V_FnuaBV4s9vLHYizGwPl-AFc5MMA1eviSw7iouxV6Q/edit?gid=0' },
-      { name: 'Master New Hire - Dataset', type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1t3IATJAHtlrMur9QTuqcrbzEypi_oLOwnWA9c8WmrRw/edit?gid=0' },
-    ]},
-  ];
-
-  function showView(view) {
-    const isStaff = view === 'staff';
-    document.getElementById('staffView').style.display = isStaff ? 'block' : 'none';
-    document.getElementById('sheetsView').style.display = isStaff ? 'none' : 'block';
-    document.getElementById('tabStaffBtn').classList.toggle('active', isStaff);
-    document.getElementById('tabSheetsBtn').classList.toggle('active', !isStaff);
-    if (!isStaff) renderSheets();
-  }
-
-  function sheetIconSvg(type) {
-    if (type === 'form') return '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
-    return '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>';
-  }
-
-  function renderSheets() {
-    const q = (document.getElementById('sheetsSearchInput').value || '').toLowerCase();
-    const container = document.getElementById('sheetsContainer');
-    let anyResults = false;
-    let html = '';
-    SHEETS_DATA.forEach(group => {
-      const items = group.items.filter(it => !q || it.name.toLowerCase().includes(q));
-      if (items.length === 0) return;
-      anyResults = true;
-      html += `<div class="sheets-category">
-        <div class="sheets-category-head">
-          <span class="sheets-category-title">${escapeHTML(group.category)}</span>
-          <span class="sheets-category-count">${items.length}</span>
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('empTable').style.display   = 'table';
+  document.getElementById('tableBody').innerHTML = data.map(r => {
+    const safeName = escapeHTML(r['Name']||'—');
+    const initials = escapeHTML((r['Name']||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    const active   = isActive(r['Status']);
+    const nid      = escapeHTML(r['National ID']||'');
+    return `<tr>
+      <td class="mono" style="color:var(--text-1);font-size:12px">${escapeHTML(r['National ID']||'—')}</td>
+      <td><div class="name-cell"><div class="avatar">${initials}</div><span>${safeName}</span></div></td>
+      <td><span class="badge badge-shift">${escapeHTML(normalizeShift(r['Shift'])||'—')}</span></td>
+      <td>${escapeHTML(normalizeProject(r['Project'])||'—')}</td>
+      <td style="color:var(--text-1)">${escapeHTML(r['Role']||'—')}</td>
+      <td><span class="badge ${active?'badge-active':'badge-inactive'}">${escapeHTML(r['Status']||'—')}</span></td>
+      <td style="color:var(--text-1)">${escapeHTML(r['Location']||'—')}</td>
+      <td>
+        <div class="action-cell">
+          <button class="btn-edit" onclick="openEditModal('${nid}')">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit
+          </button>
+          <button class="btn-delete-row" onclick="openDeleteModal('${nid}', '${escapeHTML(r['Name']||'')}')">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            Delete
+          </button>
         </div>
-        <div class="sheets-grid">
-          ${items.map(it => `
-            <a class="sheet-card" href="${escapeHTML(it.url)}" target="_blank" rel="noopener noreferrer">
-              <div class="sheet-icon ${it.type === 'form' ? 'form' : ''}">${sheetIconSvg(it.type)}</div>
-              <div class="sheet-info">
-                <div class="sheet-name">${escapeHTML(it.name)}</div>
-                <div class="sheet-type">${it.type === 'form' ? 'Form' : 'Sheet'}</div>
-              </div>
-              <svg class="sheet-open" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          `).join('')}
-        </div>
-      </div>`;
-    });
-    container.innerHTML = anyResults ? html : `<div class="sheets-empty">No sheets match your search</div>`;
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// DROPDOWN HELPERS
+// ════════════════════════════════════════════════════════════════
+function uniqueValues(field, normalizeFn) {
+  const map = new Map();
+  allData.forEach(r => {
+    let v = (r[field]||'').toString().trim();
+    if (!v) return;
+    if (normalizeFn) v = normalizeFn(v);
+    const key = v.toLowerCase();
+    if (!map.has(key)) map.set(key, v);
+  });
+  return [...map.values()].sort((a, b) => a.localeCompare(b));
+}
+
+function populateSelect(selectId, otherId, values, currentValue) {
+  const sel   = document.getElementById(selectId);
+  const other = document.getElementById(otherId);
+  sel.innerHTML = values.map(v => `<option value="${escapeHTML(v)}">${escapeHTML(v)}</option>`).join('')
+    + '<option value="__other__">+ Add new...</option>';
+  other.style.display = 'none'; other.value = '';
+  if (currentValue) {
+    const match = values.find(v => v.toLowerCase() === currentValue.toLowerCase());
+    if (match) { sel.value = match; } else { sel.value = '__other__'; other.style.display = 'block'; other.value = currentValue; }
+  } else { sel.selectedIndex = 0; }
+}
+
+function handleSelectOther(selectEl, otherId) {
+  document.getElementById(otherId).style.display = selectEl.value === '__other__' ? 'block' : 'none';
+}
+
+function getFieldValue(selectId, otherId) {
+  const sel = document.getElementById(selectId);
+  if (sel.value === '__other__') return document.getElementById(otherId).value.trim();
+  return sel.value.trim();
+}
+
+function populateModalDropdowns(prefix, current) {
+  populateSelect(`${prefix}Shift`,    `${prefix}ShiftOther`,    uniqueValues('Shift',    normalizeShift),   current ? normalizeShift(current['Shift'])      : '');
+  populateSelect(`${prefix}Role`,     `${prefix}RoleOther`,     uniqueValues('Role'),                       current ? current['Role']                        : '');
+  populateSelect(`${prefix}Project`,  `${prefix}ProjectOther`,  uniqueValues('Project',  normalizeProject), current ? normalizeProject(current['Project'])   : '');
+  populateSelect(`${prefix}Location`, `${prefix}LocationOther`, uniqueValues('Location'),                   current ? current['Location']                    : '');
+}
+
+// ════════════════════════════════════════════════════════════════
+// ADD
+// ════════════════════════════════════════════════════════════════
+function openAddModal() {
+  document.getElementById('addFormError').style.display = 'none';
+  document.getElementById('addEmployeeForm').reset();
+  populateModalDropdowns('add', null);
+  document.getElementById('addModalOverlay').style.display = 'flex';
+}
+function closeAddModal() { document.getElementById('addModalOverlay').style.display = 'none'; }
+document.getElementById('addModalOverlay').addEventListener('click', e => { if (e.target.id==='addModalOverlay') closeAddModal(); });
+
+async function handleAddEmployee(e) {
+  e.preventDefault();
+  if (!getSession()) { showError('Session expired.'); closeAddModal(); return; }
+  const errDiv = document.getElementById('addFormError');
+  const btn    = document.getElementById('addSubmitBtn');
+  errDiv.style.display = 'none';
+  const payload = {
+    'National ID': document.getElementById('addNationalId').value.trim(),
+    'Name':        document.getElementById('addName').value.trim(),
+    'Shift':       getFieldValue('addShift',    'addShiftOther'),
+    'Project':     getFieldValue('addProject',  'addProjectOther'),
+    'Role':        getFieldValue('addRole',     'addRoleOther'),
+    'Status':      document.getElementById('addStatus').value,
+    'Location':    getFieldValue('addLocation', 'addLocationOther')
+  };
+  if (!payload['Shift'] || !payload['Role'] || !payload['Project'] || !payload['Location']) {
+    errDiv.textContent = 'Please fill in all fields.'; errDiv.style.display = 'block'; return;
   }
+  btn.disabled=true; btn.textContent='Adding...';
+  try {
+    await callScript('add', payload);
+    closeAddModal();
+    showSuccess(`${payload['Name']||'Employee'} added successfully.`);
+    await loadData();
+  } catch(ex) { errDiv.textContent=ex.message; errDiv.style.display='block'; }
+  finally { btn.disabled=false; btn.textContent='Add employee'; }
+}
+
+// ════════════════════════════════════════════════════════════════
+// EDIT
+// ════════════════════════════════════════════════════════════════
+function openEditModal(nationalId) {
+  const emp = allData.find(r => String(r['National ID']) === String(nationalId));
+  if (!emp) return;
+  document.getElementById('editFormError').style.display = 'none';
+  document.getElementById('editNationalId').value = emp['National ID']||'';
+  document.getElementById('editName').value       = emp['Name']||'';
+  populateModalDropdowns('edit', emp);
+  document.getElementById('editStatus').value = isActive(emp['Status']) ? 'working' : 'inactive';
+  document.getElementById('editModalOverlay').style.display = 'flex';
+}
+function closeEditModal() { document.getElementById('editModalOverlay').style.display = 'none'; }
+document.getElementById('editModalOverlay').addEventListener('click', e => { if (e.target.id==='editModalOverlay') closeEditModal(); });
+
+async function handleEditEmployee(e) {
+  e.preventDefault();
+  if (!getSession()) { showError('Session expired.'); closeEditModal(); return; }
+  const errDiv     = document.getElementById('editFormError');
+  const btn        = document.getElementById('editSubmitBtn');
+  errDiv.style.display = 'none';
+  const nationalId = document.getElementById('editNationalId').value;
+  const payload    = {
+    'National ID': nationalId,
+    'Name':        document.getElementById('editName').value.trim(),
+    'Shift':       getFieldValue('editShift',    'editShiftOther'),
+    'Project':     getFieldValue('editProject',  'editProjectOther'),
+    'Role':        getFieldValue('editRole',     'editRoleOther'),
+    'Status':      document.getElementById('editStatus').value,
+    'Location':    getFieldValue('editLocation', 'editLocationOther')
+  };
+  if (!payload['Shift'] || !payload['Role'] || !payload['Project'] || !payload['Location']) {
+    errDiv.textContent = 'Please fill in all fields.'; errDiv.style.display = 'block'; return;
+  }
+  btn.disabled=true; btn.textContent='Saving...';
+  try {
+    await callScript('edit', payload);
+    closeEditModal();
+    showSuccess(`${payload['Name']||'Employee'} updated successfully.`);
+    await loadData();
+  } catch(ex) { errDiv.textContent=ex.message; errDiv.style.display='block'; }
+  finally { btn.disabled=false; btn.textContent='Save changes'; }
+}
+
+// ════════════════════════════════════════════════════════════════
+// DELETE
+// ════════════════════════════════════════════════════════════════
+function openDeleteModal(nationalId, name) {
+  deleteTargetId   = nationalId;
+  deleteTargetName = name;
+  document.getElementById('deleteEmpName').textContent    = name || 'this employee';
+  document.getElementById('deleteConfirmBtn').disabled    = false;
+  document.getElementById('deleteConfirmBtn').textContent = 'Delete';
+  document.getElementById('deleteModalOverlay').style.display = 'flex';
+}
+function closeDeleteModal() {
+  document.getElementById('deleteModalOverlay').style.display = 'none';
+  deleteTargetId = null; deleteTargetName = null;
+}
+document.getElementById('deleteModalOverlay').addEventListener('click', e => { if (e.target.id==='deleteModalOverlay') closeDeleteModal(); });
+
+async function confirmDelete() {
+  if (!deleteTargetId) return;
+  if (!getSession()) { showError('Session expired.'); closeDeleteModal(); return; }
+  const btn = document.getElementById('deleteConfirmBtn');
+  btn.disabled = true; btn.textContent = 'Deleting...';
+  try {
+    await callScript('delete', { 'National ID': deleteTargetId });
+    const name = deleteTargetName;
+    closeDeleteModal();
+    showSuccess(`${name||'Employee'} deleted successfully.`);
+    await loadData();
+  } catch(ex) {
+    closeDeleteModal();
+    showError('Delete failed: ' + ex.message);
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// SHEETS DIRECTORY
+// ════════════════════════════════════════════════════════════════
+const SHEETS_DATA = [
+  { category: 'Attendance', items: [
+    { name: 'GT Morning Attendance',              type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/11Ekahw8ZD6xJfFw0MVu8dKIETMP2mYXXDpV6YPaIHfk/edit?gid=1657040379' },
+    { name: 'GT Night Attendance',                type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1qWtkAMkB8aJMyGqNAivuhl8P2bmTfLpY6yLqu4nQPAQ/edit?gid=1218236832' },
+    { name: 'Over Night Attendance (Master Sheet)',type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1SXlXRnAJk0f2tbNh20yZ_2EDa9bo7HQXaQ-CSlVpxKY/edit?pli=1&gid=999998182' },
+    { name: 'S.F Attendance',                     type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1PPASHHRwPtyaN7_hiDTjVNihqGv9ZxXmN0_LfaNh32Q/edit?gid=735554126' },
+    { name: 'AVP Morning Attendance',             type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1xydLswJHJPS6Vry7P7XcjUMdTRJK1vQ-VatN4B4chLI/edit' },
+    { name: 'AVP Night Attendance',               type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1u8wcQg38rRIoE_tnmRi0xD_OCq2XwVQWQj3Eg2mXh4g/edit?gid=15901893' },
+    { name: 'AVP Overnight Attendance',           type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1-SIZHQfvsBkEvs_5KRjztTMbOHGDCpN0L38Qp0lvXWI/edit' },
+    { name: 'UAE Attendance',                     type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1TEOmdfUsFy-p29WB9ttj79zMsbCV344r7uNSbouEWFs/edit?gid=507444073' },
+    { name: 'Mapping Overnight Attendance',       type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1NEX_9R-kZYlQT8FLks3_1XnDn9JDr8VCyrvNl7hyd44/edit?gid=59640710' },
+    { name: 'Labelerslist Attendance',            type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1J_BvZ6AHD4HcpTVf_iACyTJhcu0hx7ehczucAhN2QhM/edit?gid=1562394029' },
+    { name: 'Attendance delays OP',               type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1DUFehN3sGupWwkIyZO44IL1izYUSbXggtCUiUbxcxUs/edit?gid=0' },
+  ]},
+  { category: 'Forms', items: [
+    { name: 'Form.meti portal',                   type: 'form', url: 'https://docs.google.com/forms/d/e/1FAIpQLSd2Krysi6kd_KWap5iXtNzCY4S_0Pg_HPVHRi4egEAfIoQ8nA/viewform?fbzx=1749840446210905879' },
+    { name: 'Ticket IT Form',                     type: 'form', url: 'https://forms.office.com/pages/responsepage.aspx?id=aYQGDwXYz0CRSZQnl3spqBseVUc2XpLiUQiVakwohlUQzcyQjVEVFhIN0gxVzlFSzJaVzU1S0U3Ni4u&route=shorturl' },
+    { name: 'HR Coordination Form',               type: 'form', url: 'https://docs.google.com/forms/d/1usvBwXC1kRc2QIF5hgu1fBJVVErhRlPvvj0CwX7GC5o/edit' },
+    { name: 'Official Documents Request Form',    type: 'form', url: 'https://forms.office.com/pages/responsepage.aspx?id=aYQGDwXYz0CRSZQnl3spqleEX5dr1YZEmF92kQyPQQFUMU1MTU5TSjc0NEdETlhJSjNGWTlBS1JCUSQlQCN0PWcu&origin=QRCode&route=shorturl' },
+    { name: 'Job Application Form',               type: 'form', url: 'https://forms.office.com/r/r7c0wmSYxB' },
+    { name: 'Training Feedback Form',             type: 'form', url: 'https://docs.google.com/forms/d/e/1FAIpQLSdtzKD3ZI3z6s32rPbayAZf4gKOaCCfWvM1k5BZAq1wkY14CQ/viewform?pli=1' },
+    { name: 'Metiportal_Admin',                   type: 'form', url: 'https://portal-meti.microengineering.ca/' },
+  ]},
+  { category: 'Operations & Reports', items: [
+    { name: 'Yupikey sheet',                      type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1RvdCM39Dz4-IT2k-w9sj0Ks7ExvdDACYGTceDDa41ks/edit?gid=282349957' },
+    { name: 'Onboarding',                         type: 'sheet', url: 'https://microengineeringgroup-my.sharepoint.com/:x:/r/personal/mohamed_ayman_microengineering_ca/_layouts/15/Doc.aspx?sourcedoc=%7BDF1DED35-1ED4-4803-A7DA-A14D4BE78AFA%7D&file=Labeling_Training_OnBoarding_Process.xlsx&action=default&mobileredirect=true' },
+    { name: 'Over Time Operation',                type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1R2045uoA6ICYqEuLB-wC2rsqbcM9lMbaFmM-nCw_Jko/edit?gid=682881054' },
+    { name: 'IT Issues Follow Up',                type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1YRA6octdldd3QTQtJiXX9bkueGPfR7-i9I4QHGQfUU0/edit?usp=drivesdk' },
+    { name: 'Labeler OverTime',                   type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1W2zitOpu5hamNuGQVVfZr0gCNqtsNEVntVes-80CoBc/edit?gid=383404338' },
+    { name: 'Violation Report',                   type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1pQ6hxfVJmkaS0VtxyWhAG40Dj2HOY053SMgYm3OTdUg/edit?gid=0' },
+    { name: 'الأوراق المسلمة',                    type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1V_FnuaBV4s9vLHYizGwPl-AFc5MMA1eviSw7iouxV6Q/edit?gid=0' },
+    { name: 'Master New Hire - Dataset',          type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1t3IATJAHtlrMur9QTuqcrbzEypi_oLOwnWA9c8WmrRw/edit?gid=0' },
+  ]},
+];
+
+function showView(view) {
+  const isStaff = view === 'staff';
+  document.getElementById('staffView').style.display  = isStaff ? 'block' : 'none';
+  document.getElementById('sheetsView').style.display = isStaff ? 'none'  : 'block';
+  document.getElementById('tabStaffBtn').classList.toggle('active',  isStaff);
+  document.getElementById('tabSheetsBtn').classList.toggle('active', !isStaff);
+  if (!isStaff) renderSheets();
+}
+
+function sheetIconSvg(type) {
+  if (type === 'form') return '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
+  return '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>';
+}
+
+function renderSheets() {
+  const q         = (document.getElementById('sheetsSearchInput').value||'').toLowerCase();
+  const container = document.getElementById('sheetsContainer');
+  let anyResults  = false; let html = '';
+  SHEETS_DATA.forEach(group => {
+    const items = group.items.filter(it => !q || it.name.toLowerCase().includes(q));
+    if (items.length === 0) return;
+    anyResults = true;
+    html += `<div class="sheets-category">
+      <div class="sheets-category-head">
+        <span class="sheets-category-title">${escapeHTML(group.category)}</span>
+        <span class="sheets-category-count">${items.length}</span>
+      </div>
+      <div class="sheets-grid">
+        ${items.map(it => `
+          <a class="sheet-card" href="${escapeHTML(it.url)}" target="_blank" rel="noopener noreferrer">
+            <div class="sheet-icon ${it.type==='form'?'form':''}">${sheetIconSvg(it.type)}</div>
+            <div class="sheet-info">
+              <div class="sheet-name">${escapeHTML(it.name)}</div>
+              <div class="sheet-type">${it.type==='form'?'Form':'Sheet'}</div>
+            </div>
+            <svg class="sheet-open" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        `).join('')}
+      </div>
+    </div>`;
+  });
+  container.innerHTML = anyResults ? html : `<div class="sheets-empty">No sheets match your search</div>`;
+}
 </script>
 </body>
 </html>
