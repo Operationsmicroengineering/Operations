@@ -220,7 +220,6 @@
   .sheets-empty { text-align: center; padding: 4rem; color: var(--text-1); font-size: 14px; }
   .source-badge { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--ok); background: var(--ok-dim); border: 1px solid rgba(61,214,140,0.25); padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; }
 
-  /* ── Yubikey View ── */
   .ybk-date-selector { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .ybk-date-btn { background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; color: var(--text-1); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; padding: 6px 14px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
   .ybk-date-btn:hover { border-color: var(--purple-line); color: var(--purple); background: var(--purple-dim); }
@@ -477,8 +476,6 @@
     <!-- Yubikey View -->
     <div id="yubikeyView" style="display:none">
       <div class="error-banner" id="ybkErrorBanner"></div>
-
-      <!-- Stats for selected date -->
       <div class="ybk-summary-grid" id="ybkSummaryGrid">
         <div class="ybk-summary-card" style="--sc-tint:var(--purple-dim)">
           <div class="ybk-summary-label">Total Yubikeys</div>
@@ -497,8 +494,6 @@
           <div class="ybk-summary-value" id="ybkTraining" style="color:var(--warn)">—</div>
         </div>
       </div>
-
-      <!-- Date selector toolbar -->
       <div class="toolbar" style="margin-bottom:1.5rem">
         <span class="ybk-date-label">Select date:</span>
         <div class="ybk-date-selector" id="ybkDateSelector">
@@ -511,8 +506,6 @@
           </button>
         </div>
       </div>
-
-      <!-- Search + filter -->
       <div class="toolbar">
         <div class="search-wrap">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -525,8 +518,6 @@
           <option value="training">Training (T)</option>
         </select>
       </div>
-
-      <!-- Table -->
       <div class="ybk-history-card">
         <div class="ybk-history-header">
           <span class="ybk-history-title">Yubikey records</span>
@@ -763,7 +754,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const SESSION_KEY       = 'supabaseSession';
 const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzsSGY6dFROAtVi0mQEhz6oy3sxdvrKzCaD0hO2R2yIEqcmFnsosL63Kox89YucTjYuZA/exec';
 
-// Emails that have Yubikeys (meti.ai users)
 const METI_EMAILS = new Set([
   'me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai',
   'me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai',
@@ -786,7 +776,6 @@ function normalizeProject(v) { if (!v) return ''; const t=String(v).trim(); retu
 function isActive(s)   { if (!s) return false; return s.toLowerCase().includes('working')||s.toLowerCase()==='active'; }
 function isResigned(s) { if (!s) return false; return s.toLowerCase().includes('resign')||s.toLowerCase().includes('inactive'); }
 
-// Yubikey value helpers
 function ybkIsPresent(v)  { const u=String(v||'').trim().toUpperCase(); return u==='P'||u==='TP'; }
 function ybkIsAbsent(v)   { return String(v||'').trim()==='0'; }
 function ybkIsTraining(v) { const u=String(v||'').trim().toUpperCase(); return u==='T'||u==='T1'||u==='T2'||u==='T3'; }
@@ -884,14 +873,23 @@ async function fetchFromSheet() {
   return json;
 }
 
+// ══════════════════════════════════════════════════════
+// FIX: callScript — action منفصل عن data عشان مايتكتبش
+//       في الشيت كـ column زيادة
+// ══════════════════════════════════════════════════════
 async function callScript(action, payload) {
-  const res=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,...payload})});
-  let json; try { json=await res.json(); } catch { return {success:true}; }
-  if (json&&json.error) throw new Error(json.error);
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: action, data: payload })
+  });
+  let json;
+  try { json = await res.json(); } catch { return { success: true }; }
+  if (json && json.error) throw new Error(json.error);
   return json;
 }
 
-// ── Yubikey data loader ──
+// ── Yubikey ──
 async function loadYubikeyData(forceRefresh=false) {
   if (!getSession()) return;
   document.getElementById('ybkLoadingState').style.display='block';
@@ -904,10 +902,7 @@ async function loadYubikeyData(forceRefresh=false) {
     const json = await res.json();
     if (json.error) throw new Error(json.error);
     yubikeyData = json.yubikey || { dateColumns: [], rows: [] };
-
-    // Filter to only meti.ai rows
     yubikeyData.rows = yubikeyData.rows.filter(r => ybkIsMeti(r));
-
     buildDateSelector();
     renderYubikeyTable();
   } catch(ex) {
@@ -920,95 +915,54 @@ async function loadYubikeyData(forceRefresh=false) {
 function buildDateSelector() {
   const dates = yubikeyData.dateColumns || [];
   const container = document.getElementById('ybkDateSelector');
-  if (dates.length === 0) {
-    container.innerHTML='<span style="font-size:13px;color:var(--text-2)">No dates available</span>';
-    return;
-  }
-  // Default: last date
-  if (!selectedYbkDate || !dates.includes(selectedYbkDate)) {
-    selectedYbkDate = dates[dates.length - 1];
-  }
-  container.innerHTML = dates.map(d => `
-    <button class="ybk-date-btn${d===selectedYbkDate?' active':''}" onclick="selectYbkDate('${escapeHTML(d)}')">${escapeHTML(d)}</button>
-  `).join('');
+  if (dates.length === 0) { container.innerHTML='<span style="font-size:13px;color:var(--text-2)">No dates available</span>'; return; }
+  if (!selectedYbkDate || !dates.includes(selectedYbkDate)) selectedYbkDate = dates[dates.length - 1];
+  container.innerHTML = dates.map(d => `<button class="ybk-date-btn${d===selectedYbkDate?' active':''}" onclick="selectYbkDate('${escapeHTML(d)}')">${escapeHTML(d)}</button>`).join('');
 }
 
-function selectYbkDate(date) {
-  selectedYbkDate = date;
-  buildDateSelector();
-  renderYubikeyTable();
-}
+function selectYbkDate(date) { selectedYbkDate = date; buildDateSelector(); renderYubikeyTable(); }
 
 function renderYubikeyTable() {
   const search = (document.getElementById('ybkSearch').value||'').toLowerCase();
   const statusFilter = document.getElementById('ybkStatusFilter').value;
   const date = selectedYbkDate;
-
-  if (!date) {
-    document.getElementById('ybkLoadingState').style.display='none';
-    document.getElementById('ybkEmptyState').style.display='block';
-    return;
-  }
-
-  // Update header
+  if (!date) { document.getElementById('ybkLoadingState').style.display='none'; document.getElementById('ybkEmptyState').style.display='block'; return; }
   document.getElementById('ybkDateColHeader').textContent = date;
-
   let rows = yubikeyData.rows || [];
-
-  // Compute stats for this date
-  const metiRows = rows; // already filtered to meti
   let total=0, present=0, absent=0, training=0;
-  metiRows.forEach(r => {
+  rows.forEach(r => {
     const v = r.attendance[date] || '';
-    if (ybkIsPresent(v)||ybkIsTraining(v)) total++;
-    if (ybkIsPresent(v))  { total; present++; }
+    if (ybkIsPresent(v))  present++;
     if (ybkIsAbsent(v))   absent++;
     if (ybkIsTraining(v)) training++;
   });
-  // Recalculate total: P + TP + Training
   total = present + training;
-
   document.getElementById('ybkTotal').textContent    = total;
   document.getElementById('ybkPresent').textContent  = present;
   document.getElementById('ybkAbsent').textContent   = absent;
   document.getElementById('ybkTraining').textContent = training;
-
-  // Filter rows
   let filtered = rows.filter(r => {
     const v = r.attendance[date] || '';
     const ms = !search || r.name.toLowerCase().includes(search);
-    const ss = !statusFilter ||
-      (statusFilter==='present'  && ybkIsPresent(v))  ||
-      (statusFilter==='absent'   && ybkIsAbsent(v))   ||
-      (statusFilter==='training' && ybkIsTraining(v));
+    const ss = !statusFilter || (statusFilter==='present' && ybkIsPresent(v)) || (statusFilter==='absent' && ybkIsAbsent(v)) || (statusFilter==='training' && ybkIsTraining(v));
     return ms && ss;
   });
-
   document.getElementById('ybkLoadingState').style.display='none';
   document.getElementById('ybkRowCount').textContent = filtered.length + ' records';
   document.getElementById('ybkFooterInfo').textContent = `Showing ${filtered.length} of ${rows.length} employees`;
   document.getElementById('ybkFooterTime').textContent = new Date().toLocaleDateString('en-US');
-
-  if (filtered.length === 0) {
-    document.getElementById('ybkTable').style.display='none';
-    document.getElementById('ybkEmptyState').style.display='block';
-    return;
-  }
-
+  if (filtered.length === 0) { document.getElementById('ybkTable').style.display='none'; document.getElementById('ybkEmptyState').style.display='block'; return; }
   document.getElementById('ybkEmptyState').style.display='none';
   document.getElementById('ybkTable').style.display='table';
-
   document.getElementById('ybkTableBody').innerHTML = filtered.map(r => {
     const v = r.attendance[date] || '';
     const initials = escapeHTML(r.name.split(' ').map(w=>w[0]).slice(0,2).join(''));
-    const attClass = ybkAttClass(v);
-    const attLabel = ybkAttLabel(v);
     return `<tr>
       <td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${escapeHTML(r.name)}</span></div></td>
       <td class="mono" style="color:var(--text-1);font-size:12px">${escapeHTML(r.deviceNo||'—')}</td>
       <td style="color:var(--text-1)">${escapeHTML(r.location||'—')}</td>
       <td class="mono" style="color:var(--signal);font-size:12px">${escapeHTML(r.yubikey||'—')}</td>
-      <td class="ybk-date-col">${v ? `<span class="ybk-att-cell ${attClass}">${escapeHTML(attLabel)}</span>` : '—'}</td>
+      <td class="ybk-date-col">${v ? `<span class="ybk-att-cell ${ybkAttClass(v)}">${escapeHTML(ybkAttLabel(v))}</span>` : '—'}</td>
       <td>${ybkIsPresent(v)?'<span class="badge badge-active">Present</span>':ybkIsTraining(v)?'<span class="badge badge-training">Training</span>':ybkIsAbsent(v)?'<span class="badge badge-resigned">Absent</span>':'<span style="color:var(--text-2);font-size:12px">—</span>'}</td>
     </tr>`;
   }).join('');
@@ -1126,7 +1080,7 @@ function renderTable(data) {
   }).join('');
 }
 
-// ── Training filters, stats, table ──
+// ── Training ──
 function populateTrainingFilters() {
   const pm=new Map(); trainingData.forEach(r=>{const p=(r['Project']||'').trim();if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),normalizeProject(p));}); const projects=[...pm.values()].sort();
   const sm=new Map(); trainingData.forEach(r=>{const s=normalizeShift(r['Shift']);if(s&&!sm.has(s.toLowerCase()))sm.set(s.toLowerCase(),s);}); const shifts=[...sm.values()].sort();
@@ -1215,10 +1169,10 @@ function allUniqueValues(field, normalizeFn) {
   return [...map.values()].sort((a,b)=>a.localeCompare(b));
 }
 
-function populateModalDropdowns(prefix, current, sourceData) {
-  const shifts   = allUniqueValues('Shift',    normalizeShift);
+function populateModalDropdowns(prefix, current) {
+  const shifts   = allUniqueValues('Shift',   normalizeShift);
   const roles    = allUniqueValues('Role');
-  const projects = allUniqueValues('Project',  normalizeProject);
+  const projects = allUniqueValues('Project', normalizeProject);
   const locations= allUniqueValues('Location');
   populateSelect(`${prefix}Shift`,    `${prefix}ShiftOther`,    shifts,    current?normalizeShift(current['Shift']):'');
   populateSelect(`${prefix}Role`,     `${prefix}RoleOther`,     roles,     current?current['Role']:'');
@@ -1241,7 +1195,7 @@ async function handleAddEmployee(e) {
   if(allData.some(r=>String(r['National ID']).trim()===payload['National ID'])){errDiv.textContent='National ID already exists.';errDiv.style.display='block';return;}
   closeAddModal(); showSuccess(`${payload['Name']||'Employee'} added successfully.`);
   const prev=[...allData]; optimisticAdd(payload); btn.disabled=true;
-  callScript('add',payload).catch(ex=>{rollback(prev,undefined);showError('Add failed: '+ex.message);}).finally(()=>{btn.disabled=false;btn.textContent='Add employee';});
+  callScript('add', payload).catch(ex=>{rollback(prev,undefined);showError('Add failed: '+ex.message);}).finally(()=>{btn.disabled=false;});
 }
 
 // ── Edit Employee ──
@@ -1267,7 +1221,7 @@ async function handleEditEmployee(e) {
   if(!payload['Shift']||!payload['Role']||!payload['Project']||!payload['Location']){errDiv.textContent='Please fill in all fields.';errDiv.style.display='block';return;}
   closeEditModal(); showSuccess(`${payload['Name']||'Employee'} updated successfully.`);
   const prev=[...allData]; optimisticEdit(nationalId,payload); btn.disabled=true;
-  callScript('edit',payload).catch(ex=>{rollback(prev,undefined);showError('Edit failed: '+ex.message);}).finally(()=>{btn.disabled=false;btn.textContent='Save changes';});
+  callScript('edit', payload).catch(ex=>{rollback(prev,undefined);showError('Edit failed: '+ex.message);}).finally(()=>{btn.disabled=false;});
 }
 
 // ── Delete Employee ──
@@ -1280,7 +1234,7 @@ async function confirmDelete() {
   const id=deleteTargetId, name=deleteTargetName;
   closeDeleteModal(); showSuccess(`${name||'Employee'} deleted successfully.`);
   const prev=[...allData]; optimisticDelete(id);
-  callScript('delete',{'National ID':id}).catch(ex=>{rollback(prev,undefined);showError('Delete failed: '+ex.message);});
+  callScript('delete', {'National ID':id}).catch(ex=>{rollback(prev,undefined);showError('Delete failed: '+ex.message);});
 }
 
 // ── Add Trainee ──
@@ -1298,7 +1252,7 @@ async function handleAddTrainee(e) {
   if(trainingData.some(r=>String(r['National ID']).trim()===payload['National ID'])){errDiv.textContent='National ID already exists in Training.';errDiv.style.display='block';return;}
   closeAddTraineeModal(); showSuccess(`${payload['Name']||'Trainee'} added successfully.`,'training');
   const prev=[...trainingData]; optimisticAddTrn(payload); btn.disabled=true;
-  callScript('addTrainee',payload).catch(ex=>{rollback(undefined,prev);showError('Add failed: '+ex.message,'training');}).finally(()=>{btn.disabled=false;});
+  callScript('addTrainee', payload).catch(ex=>{rollback(undefined,prev);showError('Add failed: '+ex.message,'training');}).finally(()=>{btn.disabled=false;});
 }
 
 // ── Edit Trainee ──
@@ -1323,7 +1277,7 @@ async function handleEditTrainee(e) {
   if(!payload['Shift']||!payload['Role']||!payload['Project']||!payload['Location']){errDiv.textContent='Please fill in all fields.';errDiv.style.display='block';return;}
   closeEditTraineeModal(); showSuccess(`${payload['Name']||'Trainee'} updated successfully.`,'training');
   const prev=[...trainingData]; optimisticEditTrn(nationalId,payload); btn.disabled=true;
-  callScript('editTrainee',payload).catch(ex=>{rollback(undefined,prev);showError('Edit failed: '+ex.message,'training');}).finally(()=>{btn.disabled=false;});
+  callScript('editTrainee', payload).catch(ex=>{rollback(undefined,prev);showError('Edit failed: '+ex.message,'training');}).finally(()=>{btn.disabled=false;});
 }
 
 // ── Delete Trainee ──
@@ -1336,7 +1290,7 @@ async function confirmDeleteTrainee() {
   const id=deleteTraineeTargetId, name=deleteTraineeTargetName;
   closeDeleteTraineeModal(); showSuccess(`${name||'Trainee'} deleted successfully.`,'training');
   const prev=[...trainingData]; optimisticDeleteTrn(id);
-  callScript('deleteTrainee',{'National ID':id}).catch(ex=>{rollback(undefined,prev);showError('Delete failed: '+ex.message,'training');});
+  callScript('deleteTrainee', {'National ID':id}).catch(ex=>{rollback(undefined,prev);showError('Delete failed: '+ex.message,'training');});
 }
 
 // ── Move to Employees ──
@@ -1352,7 +1306,7 @@ async function confirmMove() {
   const trainee=trainingData.find(r=>String(r['National ID'])===String(id));
   if(trainee){allData.push({...trainee,'Status':status}); populateFilters(); applyFilters();}
   optimisticMoveTrn(id);
-  callScript('moveToEmployees',{'National ID':id,'Status':status}).catch(ex=>{rollback(prevEmp,prevTrn);showError('Move failed: '+ex.message,'training');});
+  callScript('moveToEmployees', {'National ID':id,'Status':status}).catch(ex=>{rollback(prevEmp,prevTrn);showError('Move failed: '+ex.message,'training');});
 }
 
 // ── Sheets ──
