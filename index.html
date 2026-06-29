@@ -964,7 +964,6 @@ async function loadYubikeyData(forceRefresh=false) {
     const json = await res.json();
     if (json.error) throw new Error(json.error);
     yubikeyData = json.yubikey || { dateColumns: [], rows: [] };
-    yubikeyData.rows = yubikeyData.rows.filter(r => ybkIsMeti(r));
     buildDateSelector();
     renderYubikeyTable();
     saveYbkCacheToStorage();
