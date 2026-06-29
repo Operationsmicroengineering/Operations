@@ -5,914 +5,744 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Operations Team</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
-  --bg: #0a0d12;
-  --sidebar-bg: #0d1117;
-  --card: #111620;
-  --card-hover: #161c2a;
-  --border: #1e2535;
-  --border-soft: #161c28;
-  --text-0: #e8edf5;
-  --text-1: #8892a4;
-  --text-2: #4a5568;
-  --accent: #3b82f6;
-  --accent-dim: rgba(59,130,246,0.12);
-  --accent-line: rgba(59,130,246,0.3);
-  --ok: #22c55e;
-  --ok-dim: rgba(34,197,94,0.1);
-  --bad: #ef4444;
-  --bad-dim: rgba(239,68,68,0.1);
-  --warn: #f59e0b;
-  --warn-dim: rgba(245,158,11,0.1);
-  --purple: #8b5cf6;
-  --purple-dim: rgba(139,92,246,0.1);
-  --sidebar-w: 220px;
-}
+  :root {
+    --bg-0: #07090d;
+    --bg-1: #0c0f15;
+    --bg-2: #12161e;
+    --bg-3: #181d27;
+    --line: #20262f;
+    --line-soft: #181d25;
+    --text-0: #eef1f6;
+    --text-1: #9aa4b2;
+    --text-2: #5b6472;
+    --signal: #4fd1e8;
+    --signal-dim: rgba(79, 209, 232, 0.12);
+    --signal-line: rgba(79, 209, 232, 0.3);
+    --ok: #3dd68c;
+    --ok-dim: rgba(61, 214, 140, 0.12);
+    --bad: #f0556b;
+    --bad-dim: rgba(240, 85, 107, 0.12);
+    --warn: #f59e0b;
+    --warn-dim: rgba(245, 158, 11, 0.12);
+    --warn-line: rgba(245, 158, 11, 0.3);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167, 139, 250, 0.12);
+    --purple-line: rgba(167, 139, 250, 0.3);
+    --shadow-card: 0 1px 0 rgba(255,255,255,0.02) inset, 0 10px 30px rgba(0,0,0,0.35);
+    --shadow-pop: 0 20px 60px rgba(0,0,0,0.5);
+  }
 
-html, body { height: 100%; background: var(--bg); color: var(--text-0); font-family: 'Inter', sans-serif; overflow: hidden; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 
-/* ── Layout ── */
-.app { display: flex; height: 100vh; overflow: hidden; }
+  html { background: var(--bg-0); }
+  body { font-family: 'Inter', sans-serif; background: var(--bg-0); color: var(--text-0); min-height: 100vh; overflow-x: hidden; background-image: radial-gradient(ellipse 900px 500px at 50% -10%, rgba(79,209,232,0.05), transparent 60%); background-repeat: no-repeat; }
+  ::selection { background: var(--signal-dim); color: var(--text-0); }
+  :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; border-radius: 4px; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
 
-/* ── Sidebar ── */
-.sidebar {
-  width: var(--sidebar-w);
-  background: var(--sidebar-bg);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  overflow: hidden;
-}
+  .login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+  .login-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; width: 100%; max-width: 396px; padding: 2.75rem 2.25rem 2rem; box-shadow: var(--shadow-pop); }
+  .login-mark { width: 42px; height: 42px; border-radius: 9px; background: linear-gradient(160deg, var(--signal) 0%, #2a8fa8 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: #04181d; box-shadow: 0 8px 24px rgba(79,209,232,0.25); }
+  .login-header { text-align: center; margin-bottom: 2.25rem; }
+  .login-header .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 2px; color: var(--signal); font-weight: 600; display: block; margin-bottom: 10px; text-transform: uppercase; }
+  .login-header h1 { font-size: 20px; font-weight: 700; color: var(--text-0); letter-spacing: -0.3px; }
+  .login-header p { font-size: 13px; color: var(--text-1); margin-top: 7px; }
+  .form-group { margin-bottom: 1.1rem; }
+  .form-group label { display: block; font-size: 12px; color: var(--text-1); font-weight: 500; margin-bottom: 7px; }
+  .form-control { background: var(--bg-0); border: 1px solid var(--line); border-radius: 6px; color: var(--text-0); font-family: 'Inter', sans-serif; font-size: 14px; padding: 11px 14px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+  .form-control::placeholder { color: var(--text-2); }
+  .form-control:focus { border-color: var(--signal-line); box-shadow: 0 0 0 3px var(--signal-dim); }
+  .login-btn { background: var(--signal); color: #04181d; border: none; border-radius: 6px; padding: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: filter 0.15s, transform 0.1s; width: 100%; margin-top: 0.5rem; }
+  .login-btn:hover { filter: brightness(1.08); }
+  .login-btn:active { transform: translateY(1px); }
+  .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .login-error { background: var(--bad-dim); border: 1px solid rgba(240,85,107,0.3); color: var(--bad); font-size: 13px; font-weight: 500; padding: 11px 14px; border-radius: 6px; margin-bottom: 1.1rem; display: none; text-align: center; }
+  .login-note { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-2); text-align: center; margin-top: 1.75rem; line-height: 1.7; border-top: 1px solid var(--line-soft); padding-top: 1rem; }
 
-.sidebar-logo {
-  padding: 20px 16px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.logo-mark {
-  width: 34px; height: 34px;
-  border-radius: 8px;
-  background: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700; font-size: 12px; color: #fff;
-  flex-shrink: 0;
-}
-.logo-text .title { font-size: 13.5px; font-weight: 700; color: var(--text-0); }
-.logo-text .sub { font-size: 9.5px; color: var(--text-2); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; text-transform: uppercase; }
+  #dashboardSection { display: none; }
 
-.sidebar-nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
-.nav-section { margin-bottom: 20px; }
-.nav-section-label { font-size: 9.5px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 1.2px; padding: 0 8px; margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
-.nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px; border-radius: 7px;
-  cursor: pointer; transition: all 0.15s;
-  color: var(--text-1); font-size: 13px; font-weight: 500;
-  margin-bottom: 2px; border: none; background: none; width: 100%; text-align: left;
-}
-.nav-item:hover { background: var(--card); color: var(--text-0); }
-.nav-item.active { background: var(--accent-dim); color: var(--accent); }
-.nav-item svg { flex-shrink: 0; opacity: 0.8; }
-.nav-item.active svg { opacity: 1; }
-.nav-badge { margin-left: auto; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; }
+  nav { background: rgba(12,15,21,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); padding: 0 2rem; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .nav-brand { display: flex; align-items: center; gap: 11px; }
+  .nav-mark { width: 30px; height: 30px; border-radius: 7px; background: linear-gradient(160deg, var(--signal) 0%, #2a8fa8 100%); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; color: #04181d; flex-shrink: 0; }
+  .nav-brand-text { display: flex; flex-direction: column; line-height: 1.25; }
+  .nav-brand-text .title { font-size: 14.5px; font-weight: 700; color: var(--text-0); letter-spacing: -0.1px; }
+  .nav-brand-text .subtitle { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 1.4px; color: var(--signal); font-weight: 600; }
+  .nav-left { display: flex; align-items: center; gap: 14px; }
+  .nav-info { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-1); }
+  .nav-user { font-size: 12.5px; color: var(--text-1); padding-right: 14px; border-right: 1px solid var(--line); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.sidebar-user {
-  padding: 12px 12px;
-  border-top: 1px solid var(--border);
-  display: flex; align-items: center; gap: 10px;
-}
-.user-avatar {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent), var(--purple));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
-}
-.user-info { flex: 1; min-width: 0; }
-.user-name { font-size: 12.5px; font-weight: 600; color: var(--text-0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-role { font-size: 10.5px; color: var(--text-2); }
-.user-status { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); flex-shrink: 0; }
+  main { padding: 2rem; max-width: 1440px; margin: 0 auto; }
 
-/* ── Main ── */
-.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 2rem; }
+  .stat { background: var(--bg-1); border: 1px solid var(--line); border-radius: 12px; padding: 1.35rem 1.5rem 1.5rem; position: relative; overflow: hidden; box-shadow: var(--shadow-card); transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
+  .stat::after { content: ''; position: absolute; top: -18px; left: -18px; width: 84px; height: 84px; border-radius: 50%; background: var(--tint, var(--signal-dim)); opacity: 0.5; filter: blur(2px); }
+  .stat:hover { transform: translateY(-2px); border-color: var(--tint-line, var(--signal-line)); box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 16px 36px rgba(0,0,0,0.4); }
+  .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; position: relative; z-index: 1; }
+  .stat-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--tint, var(--signal-dim)); color: var(--tint-fg, var(--signal)); border: 1px solid var(--tint-line, var(--signal-line)); flex-shrink: 0; }
+  .stat-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--text-2); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; position: relative; z-index: 1; }
+  .stat-value { font-size: 32px; font-weight: 800; color: var(--text-0); letter-spacing: -0.6px; font-variant-numeric: tabular-nums; position: relative; z-index: 1; line-height: 1; }
+  .stat-value.accent-signal { color: var(--signal); }
+  .stat-value.accent-ok { color: var(--ok); }
+  .stat-value.accent-bad { color: var(--bad); }
+  .stat-value.accent-warn { color: var(--warn); }
+  .stat-value.accent-purple { color: var(--purple); }
+  .stat[data-tone="signal"] { --tint: var(--signal-dim); --tint-line: var(--signal-line); --tint-fg: var(--signal); }
+  .stat[data-tone="ok"] { --tint: var(--ok-dim); --tint-line: rgba(61,214,140,0.3); --tint-fg: var(--ok); }
+  .stat[data-tone="bad"] { --tint: var(--bad-dim); --tint-line: rgba(240,85,107,0.3); --tint-fg: var(--bad); }
+  .stat[data-tone="neutral"] { --tint: var(--bg-2); --tint-line: var(--line); --tint-fg: var(--text-1); }
+  .stat[data-tone="warn"] { --tint: var(--warn-dim); --tint-line: var(--warn-line); --tint-fg: var(--warn); }
+  .stat[data-tone="purple"] { --tint: var(--purple-dim); --tint-line: var(--purple-line); --tint-fg: var(--purple); }
 
-/* ── Topbar ── */
-.topbar {
-  height: 56px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 12px;
-  padding: 0 20px;
-  background: var(--sidebar-bg);
-  flex-shrink: 0;
-}
-.topbar-title { font-size: 15px; font-weight: 700; color: var(--text-0); }
-.topbar-sub { font-size: 12px; color: var(--text-2); }
-.topbar-spacer { flex: 1; }
-.topbar-search {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 7px; padding: 7px 12px;
-  font-size: 13px; color: var(--text-1);
-  cursor: pointer; transition: border-color 0.15s;
-}
-.topbar-search:hover { border-color: var(--accent-line); }
-.topbar-search kbd { background: var(--border); padding: 1px 5px; border-radius: 4px; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+  .toolbar { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; padding: 1rem; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 1.5rem; box-shadow: var(--shadow-card); }
+  .search-wrap { position: relative; flex: 1; min-width: 220px; }
+  .search-wrap svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-2); pointer-events: none; }
+  input[type="text"], input[type="email"], input[type="search"], select { background: var(--bg-0); border: 1px solid var(--line); border-radius: 6px; color: var(--text-0); font-family: 'Inter', sans-serif; font-size: 13.5px; padding: 9px 14px 9px 38px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+  select { padding: 9px 14px; cursor: pointer; }
+  input::placeholder { color: var(--text-2); }
+  input:focus, select:focus { border-color: var(--signal-line); box-shadow: 0 0 0 3px var(--signal-dim); }
 
-.topbar-btn {
-  display: flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px; border-radius: 7px;
-  background: var(--card); border: 1px solid var(--border);
-  color: var(--text-1); cursor: pointer; transition: all 0.15s;
-  position: relative;
-}
-.topbar-btn:hover { border-color: var(--accent-line); color: var(--accent); }
-.topbar-notif-dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--bad); border: 1.5px solid var(--sidebar-bg); }
+  .btn-primary { background: var(--signal); color: #04181d; border: none; border-radius: 6px; padding: 9px 18px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: filter 0.15s; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.topbar-user-btn {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 8px; padding: 5px 10px 5px 6px;
-  cursor: pointer; transition: border-color 0.15s;
-}
-.topbar-user-btn:hover { border-color: var(--accent-line); }
-.topbar-user-avatar { width: 26px; height: 26px; border-radius: 6px; background: linear-gradient(135deg, var(--accent), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; }
-.topbar-user-name { font-size: 12.5px; font-weight: 600; color: var(--text-0); }
-.topbar-user-role { font-size: 10px; color: var(--text-2); }
+  .table-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-card); }
+  .table-header { padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+  .table-title { font-size: 14px; font-weight: 700; color: var(--text-0); letter-spacing: -0.1px; }
+  .table-count { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--signal); background: var(--signal-dim); border: 1px solid var(--signal-line); padding: 3px 11px; border-radius: 20px; font-weight: 600; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 820px; }
+  thead tr { background: var(--bg-2); }
+  th { padding: 12px 16px; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.8px; text-transform: uppercase; font-weight: 600; color: var(--text-2); cursor: pointer; user-select: none; white-space: nowrap; border-bottom: 1px solid var(--line); transition: color 0.15s; }
+  th:hover { color: var(--text-0); }
+  th.sorted { color: var(--signal); }
+  th.no-sort { cursor: default; }
+  th.no-sort:hover { color: var(--text-2); }
+  td { padding: 13px 16px; font-size: 13.5px; border-bottom: 1px solid var(--line-soft); color: var(--text-0); white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg-2); }
 
-/* ── Content ── */
-.content { flex: 1; overflow-y: auto; padding: 20px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+  .badge-active { background: var(--ok-dim); color: var(--ok); }
+  .badge-resigned { background: rgba(250,176,5,0.12); color: #fab005; }
+  .badge-training { background: var(--warn-dim); color: var(--warn); }
+  .badge-shift { background: var(--bg-2); color: var(--text-1); border: 1px solid var(--line); font-family: 'JetBrains Mono', monospace; font-weight: 500; border-radius: 5px; }
 
-/* ── Stats Grid ── */
-.stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
-.stat-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 10px; padding: 16px;
-  transition: border-color 0.15s, transform 0.15s;
-}
-.stat-card:hover { border-color: var(--border-soft); transform: translateY(-1px); }
-.stat-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
-.stat-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-.stat-label { font-size: 11px; color: var(--text-2); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'JetBrains Mono', monospace; }
-.stat-value { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; line-height: 1; }
-.stat-sub { font-size: 11px; color: var(--text-2); margin-top: 4px; }
-.stat-trend { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; }
-.stat-trend.up { color: var(--ok); }
-.stat-trend.down { color: var(--bad); }
+  .avatar { width: 28px; height: 28px; border-radius: 7px; background: var(--bg-2); border: 1px solid var(--line); color: var(--signal); display: inline-flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700; margin-right: 11px; vertical-align: middle; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+  .name-cell { display: flex; align-items: center; }
+  .name-cell span { font-weight: 600; }
 
-/* ── Charts Row ── */
-.charts-row { display: grid; grid-template-columns: 1fr 280px; gap: 12px; margin-bottom: 20px; }
-.chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-.chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.chart-title { font-size: 13.5px; font-weight: 700; color: var(--text-0); }
-.chart-sub { font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
+  .action-cell { display: flex; align-items: center; gap: 6px; }
+  .btn-edit { background: var(--bg-2); color: var(--text-1); border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; }
+  .btn-edit:hover { border-color: var(--signal-line); color: var(--signal); background: var(--signal-dim); }
+  .btn-delete-row { background: transparent; color: var(--text-2); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; }
+  .btn-delete-row:hover { border-color: var(--bad); color: var(--bad); background: var(--bad-dim); }
+  .btn-move { background: var(--warn-dim); color: var(--warn); border: 1px solid var(--warn-line); border-radius: 6px; padding: 5px 12px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+  .btn-move:hover { background: var(--warn); color: #1a0e00; }
 
-/* Simple bar chart */
-.bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
-.bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 4px; transition: opacity 0.15s; }
-.bar:hover { opacity: 0.8; }
-.bar-label { font-size: 10.5px; color: var(--text-2); font-weight: 500; }
-.bar-val { font-size: 11px; font-weight: 700; color: var(--text-1); font-family: 'JetBrains Mono', monospace; }
+  .loading { text-align: center; padding: 5rem; color: var(--text-1); font-size: 14px; }
+  .spinner { width: 28px; height: 28px; border: 2px solid var(--line); border-top-color: var(--signal); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.1rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .empty { text-align: center; padding: 5rem; color: var(--text-1); font-size: 14px; }
+  .empty svg { margin-bottom: 1rem; color: var(--text-2); }
 
-/* Donut chart */
-.donut-wrap { display: flex; flex-direction: column; align-items: center; }
-.donut-svg-wrap { position: relative; }
-.donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.donut-center-val { font-size: 22px; font-weight: 800; color: var(--text-0); }
-.donut-center-label { font-size: 10px; color: var(--text-2); }
-.donut-legend { width: 100%; margin-top: 12px; }
-.legend-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border-soft); }
-.legend-item:last-child { border-bottom: none; }
-.legend-left { display: flex; align-items: center; gap: 8px; }
-.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-.legend-name { font-size: 12px; color: var(--text-1); }
-.legend-val { font-size: 12px; font-weight: 700; color: var(--text-0); font-family: 'JetBrains Mono', monospace; }
+  .table-footer { padding: 0.85rem 1.5rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-1); }
 
-/* ── Table Card ── */
-.table-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-.table-toolbar {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-}
-.table-toolbar-title { font-size: 14px; font-weight: 700; color: var(--text-0); }
-.table-count-badge { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-line); font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; }
-.toolbar-spacer { flex: 1; }
+  .btn-ghost { background: var(--bg-0); color: var(--text-1); border: 1px solid var(--line); border-radius: 6px; padding: 8px 16px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 7px; }
+  .btn-ghost:hover { border-color: var(--signal-line); color: var(--text-0); background: var(--bg-2); }
+  .btn-ghost svg { transition: transform 0.3s; }
+  .btn-ghost:hover svg { transform: rotate(180deg); }
+  .btn-danger { background: transparent; color: var(--text-1); border: 1px solid var(--line); border-radius: 6px; padding: 7px 14px; font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-danger:hover { border-color: var(--bad); color: var(--bad); background: var(--bad-dim); }
+  .btn-confirm-delete { background: var(--bad); color: #fff; border: none; border-radius: 6px; padding: 9px 18px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: filter 0.15s; display: inline-flex; align-items: center; gap: 7px; }
+  .btn-confirm-delete:hover { filter: brightness(1.1); }
+  .btn-confirm-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-confirm-move { background: var(--warn); color: #1a0e00; border: none; border-radius: 6px; padding: 9px 18px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: filter 0.15s; display: inline-flex; align-items: center; gap: 7px; }
+  .btn-confirm-move:hover { filter: brightness(1.08); }
+  .btn-confirm-move:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.search-box {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 7px; padding: 7px 12px;
-  min-width: 220px;
-}
-.search-box input { background: none; border: none; outline: none; color: var(--text-0); font-family: 'Inter', sans-serif; font-size: 13px; width: 100%; }
-.search-box input::placeholder { color: var(--text-2); }
-.search-box:focus-within { border-color: var(--accent-line); }
+  .error-banner { background: var(--bad-dim); border: 1px solid rgba(240,85,107,0.3); border-radius: 10px; padding: 1rem 1.5rem; color: var(--bad); font-size: 14px; font-weight: 500; margin-bottom: 1.5rem; display: none; }
+  .success-banner { background: var(--ok-dim); border: 1px solid rgba(61,214,140,0.3); border-radius: 10px; padding: 1rem 1.5rem; color: var(--ok); font-size: 14px; font-weight: 500; margin-bottom: 1.5rem; display: none; }
 
-.filter-select {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 7px; padding: 7px 12px;
-  color: var(--text-0); font-family: 'Inter', sans-serif; font-size: 13px;
-  cursor: pointer; outline: none;
-}
-.filter-select:focus { border-color: var(--accent-line); }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); display: inline-block; margin-right: 5px; animation: pulse-ok 2s ease-in-out infinite; }
+  .sync-dot.syncing { background: var(--signal); animation: spin 0.8s linear infinite; width: 9px; height: 9px; border: 2px solid var(--line); border-top-color: var(--signal); border-radius: 50%; }
+  .sync-dot.error { background: var(--bad); animation: none; }
+  @keyframes pulse-ok { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-.btn-add {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--accent); color: #fff;
-  border: none; border-radius: 7px;
-  padding: 8px 14px; font-family: 'Inter', sans-serif;
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  transition: filter 0.15s; white-space: nowrap;
-}
-.btn-add:hover { filter: brightness(1.1); }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(4,6,9,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
+  .modal-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 12px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-pop); }
+  .modal-header { padding: 1.3rem 1.6rem; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 15px; font-weight: 700; color: var(--text-0); }
+  .modal-close { background: var(--bg-2); border: 1px solid var(--line); color: var(--text-1); width: 28px; height: 28px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .modal-close:hover { color: var(--text-0); border-color: var(--bad); }
+  .modal-body { padding: 1.5rem 1.6rem; }
+  .modal-footer { padding: 1.1rem 1.6rem; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-error { background: var(--bad-dim); border: 1px solid rgba(240,85,107,0.3); color: var(--bad); font-size: 12.5px; font-weight: 500; padding: 9px 12px; border-radius: 6px; margin-bottom: 1rem; display: none; }
+  .delete-modal-card { max-width: 400px; }
+  .delete-warning-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--bad-dim); border: 1px solid rgba(240,85,107,0.3); display: flex; align-items: center; justify-content: center; color: var(--bad); margin: 0 auto 1.25rem; }
+  .move-warning-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--warn-dim); border: 1px solid var(--warn-line); display: flex; align-items: center; justify-content: center; color: var(--warn); margin: 0 auto 1.25rem; }
+  .delete-modal-body { text-align: center; padding: 1.75rem 1.6rem 1.5rem; }
+  .delete-modal-body h3 { font-size: 16px; font-weight: 700; color: var(--text-0); margin-bottom: 0.5rem; }
+  .delete-modal-body p { font-size: 13.5px; color: var(--text-1); line-height: 1.6; }
+  .delete-name-highlight { color: var(--text-0); font-weight: 600; }
 
-.btn-icon {
-  display: flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px; border-radius: 7px;
-  background: var(--bg); border: 1px solid var(--border);
-  color: var(--text-1); cursor: pointer; transition: all 0.15s;
-}
-.btn-icon:hover { border-color: var(--accent-line); color: var(--accent); }
+  .nav-tabs { display: flex; align-items: center; gap: 4px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; padding: 3px; }
+  .nav-tab { background: transparent; border: none; border-radius: 6px; color: var(--text-1); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; padding: 7px 16px; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+  .nav-tab:hover { color: var(--text-0); }
+  .nav-tab.active { background: var(--signal); color: #04181d; }
 
-/* Table */
-.table-scroll { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; min-width: 820px; }
-thead tr { background: var(--bg); }
-th {
-  padding: 10px 14px; text-align: left;
-  font-size: 10px; font-family: 'JetBrains Mono', monospace;
-  letter-spacing: 0.8px; text-transform: uppercase;
-  font-weight: 600; color: var(--text-2);
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap; cursor: pointer; user-select: none;
-  transition: color 0.15s;
-}
-th:hover { color: var(--text-0); }
-th.sorted { color: var(--accent); }
-th.no-sort { cursor: default; }
-th.no-sort:hover { color: var(--text-2); }
-td {
-  padding: 11px 14px; font-size: 13px;
-  border-bottom: 1px solid var(--border-soft);
-  color: var(--text-0); white-space: nowrap;
-}
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--card-hover); }
+  .section-heading { font-size: 13px; font-weight: 700; color: var(--text-0); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .breakdown-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 2rem; }
+  .breakdown-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.2rem; box-shadow: var(--shadow-card); }
+  .breakdown-card-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.8px; color: var(--text-2); text-transform: uppercase; margin-bottom: 6px; }
+  .breakdown-card-value { font-size: 24px; font-weight: 800; color: var(--warn); font-variant-numeric: tabular-nums; }
+  .breakdown-card-sub { font-size: 11.5px; color: var(--text-1); margin-top: 4px; }
 
-.avatar {
-  width: 30px; height: 30px; border-radius: 7px;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: #fff;
-  margin-right: 10px; flex-shrink: 0;
-}
-.name-cell { display: flex; align-items: center; }
-.name-cell span { font-weight: 600; }
+  .sheets-toolbar { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-card); }
+  .sheets-category { margin-bottom: 1.75rem; }
+  .sheets-category-head { display: flex; align-items: center; gap: 10px; margin-bottom: 0.9rem; }
+  .sheets-category-title { font-size: 13px; font-weight: 700; color: var(--text-0); }
+  .sheets-category-count { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-2); background: var(--bg-2); border: 1px solid var(--line); padding: 2px 9px; border-radius: 20px; font-weight: 600; }
+  .sheets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+  .sheet-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; display: flex; align-items: center; gap: 12px; text-decoration: none; box-shadow: var(--shadow-card); transition: transform 0.15s ease, border-color 0.15s ease; }
+  .sheet-card:hover { transform: translateY(-2px); border-color: var(--signal-line); }
+  .sheet-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--signal-dim); border: 1px solid var(--signal-line); color: var(--signal); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sheet-icon.form { background: var(--ok-dim); border-color: rgba(61,214,140,0.3); color: var(--ok); }
+  .sheet-info { flex: 1; min-width: 0; }
+  .sheet-name { font-size: 13.5px; font-weight: 600; color: var(--text-0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sheet-type { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-2); letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
+  .sheet-open { color: var(--text-2); flex-shrink: 0; transition: color 0.15s, transform 0.15s; }
+  .sheet-card:hover .sheet-open { color: var(--signal); transform: translate(2px,-2px); }
+  .sheets-empty { text-align: center; padding: 4rem; color: var(--text-1); font-size: 14px; }
+  .source-badge { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--ok); background: var(--ok-dim); border: 1px solid rgba(61,214,140,0.25); padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; }
 
-.badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 5px; }
-.badge-working { background: var(--ok-dim); color: var(--ok); }
-.badge-resigned { background: var(--bad-dim); color: var(--bad); }
-.badge-training { background: var(--warn-dim); color: var(--warn); }
-.badge-shift { background: rgba(139,92,246,0.1); color: var(--purple); font-family: 'JetBrains Mono', monospace; font-size: 10.5px; }
+  .ybk-date-selector { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .ybk-date-btn { background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; color: var(--text-1); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; padding: 6px 14px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .ybk-date-btn:hover { border-color: var(--purple-line); color: var(--purple); background: var(--purple-dim); }
+  .ybk-date-btn.active { background: var(--purple); color: #0a0714; border-color: var(--purple); }
+  .ybk-date-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--text-2); text-transform: uppercase; font-weight: 600; white-space: nowrap; }
 
-.action-cell { display: flex; align-items: center; gap: 6px; }
-.btn-row { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer; color: var(--text-2); transition: all 0.15s; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-family: 'Inter', sans-serif; font-weight: 500; }
-.btn-row:hover { border-color: var(--accent-line); color: var(--accent); background: var(--accent-dim); }
-.btn-row.del:hover { border-color: rgba(239,68,68,0.4); color: var(--bad); background: var(--bad-dim); }
-.btn-row.move { color: var(--warn); border-color: rgba(245,158,11,0.3); }
-.btn-row.move:hover { background: var(--warn-dim); }
+  .ybk-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .ybk-summary-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; padding: 1.1rem 1.3rem; position: relative; overflow: hidden; box-shadow: var(--shadow-card); }
+  .ybk-summary-card::after { content: ''; position: absolute; top: -14px; left: -14px; width: 64px; height: 64px; border-radius: 50%; background: var(--sc-tint, var(--purple-dim)); opacity: 0.6; filter: blur(2px); }
+  .ybk-summary-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 1px; color: var(--text-2); text-transform: uppercase; font-weight: 600; margin-bottom: 6px; position: relative; z-index: 1; }
+  .ybk-summary-value { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; position: relative; z-index: 1; line-height: 1; }
 
-/* Table footer / pagination */
-.table-footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.footer-info { font-size: 12px; color: var(--text-2); font-family: 'JetBrains Mono', monospace; }
-.pagination { display: flex; align-items: center; gap: 4px; }
-.page-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: none; color: var(--text-1); font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-family: 'JetBrains Mono', monospace; }
-.page-btn:hover { border-color: var(--accent-line); color: var(--accent); }
-.page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .ybk-history-table { min-width: 700px; }
+  .ybk-att-cell { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+  .ybk-att-p  { background: var(--ok-dim); color: var(--ok); }
+  .ybk-att-tp { background: rgba(79,209,232,0.1); color: var(--signal); }
+  .ybk-att-0  { background: var(--bad-dim); color: var(--bad); }
+  .ybk-att-t  { background: var(--warn-dim); color: var(--warn); }
 
-/* Loading & empty */
-.loading { text-align: center; padding: 4rem; color: var(--text-1); font-size: 13px; }
-.spinner { width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.empty { text-align: center; padding: 4rem; color: var(--text-2); font-size: 13px; }
+  .ybk-history-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-card); }
+  .ybk-history-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .ybk-history-title { font-size: 13px; font-weight: 700; color: var(--text-0); }
+  .ybk-scroll { overflow-x: auto; }
 
-/* Sync */
-.sync-indicator { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-2); font-family: 'JetBrains Mono', monospace; }
-.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); animation: pulse-ok 2s ease-in-out infinite; }
-.sync-dot.syncing { background: var(--accent); animation: spin 0.8s linear infinite; width: 10px; height: 10px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; }
-.sync-dot.error { background: var(--bad); animation: none; }
-@keyframes pulse-ok { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .ybk-history-table th { font-size: 9.5px; padding: 10px 14px; }
+  .ybk-history-table td { padding: 11px 14px; font-size: 13px; }
 
-/* Login */
-.login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); }
-.login-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 380px; padding: 2.5rem 2rem; }
-.login-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem; }
-.login-mark { width: 44px; height: 44px; border-radius: 10px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: #fff; margin-bottom: 12px; }
-.login-title { font-size: 18px; font-weight: 700; color: var(--text-0); }
-.login-sub { font-size: 13px; color: var(--text-2); margin-top: 4px; }
-.form-group { margin-bottom: 14px; }
-.form-label { display: block; font-size: 12px; color: var(--text-1); font-weight: 500; margin-bottom: 6px; }
-.form-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--text-0); font-family: 'Inter', sans-serif; font-size: 13.5px; padding: 10px 13px; outline: none; transition: border-color 0.15s; }
-.form-input::placeholder { color: var(--text-2); }
-.form-input:focus { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-dim); }
-.login-btn-submit { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 7px; padding: 11px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: filter 0.15s; margin-top: 4px; }
-.login-btn-submit:hover { filter: brightness(1.1); }
-.login-btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-.login-error { background: var(--bad-dim); border: 1px solid rgba(239,68,68,0.3); color: var(--bad); font-size: 12.5px; font-weight: 500; padding: 10px 13px; border-radius: 7px; margin-bottom: 14px; display: none; text-align: center; }
+  .ybk-date-col { min-width: 70px; text-align: center; }
 
-/* Modal */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 300; padding: 20px; }
-.modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
-.modal-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.modal-title { font-size: 14px; font-weight: 700; color: var(--text-0); }
-.modal-close { background: var(--bg); border: 1px solid var(--border); color: var(--text-1); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-.modal-close:hover { color: var(--bad); border-color: rgba(239,68,68,0.4); }
-.modal-body { padding: 18px 20px; }
-.modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.form-error { background: var(--bad-dim); border: 1px solid rgba(239,68,68,0.3); color: var(--bad); font-size: 12px; font-weight: 500; padding: 9px 12px; border-radius: 6px; margin-bottom: 14px; display: none; }
-.modal-form-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--text-0); font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 12px; outline: none; transition: border-color 0.15s; }
-.modal-form-input::placeholder { color: var(--text-2); }
-.modal-form-input:focus { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-dim); }
-.modal-form-input:disabled { opacity: 0.5; cursor: not-allowed; }
-.modal-label { display: block; font-size: 11.5px; color: var(--text-1); font-weight: 500; margin-bottom: 5px; }
-
-.btn-ghost { background: var(--bg); color: var(--text-1); border: 1px solid var(--border); border-radius: 7px; padding: 8px 16px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
-.btn-ghost:hover { border-color: var(--accent-line); color: var(--text-0); }
-.btn-primary-modal { background: var(--accent); color: #fff; border: none; border-radius: 7px; padding: 8px 18px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: filter 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-.btn-primary-modal:hover { filter: brightness(1.1); }
-.btn-primary-modal:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-danger-modal { background: var(--bad); color: #fff; border: none; border-radius: 7px; padding: 8px 18px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: filter 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-.btn-danger-modal:hover { filter: brightness(1.1); }
-.btn-warn-modal { background: var(--warn); color: #1a0e00; border: none; border-radius: 7px; padding: 8px 18px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: filter 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-
-/* Delete modal */
-.delete-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--bad-dim); border: 1px solid rgba(239,68,68,0.3); display: flex; align-items: center; justify-content: center; color: var(--bad); margin: 0 auto 16px; }
-.warn-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--warn-dim); border: 1px solid rgba(245,158,11,0.3); display: flex; align-items: center; justify-content: center; color: var(--warn); margin: 0 auto 16px; }
-.delete-modal-body { text-align: center; padding: 20px 20px 16px; }
-.delete-modal-body h3 { font-size: 15px; font-weight: 700; color: var(--text-0); margin-bottom: 6px; }
-.delete-modal-body p { font-size: 13px; color: var(--text-1); line-height: 1.6; }
-.highlight { color: var(--text-0); font-weight: 600; }
-
-/* Banners */
-.banner { border-radius: 8px; padding: 12px 16px; font-size: 13px; font-weight: 500; margin-bottom: 16px; display: none; }
-.banner-error { background: var(--bad-dim); border: 1px solid rgba(239,68,68,0.3); color: var(--bad); }
-.banner-success { background: var(--ok-dim); border: 1px solid rgba(34,197,94,0.3); color: var(--ok); }
-
-/* Training stats */
-.breakdown-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 16px; }
-.breakdown-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
-.breakdown-label { font-size: 10px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.8px; font-family: 'JetBrains Mono', monospace; margin-bottom: 6px; }
-.breakdown-value { font-size: 22px; font-weight: 800; color: var(--warn); font-variant-numeric: tabular-nums; }
-.breakdown-sub { font-size: 11px; color: var(--text-2); margin-top: 3px; }
-
-/* Yubikey */
-.ybk-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
-.ybk-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
-.ybk-label { font-size: 10px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.8px; font-family: 'JetBrains Mono', monospace; margin-bottom: 6px; }
-.ybk-value { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.date-btns { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.date-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text-1); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; padding: 5px 12px; cursor: pointer; transition: all 0.15s; }
-.date-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-dim); }
-.date-btn.active { background: var(--purple); border-color: var(--purple); color: #fff; }
-.ybk-att { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; display: inline-block; }
-.ybk-p   { background: var(--ok-dim); color: var(--ok); }
-.ybk-0   { background: var(--bad-dim); color: var(--bad); }
-.ybk-t   { background: var(--warn-dim); color: var(--warn); }
-
-/* Section heading */
-.section-heading { font-size: 12px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-
-/* Sheets */
-.sheets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
-.sheet-item { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; text-decoration: none; transition: border-color 0.15s, transform 0.15s; }
-.sheet-item:hover { border-color: var(--accent-line); transform: translateY(-1px); }
-.sheet-ico { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.sheet-ico.sheet { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-line); }
-.sheet-ico.form { background: var(--ok-dim); color: var(--ok); border: 1px solid rgba(34,197,94,0.3); }
-.sheet-info { flex: 1; min-width: 0; }
-.sheet-name { font-size: 13px; font-weight: 600; color: var(--text-0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sheet-type { font-size: 10px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px; font-family: 'JetBrains Mono', monospace; }
-.sheet-arrow { color: var(--text-2); transition: color 0.15s, transform 0.15s; flex-shrink: 0; }
-.sheet-item:hover .sheet-arrow { color: var(--accent); transform: translate(2px,-2px); }
-.sheets-cat { margin-bottom: 20px; }
-.sheets-cat-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.sheets-cat-title { font-size: 13px; font-weight: 700; color: var(--text-0); }
-.sheets-cat-count { font-size: 10.5px; color: var(--text-2); background: var(--bg); border: 1px solid var(--border); padding: 1px 8px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
-
-/* Source badge */
-.source-badge { font-size: 9.5px; color: var(--ok); background: var(--ok-dim); border: 1px solid rgba(34,197,94,0.25); padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px; }
-
-/* View title */
-.view-header { margin-bottom: 16px; }
-.view-title { font-size: 17px; font-weight: 700; color: var(--text-0); }
-.view-sub { font-size: 12.5px; color: var(--text-2); margin-top: 3px; }
-
-/* Responsive */
-@media (max-width: 900px) {
-  .sidebar { display: none; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .charts-row { grid-template-columns: 1fr; }
-}
+  @media (max-width: 640px) {
+    main { padding: 1.25rem; }
+    nav { padding: 0 1.25rem; }
+    .nav-brand-text .subtitle { display: none; }
+    .nav-user { display: none; }
+    .form-row { grid-template-columns: 1fr; }
+    .nav-tab span.tab-label-full { display: none; }
+  }
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div class="login-page" id="loginPage">
+<div class="login-container" id="loginSection">
   <div class="login-card">
-    <div class="login-logo">
-      <div class="login-mark">OT</div>
-      <div class="login-title">Operations Team</div>
-      <div class="login-sub">Sign in to your workspace</div>
+    <div class="login-mark">OT</div>
+    <div class="login-header">
+      <span class="eyebrow">Operations Team</span>
+      <h1>Sign in to continue</h1>
+      <p>Access restricted to authorized personnel</p>
     </div>
     <div class="login-error" id="loginError">Invalid email or password</div>
     <form id="loginForm" onsubmit="handleLogin(event)">
       <div class="form-group">
-        <label class="form-label">Email address</label>
-        <input type="email" id="loginEmail" class="form-input" placeholder="you@company.com" autocomplete="username" required>
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" class="form-control" placeholder="you@company.com" autocomplete="username" required>
       </div>
       <div class="form-group">
-        <label class="form-label">Password</label>
-        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" autocomplete="current-password" required>
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" autocomplete="current-password" required>
       </div>
-      <button type="submit" class="login-btn-submit" id="loginBtn">Sign in</button>
+      <button type="submit" class="login-btn" id="loginBtn">Sign in</button>
     </form>
+    <div class="login-note">AUTHENTICATED VIA SUPABASE AUTH · DATA FROM GOOGLE SHEETS</div>
   </div>
 </div>
 
-<!-- APP -->
-<div class="app" id="appPage" style="display:none">
-
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-mark">OT</div>
-      <div class="logo-text">
-        <div class="title">Operations</div>
-        <div class="sub">Workforce</div>
+<!-- DASHBOARD -->
+<div id="dashboardSection">
+  <nav>
+    <div class="nav-brand">
+      <div class="nav-mark">OT</div>
+      <div class="nav-brand-text">
+        <span class="title">Operations Team</span>
+        <span class="subtitle">WORKFORCE DASHBOARD</span>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <div class="nav-section-label">Main</div>
-        <button class="nav-item active" id="navEmployees" onclick="showView('employees')">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Employees
-        </button>
-        <button class="nav-item" id="navTraining" onclick="showView('training')">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          Training
-        </button>
-        <button class="nav-item" id="navYubikey" onclick="showView('yubikey')">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M12 12h.01"/><path d="M7 12h.01"/><path d="M17 12h.01"/></svg>
-          Yubikeys
-        </button>
-        <button class="nav-item" id="navSheets" onclick="showView('sheets')">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Sheets
-        </button>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-label">System</div>
-        <div style="padding:8px 10px;font-size:11.5px;color:var(--text-2)">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-            <svg width="12" height="12" fill="none" stroke="var(--ok)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-            Google Sheets connected
-          </div>
-          <div class="sync-indicator">
-            <span class="sync-dot" id="syncDot"></span>
-            <span id="syncText">Loading...</span>
-          </div>
-        </div>
-      </div>
-    </nav>
-    <div class="sidebar-user">
-      <div class="user-avatar" id="sidebarAvatar">?</div>
-      <div class="user-info">
-        <div class="user-name" id="sidebarEmail">—</div>
-        <div class="user-role">Operations Staff</div>
-      </div>
-      <div class="user-status"></div>
-    </div>
-  </aside>
-
-  <!-- Main -->
-  <div class="main">
-
-    <!-- Topbar -->
-    <header class="topbar">
-      <div>
-        <div class="topbar-title" id="topbarTitle">Employees</div>
-        <div class="topbar-sub" id="topbarSub">Workforce overview</div>
-      </div>
-      <div class="topbar-spacer"></div>
-      <span class="source-badge">GOOGLE SHEETS</span>
-      <button class="topbar-btn" onclick="loadData(true)" title="Refresh">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>
+    <div class="nav-tabs">
+      <button class="nav-tab active" id="tabEmployeesBtn" onclick="showView('employees')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <span class="tab-label-full">Employees</span>
       </button>
-      <div class="topbar-user-btn">
-        <div class="topbar-user-avatar" id="topbarAvatar">?</div>
-        <div>
-          <div class="topbar-user-name" id="topbarName">—</div>
-          <div class="topbar-user-role">Admin</div>
+      <button class="nav-tab" id="tabTrainingBtn" onclick="showView('training')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span class="tab-label-full">Training</span>
+      </button>
+      <button class="nav-tab" id="tabYubikeyBtn" onclick="showView('yubikey')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M12 12h.01"/><path d="M7 12h.01"/><path d="M17 12h.01"/></svg>
+        <span class="tab-label-full">Yubikeys</span>
+      </button>
+      <button class="nav-tab" id="tabSheetsBtn" onclick="showView('sheets')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span class="tab-label-full">Sheets</span>
+      </button>
+    </div>
+    <div class="nav-left">
+      <span class="nav-user mono" id="navUserEmail"></span>
+      <span class="source-badge">GOOGLE SHEETS</span>
+      <div class="nav-info mono" id="lastSync"><span class="sync-dot" id="syncDot"></span><span id="syncText">Loading...</span></div>
+      <button class="btn-danger" onclick="handleLogout()">Sign out</button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Employees View -->
+    <div id="employeesView">
+      <div class="error-banner" id="errorBanner"></div>
+      <div class="success-banner" id="successBanner"></div>
+      <div class="stats">
+        <div class="stat" data-tone="neutral">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div></div>
+          <div class="stat-label">Total employees</div>
+          <div class="stat-value" id="statTotal">—</div>
+        </div>
+        <div class="stat" data-tone="ok">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div>
+          <div class="stat-label">Working</div>
+          <div class="stat-value accent-ok" id="statActive">—</div>
+        </div>
+        <div class="stat" data-tone="bad">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div></div>
+          <div class="stat-label">Resigned</div>
+          <div class="stat-value accent-bad" id="statInactive">—</div>
+        </div>
+        <div class="stat" data-tone="signal">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div></div>
+          <div class="stat-label">Projects</div>
+          <div class="stat-value accent-signal" id="statProjects">—</div>
+        </div>
+        <div class="stat" data-tone="neutral">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div></div>
+          <div class="stat-label">Locations</div>
+          <div class="stat-value" id="statLocations">—</div>
         </div>
       </div>
-      <button class="btn-ghost" onclick="handleLogout()" style="font-size:12px;padding:6px 12px">Sign out</button>
-    </header>
-
-    <!-- Content -->
-    <div class="content">
-
-      <!-- ── EMPLOYEES VIEW ── -->
-      <div id="viewEmployees">
-        <div class="banner banner-error" id="errorBanner"></div>
-        <div class="banner banner-success" id="successBanner"></div>
-
-        <!-- Stats -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-top">
-              <div><div class="stat-label">Total</div><div class="stat-value" id="statTotal" style="color:var(--text-0)">—</div></div>
-              <div class="stat-icon" style="background:rgba(59,130,246,0.1)"><svg width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-            </div>
-            <div class="stat-sub">All employees</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-top">
-              <div><div class="stat-label">Working</div><div class="stat-value" id="statActive" style="color:var(--ok)">—</div></div>
-              <div class="stat-icon" style="background:var(--ok-dim)"><svg width="16" height="16" fill="none" stroke="var(--ok)" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-            </div>
-            <div class="stat-sub">Active now</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-top">
-              <div><div class="stat-label">Resigned</div><div class="stat-value" id="statInactive" style="color:var(--bad)">—</div></div>
-              <div class="stat-icon" style="background:var(--bad-dim)"><svg width="16" height="16" fill="none" stroke="var(--bad)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
-            </div>
-            <div class="stat-sub">This year</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-top">
-              <div><div class="stat-label">Projects</div><div class="stat-value" id="statProjects" style="color:var(--purple)">—</div></div>
-              <div class="stat-icon" style="background:var(--purple-dim)"><svg width="16" height="16" fill="none" stroke="var(--purple)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-            </div>
-            <div class="stat-sub">Active projects</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-top">
-              <div><div class="stat-label">Locations</div><div class="stat-value" id="statLocations" style="color:var(--warn)">—</div></div>
-              <div class="stat-icon" style="background:var(--warn-dim)"><svg width="16" height="16" fill="none" stroke="var(--warn)" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-            </div>
-            <div class="stat-sub">Active locations</div>
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="searchInput" placeholder="Search by name or national ID..." oninput="applyFilters()">
+        </div>
+        <select id="shiftFilter" onchange="applyFilters()"><option value="">All shifts</option></select>
+        <select id="projectFilter" onchange="applyFilters()"><option value="">All projects</option></select>
+        <select id="statusFilter" onchange="applyFilters()">
+          <option value="">All statuses</option>
+          <option value="working">Working</option>
+          <option value="resigned">Resigned</option>
+        </select>
+        <button class="btn-ghost" onclick="loadData(true)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>
+          Refresh
+        </button>
+        <button class="btn-primary" onclick="openAddModal()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add employee
+        </button>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <span class="table-title">Employee records</span>
+          <span class="table-count" id="rowCount">—</span>
+        </div>
+        <div class="table-wrap">
+          <div class="loading" id="loadingState"><div class="spinner"></div>Loading from Google Sheets...</div>
+          <table id="empTable" style="display:none">
+            <thead><tr>
+              <th data-col="National ID" onclick="sortBy('National ID')">National ID ↕</th>
+              <th data-col="Name" onclick="sortBy('Name')">Name ↕</th>
+              <th data-col="Shift" onclick="sortBy('Shift')">Shift ↕</th>
+              <th data-col="Project" onclick="sortBy('Project')">Project ↕</th>
+              <th data-col="Role" onclick="sortBy('Role')">Role ↕</th>
+              <th data-col="Status" onclick="sortBy('Status')">Status ↕</th>
+              <th data-col="Location" onclick="sortBy('Location')">Location ↕</th>
+              <th class="no-sort"></th>
+            </tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+          <div class="empty" id="emptyState" style="display:none">
+            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <div>No matching records</div>
           </div>
         </div>
+        <div class="table-footer"><span id="footerInfo">—</span><span id="footerTime">—</span></div>
+      </div>
+    </div>
 
-        <!-- Table -->
-        <div class="table-card">
-          <div class="table-toolbar">
-            <div>
-              <div class="table-toolbar-title">Employee Records</div>
-            </div>
-            <span class="table-count-badge" id="rowCount">—</span>
-            <div class="toolbar-spacer"></div>
-            <div class="search-box">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text-2);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <input type="text" id="searchInput" placeholder="Search by name or ID..." oninput="applyFilters()">
-            </div>
-            <select class="filter-select" id="shiftFilter" onchange="applyFilters()"><option value="">All Shifts</option></select>
-            <select class="filter-select" id="projectFilter" onchange="applyFilters()"><option value="">All Projects</option></select>
-            <select class="filter-select" id="statusFilter" onchange="applyFilters()">
-              <option value="">All Statuses</option>
-              <option value="working">Working</option>
-              <option value="resigned">Resigned</option>
-            </select>
-            <button class="btn-add" onclick="openAddModal()">
-              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add Employee
-            </button>
-          </div>
-          <div class="table-scroll">
-            <div class="loading" id="loadingState"><div class="spinner"></div>Loading from Google Sheets...</div>
-            <table id="empTable" style="display:none">
-              <thead><tr>
-                <th data-col="National ID" onclick="sortBy('National ID')">National ID</th>
-                <th data-col="Name" onclick="sortBy('Name')">Name</th>
-                <th data-col="Shift" onclick="sortBy('Shift')">Shift</th>
-                <th data-col="Project" onclick="sortBy('Project')">Project</th>
-                <th data-col="Role" onclick="sortBy('Role')">Role</th>
-                <th data-col="Status" onclick="sortBy('Status')">Status</th>
-                <th data-col="Location" onclick="sortBy('Location')">Location</th>
-                <th class="no-sort">Actions</th>
-              </tr></thead>
-              <tbody id="tableBody"></tbody>
-            </table>
-            <div class="empty" id="emptyState" style="display:none">
-              <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:8px;color:var(--text-2)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <div>No matching records found</div>
-            </div>
-          </div>
-          <div class="table-footer">
-            <span class="footer-info" id="footerInfo">—</span>
-            <span class="footer-info" id="footerTime">—</span>
-          </div>
+    <!-- Training View -->
+    <div id="trainingView" style="display:none">
+      <div class="error-banner" id="trainingErrorBanner"></div>
+      <div class="success-banner" id="trainingSuccessBanner"></div>
+      <div class="stats" style="margin-bottom:1.5rem">
+        <div class="stat" data-tone="warn">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div></div>
+          <div class="stat-label">Total trainees</div>
+          <div class="stat-value accent-warn" id="trnStatTotal">—</div>
+        </div>
+        <div class="stat" data-tone="signal">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div></div>
+          <div class="stat-label">Projects</div>
+          <div class="stat-value accent-signal" id="trnStatProjects">—</div>
+        </div>
+        <div class="stat" data-tone="neutral">
+          <div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div></div>
+          <div class="stat-label">Locations</div>
+          <div class="stat-value" id="trnStatLocations">—</div>
         </div>
       </div>
-
-      <!-- ── TRAINING VIEW ── -->
-      <div id="viewTraining" style="display:none">
-        <div class="banner banner-error" id="trainingErrorBanner"></div>
-        <div class="banner banner-success" id="trainingSuccessBanner"></div>
-        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
-          <div class="stat-card">
-            <div class="stat-top">
-              <div><div class="stat-label">Trainees</div><div class="stat-value accent-warn" id="trnStatTotal" style="color:var(--warn)">—</div></div>
-              <div class="stat-icon" style="background:var(--warn-dim)"><svg width="16" height="16" fill="none" stroke="var(--warn)" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-top">
-              <div><div class="stat-label">Projects</div><div class="stat-value" id="trnStatProjects" style="color:var(--accent)">—</div></div>
-              <div class="stat-icon" style="background:var(--accent-dim)"><svg width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-top">
-              <div><div class="stat-label">Locations</div><div class="stat-value" id="trnStatLocations" style="color:var(--text-0)">—</div></div>
-              <div class="stat-icon" style="background:rgba(255,255,255,0.05)"><svg width="16" height="16" fill="none" stroke="var(--text-1)" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-            </div>
+      <div class="section-heading">
+        Project breakdown <span class="badge badge-training">Training</span>
+      </div>
+      <div class="breakdown-grid" id="trnBreakdown"></div>
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="trnSearchInput" placeholder="Search by name or national ID..." oninput="renderTrainingTable()">
+        </div>
+        <select id="trnProjectFilter" onchange="renderTrainingTable()"><option value="">All projects</option></select>
+        <select id="trnShiftFilter" onchange="renderTrainingTable()"><option value="">All shifts</option></select>
+        <button class="btn-ghost" onclick="loadData(true)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>
+          Refresh
+        </button>
+        <button class="btn-primary" style="background:var(--warn);color:#1a0e00" onclick="openAddTraineeModal()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add trainee
+        </button>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <span class="table-title">Training records</span>
+          <span class="table-count" id="trnRowCount">—</span>
+        </div>
+        <div class="table-wrap">
+          <div class="loading" id="trnLoadingState"><div class="spinner"></div>Loading trainees...</div>
+          <table id="trnTable" style="display:none">
+            <thead><tr>
+              <th>National ID</th>
+              <th>Name</th>
+              <th>Shift</th>
+              <th>Project</th>
+              <th>Role</th>
+              <th>Location</th>
+              <th class="no-sort"></th>
+            </tr></thead>
+            <tbody id="trnTableBody"></tbody>
+          </table>
+          <div class="empty" id="trnEmptyState" style="display:none">
+            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <div>No trainees found</div>
           </div>
         </div>
-        <div class="section-heading">Project Breakdown</div>
-        <div class="breakdown-grid" id="trnBreakdown"></div>
-        <div class="table-card">
-          <div class="table-toolbar">
-            <div class="table-toolbar-title">Training Records</div>
-            <span class="table-count-badge" id="trnRowCount">—</span>
-            <div class="toolbar-spacer"></div>
-            <div class="search-box">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text-2);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <input type="text" id="trnSearchInput" placeholder="Search trainees..." oninput="renderTrainingTable()">
-            </div>
-            <select class="filter-select" id="trnProjectFilter" onchange="renderTrainingTable()"><option value="">All Projects</option></select>
-            <select class="filter-select" id="trnShiftFilter" onchange="renderTrainingTable()"><option value="">All Shifts</option></select>
-            <button class="btn-add" style="background:var(--warn);color:#1a0e00" onclick="openAddTraineeModal()">
-              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add Trainee
-            </button>
-          </div>
-          <div class="table-scroll">
-            <div class="loading" id="trnLoadingState"><div class="spinner"></div>Loading trainees...</div>
-            <table id="trnTable" style="display:none">
-              <thead><tr>
-                <th>National ID</th><th>Name</th><th>Shift</th><th>Project</th><th>Role</th><th>Location</th><th class="no-sort">Actions</th>
-              </tr></thead>
-              <tbody id="trnTableBody"></tbody>
-            </table>
-            <div class="empty" id="trnEmptyState" style="display:none"><div>No trainees found</div></div>
-          </div>
-          <div class="table-footer"><span class="footer-info" id="trnFooterInfo">—</span><span class="footer-info" id="trnFooterTime">—</span></div>
+        <div class="table-footer"><span id="trnFooterInfo">—</span><span id="trnFooterTime">—</span></div>
+      </div>
+    </div>
+
+    <!-- Yubikey View -->
+    <div id="yubikeyView" style="display:none">
+      <div class="error-banner" id="ybkErrorBanner"></div>
+      <div class="ybk-summary-grid" id="ybkSummaryGrid">
+        <div class="ybk-summary-card" style="--sc-tint:var(--purple-dim)">
+          <div class="ybk-summary-label">Total Yubikeys</div>
+          <div class="ybk-summary-value" id="ybkTotal" style="color:var(--purple)">—</div>
+        </div>
+        <div class="ybk-summary-card" style="--sc-tint:var(--ok-dim)">
+          <div class="ybk-summary-label">Present</div>
+          <div class="ybk-summary-value" id="ybkPresent" style="color:var(--ok)">—</div>
+        </div>
+        <div class="ybk-summary-card" style="--sc-tint:var(--bad-dim)">
+          <div class="ybk-summary-label">Absent</div>
+          <div class="ybk-summary-value" id="ybkAbsent" style="color:var(--bad)">—</div>
+        </div>
+        <div class="ybk-summary-card" style="--sc-tint:var(--warn-dim)">
+          <div class="ybk-summary-label">Training</div>
+          <div class="ybk-summary-value" id="ybkTraining" style="color:var(--warn)">—</div>
         </div>
       </div>
-
-      <!-- ── YUBIKEY VIEW ── -->
-      <div id="viewYubikey" style="display:none">
-        <div class="banner banner-error" id="ybkErrorBanner"></div>
-        <div class="ybk-summary">
-          <div class="ybk-card"><div class="ybk-label">Total</div><div class="ybk-value" id="ybkTotal" style="color:var(--purple)">—</div></div>
-          <div class="ybk-card"><div class="ybk-label">Present</div><div class="ybk-value" id="ybkPresent" style="color:var(--ok)">—</div></div>
-          <div class="ybk-card"><div class="ybk-label">Absent</div><div class="ybk-value" id="ybkAbsent" style="color:var(--bad)">—</div></div>
-          <div class="ybk-card"><div class="ybk-label">Training</div><div class="ybk-value" id="ybkTraining" style="color:var(--warn)">—</div></div>
+      <div class="toolbar" style="margin-bottom:1.5rem">
+        <span class="ybk-date-label">Select date:</span>
+        <div class="ybk-date-selector" id="ybkDateSelector">
+          <span style="font-size:13px;color:var(--text-2)">Loading dates...</span>
         </div>
-        <div class="table-card" style="margin-bottom:16px">
-          <div class="table-toolbar">
-            <span style="font-size:12px;color:var(--text-2);font-family:'JetBrains Mono',monospace;font-weight:600;text-transform:uppercase;letter-spacing:1px">Select Date:</span>
-            <div class="date-btns" id="ybkDateSelector"><span style="font-size:12px;color:var(--text-2)">Loading...</span></div>
-            <div class="toolbar-spacer"></div>
-            <button class="btn-icon" onclick="loadYubikeyData(true)" title="Refresh">
-              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>
-            </button>
-          </div>
-        </div>
-        <div class="table-card">
-          <div class="table-toolbar">
-            <div class="table-toolbar-title">Yubikey Records</div>
-            <span class="table-count-badge" id="ybkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:rgba(139,92,246,0.3)">—</span>
-            <div class="toolbar-spacer"></div>
-            <div class="search-box">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text-2);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <input type="text" id="ybkSearch" placeholder="Search by name..." oninput="renderYubikeyTable()">
-            </div>
-            <select class="filter-select" id="ybkStatusFilter" onchange="renderYubikeyTable()">
-              <option value="">All Statuses</option>
-              <option value="present">Present</option>
-              <option value="absent">Absent</option>
-              <option value="training">Training</option>
-            </select>
-          </div>
-          <div class="table-scroll">
-            <div class="loading" id="ybkLoadingState"><div class="spinner"></div>Loading Yubikey data...</div>
-            <table id="ybkTable" style="display:none;min-width:600px">
-              <thead><tr>
-                <th>Name</th><th>Device No.</th><th>Location</th><th>Yubikey</th><th id="ybkDateColHeader" style="text-align:center">Date</th><th class="no-sort">Status</th>
-              </tr></thead>
-              <tbody id="ybkTableBody"></tbody>
-            </table>
-            <div class="empty" id="ybkEmptyState" style="display:none"><div>No records found</div></div>
-          </div>
-          <div class="table-footer"><span class="footer-info" id="ybkFooterInfo">—</span><span class="footer-info" id="ybkFooterTime">—</span></div>
+        <div style="margin-left:auto">
+          <button class="btn-ghost" onclick="loadYubikeyData(true)">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>
+            Refresh
+          </button>
         </div>
       </div>
-
-      <!-- ── SHEETS VIEW ── -->
-      <div id="viewSheets" style="display:none">
-        <div class="view-header">
-          <div class="view-title">Sheets & Forms</div>
-          <div class="view-sub">Quick access to all attendance sheets and forms</div>
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="ybkSearch" placeholder="Search by name..." oninput="renderYubikeyTable()">
         </div>
-        <div class="search-box" style="max-width:300px;margin-bottom:20px">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text-2);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <select id="ybkStatusFilter" onchange="renderYubikeyTable()">
+          <option value="">All statuses</option>
+          <option value="present">Present (P / TP)</option>
+          <option value="absent">Absent (0)</option>
+          <option value="training">Training (T)</option>
+        </select>
+      </div>
+      <div class="ybk-history-card">
+        <div class="ybk-history-header">
+          <span class="ybk-history-title">Yubikey records</span>
+          <span class="table-count" id="ybkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span>
+        </div>
+        <div class="ybk-scroll">
+          <div class="loading" id="ybkLoadingState"><div class="spinner"></div>Loading Yubikey data...</div>
+          <table class="ybk-history-table" id="ybkTable" style="display:none;min-width:600px">
+            <thead><tr>
+              <th>Name</th>
+              <th>Device No.</th>
+              <th>Location</th>
+              <th>Yubikey</th>
+              <th class="ybk-date-col" id="ybkDateColHeader">Date</th>
+              <th class="no-sort">Status</th>
+            </tr></thead>
+            <tbody id="ybkTableBody"></tbody>
+          </table>
+          <div class="empty" id="ybkEmptyState" style="display:none">
+            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <div>No records found</div>
+          </div>
+        </div>
+        <div class="table-footer"><span id="ybkFooterInfo">—</span><span id="ybkFooterTime">—</span></div>
+      </div>
+    </div>
+
+    <!-- Sheets View -->
+    <div id="sheetsView" style="display:none">
+      <div class="sheets-toolbar">
+        <div class="search-wrap">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <input type="text" id="sheetsSearchInput" placeholder="Search sheets and forms..." oninput="renderSheets()">
         </div>
-        <div id="sheetsContainer"></div>
       </div>
+      <div id="sheetsContainer"></div>
+    </div>
+  </main>
+</div>
 
-    </div><!-- /content -->
-  </div><!-- /main -->
-</div><!-- /app -->
-
-<!-- ─── MODALS ─── -->
-
-<!-- Add Employee -->
+<!-- ADD EMPLOYEE MODAL -->
 <div class="modal-overlay" id="addModalOverlay">
   <div class="modal-card">
     <div class="modal-header">
-      <span class="modal-title">Add Employee</span>
-      <button class="modal-close" onclick="closeAddModal()">✕</button>
+      <span class="modal-title">Add employee</span>
+      <button class="modal-close" onclick="closeAddModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <form id="addEmployeeForm" onsubmit="handleAddEmployee(event)">
       <div class="modal-body">
         <div class="form-error" id="addFormError"></div>
-        <div class="form-group"><label class="modal-label">Full Name</label><input type="text" id="addName" class="modal-form-input" placeholder="e.g. Ahmed Mohamed Ibrahim" required></div>
-        <div class="form-group"><label class="modal-label">National ID</label><input type="text" id="addNationalId" class="modal-form-input" required></div>
+        <div class="form-group"><label>Full name</label><input type="text" id="addName" class="form-control" placeholder="e.g. Youssef Magdy Ibrahim" required></div>
+        <div class="form-group"><label>National ID</label><input type="text" id="addNationalId" class="form-control" required></div>
         <div class="form-row">
-          <div class="form-group"><label class="modal-label">Shift</label><select id="addShift" class="modal-form-input" onchange="handleSelectOther(this,'addShiftOther')" required></select><input type="text" id="addShiftOther" class="modal-form-input" placeholder="Type new shift" style="display:none;margin-top:6px"></div>
-          <div class="form-group"><label class="modal-label">Role</label><select id="addRole" class="modal-form-input" onchange="handleSelectOther(this,'addRoleOther')" required></select><input type="text" id="addRoleOther" class="modal-form-input" placeholder="Type new role" style="display:none;margin-top:6px"></div>
+          <div class="form-group"><label>Shift</label><select id="addShift" class="form-control" onchange="handleSelectOther(this,'addShiftOther')" required></select><input type="text" id="addShiftOther" class="form-control" placeholder="Type new shift" style="display:none;margin-top:8px"></div>
+          <div class="form-group"><label>Role</label><select id="addRole" class="form-control" onchange="handleSelectOther(this,'addRoleOther')" required></select><input type="text" id="addRoleOther" class="form-control" placeholder="Type new role" style="display:none;margin-top:8px"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label class="modal-label">Project</label><select id="addProject" class="modal-form-input" onchange="handleSelectOther(this,'addProjectOther')" required></select><input type="text" id="addProjectOther" class="modal-form-input" placeholder="Type new project" style="display:none;margin-top:6px"></div>
-          <div class="form-group"><label class="modal-label">Status</label><select id="addStatus" class="modal-form-input"><option value="working">Working</option><option value="resigned">Resigned</option></select></div>
+          <div class="form-group"><label>Project</label><select id="addProject" class="form-control" onchange="handleSelectOther(this,'addProjectOther')" required></select><input type="text" id="addProjectOther" class="form-control" placeholder="Type new project" style="display:none;margin-top:8px"></div>
+          <div class="form-group"><label>Status</label><select id="addStatus" class="form-control"><option value="working">Working</option><option value="resigned">Resigned</option></select></div>
         </div>
-        <div class="form-group"><label class="modal-label">Location</label><select id="addLocation" class="modal-form-input" onchange="handleSelectOther(this,'addLocationOther')" required></select><input type="text" id="addLocationOther" class="modal-form-input" placeholder="Type new location" style="display:none;margin-top:6px"></div>
+        <div class="form-group"><label>Location</label><select id="addLocation" class="form-control" onchange="handleSelectOther(this,'addLocationOther')" required></select><input type="text" id="addLocationOther" class="form-control" placeholder="Type new location" style="display:none;margin-top:8px"></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-ghost" onclick="closeAddModal()">Cancel</button>
-        <button type="submit" class="btn-primary-modal" id="addSubmitBtn">Add Employee</button>
+        <button type="submit" class="btn-primary" id="addSubmitBtn">Add employee</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Edit Employee -->
+<!-- EDIT EMPLOYEE MODAL -->
 <div class="modal-overlay" id="editModalOverlay">
   <div class="modal-card">
     <div class="modal-header">
-      <span class="modal-title">Edit Employee</span>
-      <button class="modal-close" onclick="closeEditModal()">✕</button>
+      <span class="modal-title">Edit employee</span>
+      <button class="modal-close" onclick="closeEditModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <form id="editEmployeeForm" onsubmit="handleEditEmployee(event)">
       <div class="modal-body">
         <div class="form-error" id="editFormError"></div>
-        <div class="form-group"><label class="modal-label">National ID <span style="color:var(--text-2);font-size:10px">(read-only)</span></label><input type="text" id="editNationalId" class="modal-form-input" disabled></div>
-        <div class="form-group"><label class="modal-label">Full Name</label><input type="text" id="editName" class="modal-form-input" required></div>
+        <div class="form-group"><label>National ID <span style="color:var(--text-2);font-size:11px">(read-only)</span></label><input type="text" id="editNationalId" class="form-control" readonly style="opacity:0.5;cursor:not-allowed"></div>
+        <div class="form-group"><label>Full name</label><input type="text" id="editName" class="form-control" required></div>
         <div class="form-row">
-          <div class="form-group"><label class="modal-label">Shift</label><select id="editShift" class="modal-form-input" onchange="handleSelectOther(this,'editShiftOther')" required></select><input type="text" id="editShiftOther" class="modal-form-input" placeholder="Type new shift" style="display:none;margin-top:6px"></div>
-          <div class="form-group"><label class="modal-label">Role</label><select id="editRole" class="modal-form-input" onchange="handleSelectOther(this,'editRoleOther')" required></select><input type="text" id="editRoleOther" class="modal-form-input" placeholder="Type new role" style="display:none;margin-top:6px"></div>
+          <div class="form-group"><label>Shift</label><select id="editShift" class="form-control" onchange="handleSelectOther(this,'editShiftOther')" required></select><input type="text" id="editShiftOther" class="form-control" placeholder="Type new shift" style="display:none;margin-top:8px"></div>
+          <div class="form-group"><label>Role</label><select id="editRole" class="form-control" onchange="handleSelectOther(this,'editRoleOther')" required></select><input type="text" id="editRoleOther" class="form-control" placeholder="Type new role" style="display:none;margin-top:8px"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label class="modal-label">Project</label><select id="editProject" class="modal-form-input" onchange="handleSelectOther(this,'editProjectOther')" required></select><input type="text" id="editProjectOther" class="modal-form-input" placeholder="Type new project" style="display:none;margin-top:6px"></div>
-          <div class="form-group"><label class="modal-label">Status</label><select id="editStatus" class="modal-form-input"><option value="working">Working</option><option value="resigned">Resigned</option></select></div>
+          <div class="form-group"><label>Project</label><select id="editProject" class="form-control" onchange="handleSelectOther(this,'editProjectOther')" required></select><input type="text" id="editProjectOther" class="form-control" placeholder="Type new project" style="display:none;margin-top:8px"></div>
+          <div class="form-group"><label>Status</label><select id="editStatus" class="form-control"><option value="working">Working</option><option value="resigned">Resigned</option></select></div>
         </div>
-        <div class="form-group"><label class="modal-label">Location</label><select id="editLocation" class="modal-form-input" onchange="handleSelectOther(this,'editLocationOther')" required></select><input type="text" id="editLocationOther" class="modal-form-input" placeholder="Type new location" style="display:none;margin-top:6px"></div>
+        <div class="form-group"><label>Location</label><select id="editLocation" class="form-control" onchange="handleSelectOther(this,'editLocationOther')" required></select><input type="text" id="editLocationOther" class="form-control" placeholder="Type new location" style="display:none;margin-top:8px"></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-ghost" onclick="closeEditModal()">Cancel</button>
-        <button type="submit" class="btn-primary-modal" id="editSubmitBtn">Save Changes</button>
+        <button type="submit" class="btn-primary" id="editSubmitBtn">Save changes</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Delete Employee -->
+<!-- DELETE EMPLOYEE MODAL -->
 <div class="modal-overlay" id="deleteModalOverlay">
-  <div class="modal-card" style="max-width:380px">
-    <div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete Employee</span><button class="modal-close" onclick="closeDeleteModal()">✕</button></div>
+  <div class="modal-card delete-modal-card">
+    <div class="modal-header">
+      <span class="modal-title" style="color:var(--bad)">Delete employee</span>
+      <button class="modal-close" onclick="closeDeleteModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
     <div class="delete-modal-body">
-      <div class="delete-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div>
+      <div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div>
       <h3>Are you sure?</h3>
-      <p>Permanently delete <span class="highlight" id="deleteEmpName">this employee</span>? This action cannot be undone.</p>
+      <p>You're about to permanently delete <span class="delete-name-highlight" id="deleteEmpName">this employee</span>. This cannot be undone.</p>
     </div>
     <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeDeleteModal()">Cancel</button>
-      <button class="btn-danger-modal" id="deleteConfirmBtn" onclick="confirmDelete()">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete
+      <button type="button" class="btn-ghost" onclick="closeDeleteModal()">Cancel</button>
+      <button type="button" class="btn-confirm-delete" id="deleteConfirmBtn" onclick="confirmDelete()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        Delete
       </button>
     </div>
   </div>
 </div>
 
-<!-- Add Trainee -->
+<!-- ADD TRAINEE MODAL -->
 <div class="modal-overlay" id="addTraineeModalOverlay">
   <div class="modal-card">
-    <div class="modal-header"><span class="modal-title">Add Trainee</span><button class="modal-close" onclick="closeAddTraineeModal()">✕</button></div>
+    <div class="modal-header">
+      <span class="modal-title">Add trainee</span>
+      <button class="modal-close" onclick="closeAddTraineeModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
     <form id="addTraineeForm" onsubmit="handleAddTrainee(event)">
       <div class="modal-body">
         <div class="form-error" id="addTraineeFormError"></div>
-        <div class="form-group"><label class="modal-label">Full Name</label><input type="text" id="trnAddName" class="modal-form-input" placeholder="e.g. Ahmed Mohamed" required></div>
-        <div class="form-group"><label class="modal-label">National ID</label><input type="text" id="trnAddNationalId" class="modal-form-input" required></div>
+        <div class="form-group"><label>Full name</label><input type="text" id="trnAddName" class="form-control" placeholder="e.g. Ahmed Mohamed" required></div>
+        <div class="form-group"><label>National ID</label><input type="text" id="trnAddNationalId" class="form-control" required></div>
         <div class="form-row">
-          <div class="form-group"><label class="modal-label">Shift</label><select id="trnAddShift" class="modal-form-input" onchange="handleSelectOther(this,'trnAddShiftOther')" required></select><input type="text" id="trnAddShiftOther" class="modal-form-input" placeholder="Type new shift" style="display:none;margin-top:6px"></div>
-          <div class="form-group"><label class="modal-label">Role</label><select id="trnAddRole" class="modal-form-input" onchange="handleSelectOther(this,'trnAddRoleOther')" required></select><input type="text" id="trnAddRoleOther" class="modal-form-input" placeholder="Type new role" style="display:none;margin-top:6px"></div>
+          <div class="form-group"><label>Shift</label><select id="trnAddShift" class="form-control" onchange="handleSelectOther(this,'trnAddShiftOther')" required></select><input type="text" id="trnAddShiftOther" class="form-control" placeholder="Type new shift" style="display:none;margin-top:8px"></div>
+          <div class="form-group"><label>Role</label><select id="trnAddRole" class="form-control" onchange="handleSelectOther(this,'trnAddRoleOther')" required></select><input type="text" id="trnAddRoleOther" class="form-control" placeholder="Type new role" style="display:none;margin-top:8px"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label class="modal-label">Project</label><select id="trnAddProject" class="modal-form-input" onchange="handleSelectOther(this,'trnAddProjectOther')" required></select><input type="text" id="trnAddProjectOther" class="modal-form-input" placeholder="Type new project" style="display:none;margin-top:6px"></div>
-          <div class="form-group"><label class="modal-label">Location</label><select id="trnAddLocation" class="modal-form-input" onchange="handleSelectOther(this,'trnAddLocationOther')" required></select><input type="text" id="trnAddLocationOther" class="modal-form-input" placeholder="Type new location" style="display:none;margin-top:6px"></div>
+          <div class="form-group"><label>Project</label><select id="trnAddProject" class="form-control" onchange="handleSelectOther(this,'trnAddProjectOther')" required></select><input type="text" id="trnAddProjectOther" class="form-control" placeholder="Type new project" style="display:none;margin-top:8px"></div>
+          <div class="form-group"><label>Location</label><select id="trnAddLocation" class="form-control" onchange="handleSelectOther(this,'trnAddLocationOther')" required></select><input type="text" id="trnAddLocationOther" class="form-control" placeholder="Type new location" style="display:none;margin-top:8px"></div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-ghost" onclick="closeAddTraineeModal()">Cancel</button>
-        <button type="submit" class="btn-warn-modal" id="addTraineeSubmitBtn">Add Trainee</button>
+        <button type="submit" class="btn-confirm-move" id="addTraineeSubmitBtn">Add trainee</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Edit Trainee -->
+<!-- EDIT TRAINEE MODAL -->
 <div class="modal-overlay" id="editTraineeModalOverlay">
   <div class="modal-card">
-    <div class="modal-header"><span class="modal-title">Edit Trainee</span><button class="modal-close" onclick="closeEditTraineeModal()">✕</button></div>
+    <div class="modal-header">
+      <span class="modal-title">Edit trainee</span>
+      <button class="modal-close" onclick="closeEditTraineeModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
     <form id="editTraineeForm" onsubmit="handleEditTrainee(event)">
       <div class="modal-body">
         <div class="form-error" id="editTraineeFormError"></div>
-        <div class="form-group"><label class="modal-label">National ID <span style="color:var(--text-2);font-size:10px">(read-only)</span></label><input type="text" id="trnEditNationalId" class="modal-form-input" disabled></div>
-        <div class="form-group"><label class="modal-label">Full Name</label><input type="text" id="trnEditName" class="modal-form-input" required></div>
+        <div class="form-group"><label>National ID <span style="color:var(--text-2);font-size:11px">(read-only)</span></label><input type="text" id="trnEditNationalId" class="form-control" readonly style="opacity:0.5;cursor:not-allowed"></div>
+        <div class="form-group"><label>Full name</label><input type="text" id="trnEditName" class="form-control" required></div>
         <div class="form-row">
-          <div class="form-group"><label class="modal-label">Shift</label><select id="trnEditShift" class="modal-form-input" onchange="handleSelectOther(this,'trnEditShiftOther')" required></select><input type="text" id="trnEditShiftOther" class="modal-form-input" placeholder="Type new shift" style="display:none;margin-top:6px"></div>
-          <div class="form-group"><label class="modal-label">Role</label><select id="trnEditRole" class="modal-form-input" onchange="handleSelectOther(this,'trnEditRoleOther')" required></select><input type="text" id="trnEditRoleOther" class="modal-form-input" placeholder="Type new role" style="display:none;margin-top:6px"></div>
+          <div class="form-group"><label>Shift</label><select id="trnEditShift" class="form-control" onchange="handleSelectOther(this,'trnEditShiftOther')" required></select><input type="text" id="trnEditShiftOther" class="form-control" placeholder="Type new shift" style="display:none;margin-top:8px"></div>
+          <div class="form-group"><label>Role</label><select id="trnEditRole" class="form-control" onchange="handleSelectOther(this,'trnEditRoleOther')" required></select><input type="text" id="trnEditRoleOther" class="form-control" placeholder="Type new role" style="display:none;margin-top:8px"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label class="modal-label">Project</label><select id="trnEditProject" class="modal-form-input" onchange="handleSelectOther(this,'trnEditProjectOther')" required></select><input type="text" id="trnEditProjectOther" class="modal-form-input" placeholder="Type new project" style="display:none;margin-top:6px"></div>
-          <div class="form-group"><label class="modal-label">Location</label><select id="trnEditLocation" class="modal-form-input" onchange="handleSelectOther(this,'trnEditLocationOther')" required></select><input type="text" id="trnEditLocationOther" class="modal-form-input" placeholder="Type new location" style="display:none;margin-top:6px"></div>
+          <div class="form-group"><label>Project</label><select id="trnEditProject" class="form-control" onchange="handleSelectOther(this,'trnEditProjectOther')" required></select><input type="text" id="trnEditProjectOther" class="form-control" placeholder="Type new project" style="display:none;margin-top:8px"></div>
+          <div class="form-group"><label>Location</label><select id="trnEditLocation" class="form-control" onchange="handleSelectOther(this,'trnEditLocationOther')" required></select><input type="text" id="trnEditLocationOther" class="form-control" placeholder="Type new location" style="display:none;margin-top:8px"></div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-ghost" onclick="closeEditTraineeModal()">Cancel</button>
-        <button type="submit" class="btn-warn-modal" id="editTraineeSubmitBtn">Save Changes</button>
+        <button type="submit" class="btn-confirm-move" id="editTraineeSubmitBtn">Save changes</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Delete Trainee -->
+<!-- DELETE TRAINEE MODAL -->
 <div class="modal-overlay" id="deleteTraineeModalOverlay">
-  <div class="modal-card" style="max-width:380px">
-    <div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete Trainee</span><button class="modal-close" onclick="closeDeleteTraineeModal()">✕</button></div>
+  <div class="modal-card delete-modal-card">
+    <div class="modal-header">
+      <span class="modal-title" style="color:var(--bad)">Delete trainee</span>
+      <button class="modal-close" onclick="closeDeleteTraineeModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
     <div class="delete-modal-body">
-      <div class="delete-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div>
+      <div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div>
       <h3>Are you sure?</h3>
-      <p>Permanently delete <span class="highlight" id="deleteTraineeName">this trainee</span>?</p>
+      <p>You're about to permanently delete <span class="delete-name-highlight" id="deleteTraineeName">this trainee</span>. This cannot be undone.</p>
     </div>
     <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeDeleteTraineeModal()">Cancel</button>
-      <button class="btn-danger-modal" id="deleteTraineeConfirmBtn" onclick="confirmDeleteTrainee()">Delete</button>
+      <button type="button" class="btn-ghost" onclick="closeDeleteTraineeModal()">Cancel</button>
+      <button type="button" class="btn-confirm-delete" id="deleteTraineeConfirmBtn" onclick="confirmDeleteTrainee()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        Delete
+      </button>
     </div>
   </div>
 </div>
 
-<!-- Move Modal -->
+<!-- MOVE MODAL -->
 <div class="modal-overlay" id="moveModalOverlay">
-  <div class="modal-card" style="max-width:380px">
-    <div class="modal-header"><span class="modal-title" style="color:var(--warn)">Move to Employees</span><button class="modal-close" onclick="closeMoveModal()">✕</button></div>
+  <div class="modal-card delete-modal-card">
+    <div class="modal-header">
+      <span class="modal-title" style="color:var(--warn)">Move to Employees</span>
+      <button class="modal-close" onclick="closeMoveModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
     <div class="delete-modal-body">
-      <div class="warn-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
+      <div class="move-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
       <h3>Move to Employees?</h3>
-      <p>Moving <span class="highlight" id="moveEmpName">this trainee</span> from Training to Employees.</p>
+      <p>Moving <span class="delete-name-highlight" id="moveEmpName">this trainee</span> from Training to Employees.</p>
     </div>
     <div class="modal-body" style="padding-top:0">
-      <div class="form-group"><label class="modal-label">Status after move</label><select id="moveStatus" class="modal-form-input"><option value="working">Working</option><option value="resigned">Resigned</option></select></div>
+      <div class="form-group">
+        <label style="font-size:12px;color:var(--text-1);font-weight:500;display:block;margin-bottom:7px">Status after move</label>
+        <select id="moveStatus" class="form-control"><option value="working">Working</option><option value="resigned">Resigned</option></select>
+      </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeMoveModal()">Cancel</button>
-      <button class="btn-warn-modal" id="moveConfirmBtn" onclick="confirmMove()">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Move
+      <button type="button" class="btn-ghost" onclick="closeMoveModal()">Cancel</button>
+      <button type="button" class="btn-confirm-move" id="moveConfirmBtn" onclick="confirmMove()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        Move to Employees
       </button>
     </div>
   </div>
@@ -922,61 +752,105 @@ tr:hover td { background: var(--card-hover); }
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwZd-k7pwh1Wq-skO8cUloLJtSFHgGZguitJH--BT17TPTW0GHfdTqQkY9nHIEsYPFpdA/exec';
-const CACHE_KEY         = 'ops_cache_v2';
-const CACHE_MAX_AGE     = 5 * 60 * 1000;
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZd-k7pwh1Wq-skO8cUloLJtSFHgGZguitJH--BT17TPTW0GHfdTqQkY9nHIEsYPFpdA/exec';
 
-const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
+const CACHE_KEY      = 'dashboard_cache_v1';
+const CACHE_MAX_AGE  = 5 * 60 * 1000; // اعتبر الكاش "قديم جدًا" بعد 5 دقايق
+const YBK_CACHE_KEY  = 'dashboard_ybk_cache_v1';
 
-let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]};
-let sortCol='', sortAsc=true;
-let pollTimer=null, session=null, isSyncing=false;
-let deleteTargetId=null, deleteTargetName=null;
-let deleteTraineeTargetId=null, deleteTraineeTargetName=null;
-let moveTargetId=null, moveTargetName=null;
-let selectedYbkDate=null;
-
-// ── Cache ──
-function saveCache() { try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({employees:allData,training:trainingData,ts:Date.now()})); } catch {} }
-function loadCache() { try { const r=JSON.parse(sessionStorage.getItem(CACHE_KEY)||'null'); return r&&Date.now()-r.ts<CACHE_MAX_AGE?r:null; } catch { return null; } }
-
-// ── Utils ──
-function esc(v) { if(v==null)return''; return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
-function normalizeShift(v) { if(!v)return''; const t=String(v).trim(); return t?t[0].toUpperCase()+t.slice(1).toLowerCase():''; }
-function normalizeProject(v) { if(!v)return''; const t=String(v).trim(); return t?t[0].toUpperCase()+t.slice(1):''; }
-function isActive(s) { return s&&(s.toLowerCase().includes('working')||s.toLowerCase()==='active'); }
-function isResigned(s) { return s&&(s.toLowerCase().includes('resign')||s.toLowerCase().includes('inactive')); }
-
-function avatarColor(name) {
-  const colors=['#3b82f6','#8b5cf6','#22c55e','#f59e0b','#ef4444','#06b6d4','#ec4899'];
-  let h=0; for(let c of(name||'?'))h=c.charCodeAt(0)+((h<<5)-h);
-  return colors[Math.abs(h)%colors.length];
+function saveCacheToStorage() {
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+      employees: allData,
+      training: trainingData,
+      timestamp: Date.now()
+    }));
+  } catch (e) { /* sessionStorage ممكن يفضل full في حالات نادرة - تجاهل */ }
 }
-function initials(name) { return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
 
-function ybkIsPresent(v) { const u=String(v||'').trim().toUpperCase(); return u==='P'||u==='TP'; }
-function ybkIsAbsent(v) { return String(v||'').trim()==='0'; }
+function loadCacheFromStorage() {
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (Date.now() - parsed.timestamp > CACHE_MAX_AGE) return null; // كاش قديم، تجاهله
+    return parsed;
+  } catch (e) { return null; }
+}
+
+function saveYbkCacheToStorage() {
+  try {
+    sessionStorage.setItem(YBK_CACHE_KEY, JSON.stringify({
+      data: yubikeyData,
+      timestamp: Date.now()
+    }));
+  } catch (e) { /* تجاهل */ }
+}
+
+function loadYbkCacheFromStorage() {
+  try {
+    const raw = sessionStorage.getItem(YBK_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (Date.now() - parsed.timestamp > CACHE_MAX_AGE) return null;
+    return parsed;
+  } catch (e) { return null; }
+}
+
+const METI_EMAILS = new Set([
+  'me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai',
+  'me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai',
+  'me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai',
+  'me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai',
+  'me254089@meti.ai','me584500@meti.ai','me583427@meti.ai'
+]);
+
+let allData = [], trainingData = [], yubikeyData = { dateColumns: [], rows: [] };
+let sortCol = '', sortAsc = true;
+let pollTimer = null, session = null, isSyncing = false;
+let deleteTargetId = null, deleteTargetName = null;
+let deleteTraineeTargetId = null, deleteTraineeTargetName = null;
+let moveTargetId = null, moveTargetName = null;
+let selectedYbkDate = null;
+
+function escapeHTML(v) { if (v==null) return ''; return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
+function normalizeShift(v)   { if (!v) return ''; const t=String(v).trim(); return t?t.charAt(0).toUpperCase()+t.slice(1).toLowerCase():''; }
+function normalizeProject(v) { if (!v) return ''; const t=String(v).trim(); return t?t.charAt(0).toUpperCase()+t.slice(1):''; }
+function isActive(s)   { if (!s) return false; return s.toLowerCase().includes('working')||s.toLowerCase()==='active'; }
+function isResigned(s) { if (!s) return false; return s.toLowerCase().includes('resign')||s.toLowerCase().includes('inactive'); }
+
+function ybkIsPresent(v)  { const u=String(v||'').trim().toUpperCase(); return u==='P'||u==='TP'; }
+function ybkIsAbsent(v)   { return String(v||'').trim()==='0'; }
 function ybkIsTraining(v) { const u=String(v||'').trim().toUpperCase(); return u==='T'||u==='T1'||u==='T2'||u==='T3'; }
-function ybkIsMeti(r) { return METI_EMAILS.has((r.email||'').trim().toLowerCase()); }
+function ybkIsMeti(row)   { return METI_EMAILS.has((row.email||'').trim().toLowerCase()); }
 
-// ── Sync ──
-function setSyncState(state,text) {
-  const dot=document.getElementById('syncDot'),span=document.getElementById('syncText');
+function ybkAttClass(v) {
+  if (ybkIsPresent(v))  return 'ybk-att-p';
+  if (ybkIsAbsent(v))   return 'ybk-att-0';
+  if (ybkIsTraining(v)) return 'ybk-att-t';
+  return '';
+}
+function ybkAttLabel(v) {
+  if (ybkIsPresent(v))  return v.toUpperCase()==='TP'?'TP':'P';
+  if (ybkIsAbsent(v))   return '0';
+  if (ybkIsTraining(v)) return v.toUpperCase();
+  return v||'—';
+}
+
+function setSyncState(state, text) {
+  const dot=document.getElementById('syncDot'), span=document.getElementById('syncText');
   dot.className='sync-dot'+(state==='syncing'?' syncing':state==='error'?' error':'');
   span.textContent=text;
 }
 
-// ── Session ──
-function getSession() { if(session)return session; try{const r=sessionStorage.getItem(SESSION_KEY);return r?(session=JSON.parse(r)):null;}catch{return null;} }
-function saveSession(s) { session=s; sessionStorage.setItem(SESSION_KEY,JSON.stringify(s)); }
+function getSession()   { if (session) return session; try { const r=sessionStorage.getItem(SESSION_KEY); return r?(session=JSON.parse(r)):null; } catch { return null; } }
+function saveSession(s) { session=s; sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
 function clearSession() { session=null; sessionStorage.removeItem(SESSION_KEY); }
 function authHeaders(extra) { const s=getSession(); return {'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${s?s.access_token:SUPABASE_ANON_KEY}`,...extra}; }
 
-// ── Boot ──
-window.onload=()=>{ if(getSession())showApp(); };
-window.addEventListener('beforeunload',stopPolling);
+window.onload = function() { if (getSession()) showDashboard(); };
+window.addEventListener('beforeunload', stopPolling);
 
-// ── Login ──
 async function handleLogin(e) {
   e.preventDefault();
   const email=document.getElementById('loginEmail').value.trim(), password=document.getElementById('loginPassword').value;
@@ -985,117 +859,226 @@ async function handleLogin(e) {
   try {
     const res=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
     const data=await res.json();
-    if(!res.ok||!data.access_token) throw new Error(data.error_description||'Invalid credentials');
+    if (!res.ok||!data.access_token) throw new Error(data.error_description||'Invalid email or password');
     saveSession({access_token:data.access_token,refresh_token:data.refresh_token,user:{email:data.user?.email||email}});
     document.getElementById('loginPassword').value='';
-    showApp();
+    showDashboard();
   } catch(ex) { errEl.textContent=ex.message; errEl.style.display='block'; document.getElementById('loginPassword').value=''; }
   finally { btn.disabled=false; }
 }
 
 async function handleLogout() {
   stopPolling();
-  try { if(getSession()) await fetch(`${SUPABASE_URL}/auth/v1/logout`,{method:'POST',headers:authHeaders()}); } catch {}
-  clearSession(); sessionStorage.removeItem(CACHE_KEY);
-  allData=[]; trainingData=[]; yubikeyData={dateColumns:[],rows:[]};
-  document.getElementById('appPage').style.display='none';
-  document.getElementById('loginPage').style.display='flex';
+  try { if (getSession()) await fetch(`${SUPABASE_URL}/auth/v1/logout`,{method:'POST',headers:authHeaders()}); } catch {}
+  clearSession(); allData=[]; trainingData=[]; yubikeyData={dateColumns:[],rows:[]}; sortCol=''; sortAsc=true; selectedYbkDate=null;
+  sessionStorage.removeItem(CACHE_KEY); sessionStorage.removeItem(YBK_CACHE_KEY);
+  document.getElementById('dashboardSection').style.display='none';
+  document.getElementById('loginSection').style.display='flex';
   document.getElementById('loginEmail').value=''; document.getElementById('loginPassword').value='';
   document.getElementById('loginError').style.display='none';
 }
 
-function showApp() {
-  document.getElementById('loginPage').style.display='none';
-  document.getElementById('appPage').style.display='flex';
-  const email=getSession()?.user?.email||'';
-  document.getElementById('sidebarEmail').textContent=email;
-  document.getElementById('sidebarAvatar').textContent=email?email[0].toUpperCase():'?';
-  document.getElementById('topbarName').textContent=email;
-  document.getElementById('topbarAvatar').textContent=email?email[0].toUpperCase():'?';
+function showDashboard() {
+  document.getElementById('loginSection').style.display='none';
+  document.getElementById('dashboardSection').style.display='block';
+  document.getElementById('navUserEmail').textContent=getSession()?.user?.email||'';
 
-  const cached=loadCache();
-  if(cached) {
+  // اعرض الكاش المحفوظ فورًا قبل أي fetch - الداشبورد يبان فورًا
+  const cached = loadCacheFromStorage();
+  if (cached) {
     allData=cached.employees||[]; trainingData=cached.training||[];
     populateFilters(); applyFilters();
     populateTrainingFilters(); renderTrainingStats(); renderTrainingTable();
-    setSyncState('ok',`Cached ${new Date(cached.ts).toLocaleTimeString('en-US')}`);
+    setSyncState('ok',`Cached ${new Date(cached.timestamp).toLocaleTimeString('en-US')}`);
   }
-  loadData(!cached);
+
+  loadData(!cached); // لو مفيش كاش، اظهر اللودينج العادي. لو فيه، حدّث في الخلفية بهدوء
   startPolling();
 }
 
 function startPolling() { stopPolling(); pollTimer=setInterval(()=>{ getSession()?loadData():stopPolling(); },120000); }
-function stopPolling() { if(pollTimer){clearInterval(pollTimer);pollTimer=null;} }
+function stopPolling()  { if (pollTimer){clearInterval(pollTimer);pollTimer=null;} }
 
 async function loadData(forceVisible=false) {
-  if(!getSession()||isSyncing)return;
+  if (!getSession()||isSyncing) return;
   const isFirst=allData.length===0&&trainingData.length===0;
-  if(isFirst||forceVisible) {
+  if (isFirst||forceVisible) {
     ['loadingState','trnLoadingState'].forEach(id=>document.getElementById(id).style.display='block');
-    ['empTable','emptyState','trnTable','trnEmptyState'].forEach(id=>document.getElementById(id).style.display='none');
-    document.getElementById('errorBanner').style.display='none';
+    ['empTable','emptyState','trnTable','trnEmptyState','errorBanner'].forEach(id=>document.getElementById(id).style.display='none');
   }
   setSyncState('syncing','Syncing...');
   isSyncing=true;
   try {
-    const res=await fetch(APPS_SCRIPT_URL);
-    if(!res.ok) throw new Error(`Fetch error: ${res.status}`);
-    const json=await res.json();
-    if(json.error) throw new Error(json.error);
+    const json=await fetchFromSheet();
     allData=json.employees||[]; trainingData=json.training||[];
     populateFilters(); applyFilters();
     populateTrainingFilters(); renderTrainingStats(); renderTrainingTable();
-    saveCache();
+    saveCacheToStorage();
     setSyncState('ok',`Updated ${new Date().toLocaleTimeString('en-US')}`);
   } catch(ex) {
-    if(isFirst) { ['loadingState','trnLoadingState'].forEach(id=>document.getElementById(id).style.display='none'); showError('Failed to load: '+esc(ex.message)); }
+    if (isFirst) { ['loadingState','trnLoadingState'].forEach(id=>document.getElementById(id).style.display='none'); showError('Failed to load: '+escapeHTML(ex.message)); }
     setSyncState('error','Sync failed');
   } finally { isSyncing=false; }
 }
 
-async function callScript(action,payload) {
-  await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,data:payload})});
-  return {success:true};
+async function fetchFromSheet() {
+  const res=await fetch(APPS_SCRIPT_URL);
+  if (!res.ok) throw new Error(`Sheet fetch error: ${res.status}`);
+  const json=await res.json();
+  if (json.error) throw new Error(json.error);
+  return json;
+}
+
+// ══════════════════════════════════════════════════════
+// FIX: callScript — action منفصل عن data عشان مايتكتبش
+//       في الشيت كـ column زيادة
+// ══════════════════════════════════════════════════════
+async function callScript(action, payload) {
+  await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: action, data: payload })
+  });
+  return { success: true };
+}
+
+// ── Yubikey ──
+async function loadYubikeyData(forceRefresh=false) {
+  if (!getSession()) return;
+
+  if (!forceRefresh) {
+    const cached = loadYbkCacheFromStorage();
+    if (cached) {
+      yubikeyData = cached.data || { dateColumns: [], rows: [] };
+      buildDateSelector();
+      renderYubikeyTable();
+    }
+  }
+
+  document.getElementById('ybkLoadingState').style.display = (yubikeyData.rows&&yubikeyData.rows.length>0) ? 'none' : 'block';
+  document.getElementById('ybkErrorBanner').style.display='none';
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?sheet=yubikey');
+    if (!res.ok) throw new Error('Failed to fetch Yubikey data');
+    const json = await res.json();
+    if (json.error) throw new Error(json.error);
+    yubikeyData = json.yubikey || { dateColumns: [], rows: [] };
+    buildDateSelector();
+    renderYubikeyTable();
+    saveYbkCacheToStorage();
+  } catch(ex) {
+    document.getElementById('ybkLoadingState').style.display='none';
+    const b=document.getElementById('ybkErrorBanner');
+    b.style.display='block'; b.textContent='Failed to load Yubikey data: '+ex.message;
+  }
+}
+
+function buildDateSelector() {
+  const dates = yubikeyData.dateColumns || [];
+  const container = document.getElementById('ybkDateSelector');
+  if (dates.length === 0) { container.innerHTML='<span style="font-size:13px;color:var(--text-2)">No dates available</span>'; return; }
+  if (!selectedYbkDate || !dates.includes(selectedYbkDate)) selectedYbkDate = dates[dates.length - 1];
+  container.innerHTML = dates.map(d => `<button class="ybk-date-btn${d===selectedYbkDate?' active':''}" onclick="selectYbkDate('${escapeHTML(d)}')">${escapeHTML(d)}</button>`).join('');
+}
+
+function selectYbkDate(date) { selectedYbkDate = date; buildDateSelector(); renderYubikeyTable(); }
+
+function renderYubikeyTable() {
+  const search = (document.getElementById('ybkSearch').value||'').toLowerCase();
+  const statusFilter = document.getElementById('ybkStatusFilter').value;
+  const date = selectedYbkDate;
+  if (!date) { document.getElementById('ybkLoadingState').style.display='none'; document.getElementById('ybkEmptyState').style.display='block'; return; }
+  document.getElementById('ybkDateColHeader').textContent = date;
+  let rows = yubikeyData.rows || [];
+  let total=0, present=0, absent=0, training=0;
+  rows.forEach(r => {
+    const v = r.attendance[date] || '';
+    if (ybkIsPresent(v))  present++;
+    if (ybkIsAbsent(v))   absent++;
+    if (ybkIsTraining(v)) training++;
+  });
+  total = present + training;
+  document.getElementById('ybkTotal').textContent    = total;
+  document.getElementById('ybkPresent').textContent  = present;
+  document.getElementById('ybkAbsent').textContent   = absent;
+  document.getElementById('ybkTraining').textContent = training;
+  let filtered = rows.filter(r => {
+    const v = r.attendance[date] || '';
+    const ms = !search || r.name.toLowerCase().includes(search);
+    const ss = !statusFilter || (statusFilter==='present' && ybkIsPresent(v)) || (statusFilter==='absent' && ybkIsAbsent(v)) || (statusFilter==='training' && ybkIsTraining(v));
+    return ms && ss;
+  });
+  document.getElementById('ybkLoadingState').style.display='none';
+  document.getElementById('ybkRowCount').textContent = filtered.length + ' records';
+  document.getElementById('ybkFooterInfo').textContent = `Showing ${filtered.length} of ${rows.length} employees`;
+  document.getElementById('ybkFooterTime').textContent = new Date().toLocaleDateString('en-US');
+  if (filtered.length === 0) { document.getElementById('ybkTable').style.display='none'; document.getElementById('ybkEmptyState').style.display='block'; return; }
+  document.getElementById('ybkEmptyState').style.display='none';
+  document.getElementById('ybkTable').style.display='table';
+  document.getElementById('ybkTableBody').innerHTML = filtered.map(r => {
+    const v = r.attendance[date] || '';
+    const initials = escapeHTML(r.name.split(' ').map(w=>w[0]).slice(0,2).join(''));
+    return `<tr>
+      <td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${escapeHTML(r.name)}</span></div></td>
+      <td class="mono" style="color:var(--text-1);font-size:12px">${escapeHTML(r.deviceNo||'—')}</td>
+      <td style="color:var(--text-1)">${escapeHTML(r.location||'—')}</td>
+      <td class="mono" style="color:var(--signal);font-size:12px">${escapeHTML(r.yubikey||'—')}</td>
+      <td class="ybk-date-col">${v ? `<span class="ybk-att-cell ${ybkAttClass(v)}">${escapeHTML(ybkAttLabel(v))}</span>` : '—'}</td>
+      <td>${ybkIsPresent(v)?'<span class="badge badge-active">Present</span>':ybkIsTraining(v)?'<span class="badge badge-training">Training</span>':ybkIsAbsent(v)?'<span class="badge badge-resigned">Absent</span>':'<span style="color:var(--text-2);font-size:12px">—</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Optimistic ──
+function optimisticAdd(p)       { allData.push(p); populateFilters(); applyFilters(); saveCacheToStorage(); }
+function optimisticEdit(id,p)   { const i=allData.findIndex(r=>String(r['National ID'])===String(id)); if(i!==-1){allData[i]={...allData[i],...p}; populateFilters(); applyFilters(); saveCacheToStorage();} }
+function optimisticDelete(id)   { allData=allData.filter(r=>String(r['National ID'])!==String(id)); populateFilters(); applyFilters(); saveCacheToStorage(); }
+function optimisticAddTrn(p)    { trainingData.push(p); populateTrainingFilters(); renderTrainingStats(); renderTrainingTable(); saveCacheToStorage(); }
+function optimisticEditTrn(id,p){ const i=trainingData.findIndex(r=>String(r['National ID'])===String(id)); if(i!==-1){trainingData[i]={...trainingData[i],...p}; renderTrainingStats(); renderTrainingTable(); saveCacheToStorage();} }
+function optimisticDeleteTrn(id){ trainingData=trainingData.filter(r=>String(r['National ID'])!==String(id)); populateTrainingFilters(); renderTrainingStats(); renderTrainingTable(); saveCacheToStorage(); }
+function optimisticMoveTrn(id)  { optimisticDeleteTrn(id); }
+function rollback(prevEmp,prevTrn) {
+  if(prevEmp!==undefined){allData=prevEmp; populateFilters(); applyFilters();}
+  if(prevTrn!==undefined){trainingData=prevTrn; populateTrainingFilters(); renderTrainingStats(); renderTrainingTable();}
+  saveCacheToStorage();
 }
 
 // ── Views ──
-const viewTitles={employees:'Employees',training:'Training',yubikey:'Yubikeys',sheets:'Sheets & Forms'};
-const viewSubs={employees:'Workforce overview',training:'Trainee management',yubikey:'Yubikey attendance',sheets:'Quick access links'};
-
 function showView(view) {
   ['employees','training','yubikey','sheets'].forEach(v=>{
-    document.getElementById('view'+v.charAt(0).toUpperCase()+v.slice(1)).style.display=v===view?'block':'none';
-    document.getElementById('nav'+v.charAt(0).toUpperCase()+v.slice(1)).classList.toggle('active',v===view);
+    document.getElementById(v+'View').style.display=v===view?'block':'none';
+    const btnId='tab'+v.charAt(0).toUpperCase()+v.slice(1)+'Btn';
+    const btn=document.getElementById(btnId);
+    if(btn) btn.classList.toggle('active',v===view);
   });
-  document.getElementById('topbarTitle').textContent=viewTitles[view];
-  document.getElementById('topbarSub').textContent=viewSubs[view];
   if(view==='sheets') renderSheets();
-  if(view==='yubikey'&&yubikeyData.rows.length===0) loadYubikeyData();
+  if(view==='yubikey' && yubikeyData.rows.length===0) loadYubikeyData();
 }
 
 // ── Banners ──
 function showError(msg,scope) {
   const id=scope==='training'?'trainingErrorBanner':'errorBanner';
-  const b=document.getElementById(id); b.className='banner banner-error'; b.style.display='block'; b.textContent=msg;
+  const b=document.getElementById(id); b.style.display='block'; b.textContent=msg;
   document.getElementById(scope==='training'?'trainingSuccessBanner':'successBanner').style.display='none';
 }
 function showSuccess(msg,scope) {
   const id=scope==='training'?'trainingSuccessBanner':'successBanner';
-  const b=document.getElementById(id); b.className='banner banner-success'; b.style.display='block'; b.textContent=msg;
+  const b=document.getElementById(id); b.style.display='block'; b.textContent=msg;
   document.getElementById(scope==='training'?'trainingErrorBanner':'errorBanner').style.display='none';
   setTimeout(()=>b.style.display='none',4000);
 }
 
-// ── Employees ──
+// ── Employees filters & table ──
 function populateFilters() {
-  const sm=new Map(); allData.forEach(r=>{const n=normalizeShift(r.Shift);if(n&&!sm.has(n.toLowerCase()))sm.set(n.toLowerCase(),n);}); const shifts=[...sm.values()].sort();
-  const pm=new Map(); allData.forEach(r=>{const p=(r.Project||'').trim();if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),normalizeProject(p));}); const projects=[...pm.values()].sort();
-  const ss=document.getElementById('shiftFilter'),ps=ss.value;
-  ss.innerHTML='<option value="">All Shifts</option>';
+  const sm=new Map(); allData.forEach(r=>{const n=normalizeShift(r['Shift']); if(n&&!sm.has(n.toLowerCase()))sm.set(n.toLowerCase(),n);}); const shifts=[...sm.values()].sort();
+  const pm=new Map(); allData.forEach(r=>{const p=(r['Project']||'').trim(); if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),normalizeProject(p));}); const projects=[...pm.values()].sort();
+  const ss=document.getElementById('shiftFilter'); const ps=ss.value;
+  ss.innerHTML='<option value="">All shifts</option>';
   shifts.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});
   if(shifts.includes(ps))ss.value=ps;
-  const sp=document.getElementById('projectFilter'),pp=sp.value;
-  sp.innerHTML='<option value="">All Projects</option>';
+  const sp=document.getElementById('projectFilter'); const pp=sp.value;
+  sp.innerHTML='<option value="">All projects</option>';
   projects.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;sp.appendChild(o);});
   if(projects.includes(pp))sp.value=pp;
 }
@@ -1106,10 +1089,10 @@ function applyFilters() {
   const project=document.getElementById('projectFilter').value;
   const status=document.getElementById('statusFilter').value;
   let data=allData.filter(r=>{
-    const ms=!search||(r.Name||'').toLowerCase().includes(search)||String(r['National ID']||'').includes(search);
-    const msh=!shift||normalizeShift(r.Shift)===shift;
-    const mp=!project||(r.Project||'').trim().toLowerCase()===project.toLowerCase();
-    const mst=!status||(status==='working'&&isActive(r.Status))||(status==='resigned'&&isResigned(r.Status));
+    const ms=!search||(r['Name']||'').toLowerCase().includes(search)||String(r['National ID']||'').includes(search);
+    const msh=!shift||normalizeShift(r['Shift'])===shift;
+    const mp=!project||(r['Project']||'').trim().toLowerCase()===project.toLowerCase();
+    const mst=!status||(status==='working'&&isActive(r['Status']))||(status==='resigned'&&isResigned(r['Status']));
     return ms&&msh&&mp&&mst;
   });
   if(sortCol) data=data.slice().sort((a,b)=>{
@@ -1118,87 +1101,73 @@ function applyFilters() {
     const cmp=isNum?nA-nB:(rA??'').toString().localeCompare((rB??'').toString(),'en');
     return sortAsc?cmp:-cmp;
   });
-  document.querySelectorAll('#empTable th').forEach(th=>th.classList.toggle('sorted',th.dataset.col===sortCol));
-  updateStats(); renderTable(data);
+  updateSortIndicators(); updateStats(data); renderTable(data);
 }
 
+function updateSortIndicators() { document.querySelectorAll('#empTable th').forEach(th=>th.classList.toggle('sorted',th.dataset.col===sortCol)); }
 function sortBy(col) { if(sortCol===col)sortAsc=!sortAsc; else{sortCol=col;sortAsc=true;} applyFilters(); }
 
-function updateStats() {
-  document.getElementById('statTotal').textContent=allData.length;
-  document.getElementById('statActive').textContent=allData.filter(r=>isActive(r.Status)).length;
-  document.getElementById('statInactive').textContent=allData.filter(r=>isResigned(r.Status)).length;
-  document.getElementById('statProjects').textContent=new Set(allData.map(r=>(r.Project||'').trim().toLowerCase()).filter(Boolean)).size;
-  document.getElementById('statLocations').textContent=new Set(allData.map(r=>r.Location).filter(Boolean)).size;
+function updateStats(filtered) {
+  document.getElementById('statTotal').textContent    =allData.length;
+  document.getElementById('statActive').textContent   =allData.filter(r=>isActive(r['Status'])).length;
+  document.getElementById('statInactive').textContent =allData.filter(r=>isResigned(r['Status'])).length;
+  document.getElementById('statProjects').textContent =new Set(allData.map(r=>(r['Project']||'').trim().toLowerCase()).filter(Boolean)).size;
+  document.getElementById('statLocations').textContent=new Set(allData.map(r=>r['Location']).filter(Boolean)).size;
+  document.getElementById('rowCount').textContent     =filtered.length+' employees';
+  document.getElementById('footerInfo').textContent   =`Showing ${filtered.length} of ${allData.length} employees`;
+  document.getElementById('footerTime').textContent   =new Date().toLocaleDateString('en-US');
 }
 
 function renderTable(data) {
   document.getElementById('loadingState').style.display='none';
-  document.getElementById('rowCount').textContent=data.length+' employees';
-  document.getElementById('footerInfo').textContent=`Showing ${data.length} of ${allData.length} employees`;
-  document.getElementById('footerTime').textContent=new Date().toLocaleDateString('en-US');
   if(data.length===0){document.getElementById('empTable').style.display='none';document.getElementById('emptyState').style.display='block';return;}
-  document.getElementById('emptyState').style.display='none';
-  document.getElementById('empTable').style.display='table';
-  const color=avatarColor;
+  document.getElementById('emptyState').style.display='none'; document.getElementById('empTable').style.display='table';
   document.getElementById('tableBody').innerHTML=data.map(r=>{
-    const nid=esc(r['National ID']||'');
-    const statusBadge=isActive(r.Status)?'badge-working':isResigned(r.Status)?'badge-resigned':'badge-resigned';
+    const safeName=escapeHTML(r['Name']||'—');
+    const initials=escapeHTML((r['Name']||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    const active=isActive(r['Status']); const nid=escapeHTML(r['National ID']||'');
+    const statusBadge=active?'badge-active':isResigned(r['Status'])?'badge-resigned':'badge-resigned';
     return `<tr>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-2)">${esc(r['National ID']||'—')}</td>
-      <td><div class="name-cell"><div class="avatar" style="background:${color(r.Name)}">${initials(r.Name)}</div><span>${esc(r.Name||'—')}</span></div></td>
-      <td><span class="badge badge-shift">${esc(normalizeShift(r.Shift)||'—')}</span></td>
-      <td style="color:var(--text-1)">${esc(normalizeProject(r.Project)||'—')}</td>
-      <td style="color:var(--text-2);font-size:12.5px">${esc(r.Role||'—')}</td>
-      <td><span class="badge ${statusBadge}">${esc(r.Status||'—')}</span></td>
-      <td style="color:var(--text-2);font-size:12.5px">${esc(r.Location||'—')}</td>
+      <td class="mono" style="color:var(--text-1);font-size:12px">${escapeHTML(r['National ID']||'—')}</td>
+      <td><div class="name-cell"><div class="avatar">${initials}</div><span>${safeName}</span></div></td>
+      <td><span class="badge badge-shift">${escapeHTML(normalizeShift(r['Shift'])||'—')}</span></td>
+      <td>${escapeHTML(normalizeProject(r['Project'])||'—')}</td>
+      <td style="color:var(--text-1)">${escapeHTML(r['Role']||'—')}</td>
+      <td><span class="badge ${statusBadge}">${escapeHTML(r['Status']||'—')}</span></td>
+      <td style="color:var(--text-1)">${escapeHTML(r['Location']||'—')}</td>
       <td><div class="action-cell">
-        <button class="btn-row" onclick="openEditModal('${nid}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>Edit</button>
-        <button class="btn-row del" onclick="openDeleteModal('${nid}','${esc(r.Name||'')}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Del</button>
+        <button class="btn-edit" onclick="openEditModal('${nid}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+        <button class="btn-delete-row" onclick="openDeleteModal('${nid}','${escapeHTML(r['Name']||'')}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>Delete</button>
       </div></td>
     </tr>`;
   }).join('');
 }
 
-// ── Optimistic ──
-function optimisticAdd(p) { allData.unshift(p); populateFilters(); applyFilters(); saveCache(); }
-function optimisticEdit(id,p) { const i=allData.findIndex(r=>String(r['National ID'])===String(id)); if(i!==-1){allData[i]={...allData[i],...p}; populateFilters(); applyFilters(); saveCache();} }
-function optimisticDelete(id) { allData=allData.filter(r=>String(r['National ID'])!==String(id)); populateFilters(); applyFilters(); saveCache(); }
-function optimisticAddTrn(p) { trainingData.unshift(p); populateTrainingFilters(); renderTrainingStats(); renderTrainingTable(); saveCache(); }
-function optimisticEditTrn(id,p) { const i=trainingData.findIndex(r=>String(r['National ID'])===String(id)); if(i!==-1){trainingData[i]={...trainingData[i],...p}; renderTrainingStats(); renderTrainingTable(); saveCache();} }
-function optimisticDeleteTrn(id) { trainingData=trainingData.filter(r=>String(r['National ID'])!==String(id)); populateTrainingFilters(); renderTrainingStats(); renderTrainingTable(); saveCache(); }
-function optimisticMoveTrn(id) { optimisticDeleteTrn(id); }
-function rollback(prevEmp,prevTrn) {
-  if(prevEmp!==undefined){allData=prevEmp; populateFilters(); applyFilters();}
-  if(prevTrn!==undefined){trainingData=prevTrn; populateTrainingFilters(); renderTrainingStats(); renderTrainingTable();}
-  saveCache();
-}
-
 // ── Training ──
 function populateTrainingFilters() {
-  const pm=new Map(); trainingData.forEach(r=>{const p=(r.Project||'').trim();if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),normalizeProject(p));}); const projects=[...pm.values()].sort();
-  const sm=new Map(); trainingData.forEach(r=>{const s=normalizeShift(r.Shift);if(s&&!sm.has(s.toLowerCase()))sm.set(s.toLowerCase(),s);}); const shifts=[...sm.values()].sort();
-  const tp=document.getElementById('trnProjectFilter'),prevP=tp.value;
-  tp.innerHTML='<option value="">All Projects</option>';
+  const pm=new Map(); trainingData.forEach(r=>{const p=(r['Project']||'').trim();if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),normalizeProject(p));}); const projects=[...pm.values()].sort();
+  const sm=new Map(); trainingData.forEach(r=>{const s=normalizeShift(r['Shift']);if(s&&!sm.has(s.toLowerCase()))sm.set(s.toLowerCase(),s);}); const shifts=[...sm.values()].sort();
+  const tp=document.getElementById('trnProjectFilter'); const prevP=tp.value;
+  tp.innerHTML='<option value="">All projects</option>';
   projects.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;tp.appendChild(o);});
   if(projects.includes(prevP))tp.value=prevP;
-  const ts=document.getElementById('trnShiftFilter'),prevS=ts.value;
-  ts.innerHTML='<option value="">All Shifts</option>';
+  const ts=document.getElementById('trnShiftFilter'); const prevS=ts.value;
+  ts.innerHTML='<option value="">All shifts</option>';
   shifts.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ts.appendChild(o);});
   if(shifts.includes(prevS))ts.value=prevS;
 }
 
 function renderTrainingStats() {
-  document.getElementById('trnStatTotal').textContent=trainingData.length;
-  document.getElementById('trnStatProjects').textContent=new Set(trainingData.map(r=>(r.Project||'').trim().toLowerCase()).filter(Boolean)).size;
-  document.getElementById('trnStatLocations').textContent=new Set(trainingData.map(r=>r.Location).filter(Boolean)).size;
-  const pm=new Map(); trainingData.forEach(r=>{const p=normalizeProject(r.Project)||'Unknown'; pm.set(p,(pm.get(p)||0)+1);});
+  document.getElementById('trnStatTotal').textContent    =trainingData.length;
+  document.getElementById('trnStatProjects').textContent =new Set(trainingData.map(r=>(r['Project']||'').trim().toLowerCase()).filter(Boolean)).size;
+  document.getElementById('trnStatLocations').textContent=new Set(trainingData.map(r=>r['Location']).filter(Boolean)).size;
+  const pm=new Map(); trainingData.forEach(r=>{const p=normalizeProject(r['Project'])||'Unknown'; pm.set(p,(pm.get(p)||0)+1);});
   const sorted=[...pm.entries()].sort((a,b)=>b[1]-a[1]);
   document.getElementById('trnBreakdown').innerHTML=sorted.map(([proj,count])=>`
     <div class="breakdown-card">
-      <div class="breakdown-label">${esc(proj)}</div>
-      <div class="breakdown-value">${count}</div>
-      <div class="breakdown-sub">${count===1?'trainee':'trainees'}</div>
+      <div class="breakdown-card-label">${escapeHTML(proj)}</div>
+      <div class="breakdown-card-value">${count}</div>
+      <div class="breakdown-card-sub">${count===1?'trainee':'trainees'}</div>
     </div>`).join('')||'<div style="color:var(--text-2);font-size:13px">No data</div>';
 }
 
@@ -1207,9 +1176,9 @@ function renderTrainingTable() {
   const project=document.getElementById('trnProjectFilter').value;
   const shift=document.getElementById('trnShiftFilter').value;
   let data=trainingData.filter(r=>{
-    const ms=!search||(r.Name||'').toLowerCase().includes(search)||String(r['National ID']||'').includes(search);
-    const mp=!project||(r.Project||'').trim().toLowerCase()===project.toLowerCase();
-    const msh=!shift||normalizeShift(r.Shift)===shift;
+    const ms=!search||(r['Name']||'').toLowerCase().includes(search)||String(r['National ID']||'').includes(search);
+    const mp=!project||(r['Project']||'').trim().toLowerCase()===project.toLowerCase();
+    const msh=!shift||normalizeShift(r['Shift'])===shift;
     return ms&&mp&&msh;
   });
   document.getElementById('trnLoadingState').style.display='none';
@@ -1217,306 +1186,254 @@ function renderTrainingTable() {
   document.getElementById('trnFooterInfo').textContent=`Showing ${data.length} of ${trainingData.length} trainees`;
   document.getElementById('trnFooterTime').textContent=new Date().toLocaleDateString('en-US');
   if(data.length===0){document.getElementById('trnTable').style.display='none';document.getElementById('trnEmptyState').style.display='block';return;}
-  document.getElementById('trnEmptyState').style.display='none';
-  document.getElementById('trnTable').style.display='table';
+  document.getElementById('trnEmptyState').style.display='none'; document.getElementById('trnTable').style.display='table';
   document.getElementById('trnTableBody').innerHTML=data.map(r=>{
-    const nid=esc(r['National ID']||'');
+    const safeName=escapeHTML(r['Name']||'—');
+    const initials=escapeHTML((r['Name']||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    const nid=escapeHTML(r['National ID']||'');
     return `<tr>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-2)">${esc(r['National ID']||'—')}</td>
-      <td><div class="name-cell"><div class="avatar" style="background:${avatarColor(r.Name)}">${initials(r.Name)}</div><span>${esc(r.Name||'—')}</span></div></td>
-      <td><span class="badge badge-shift">${esc(normalizeShift(r.Shift)||'—')}</span></td>
-      <td style="color:var(--text-1)">${esc(normalizeProject(r.Project)||'—')}</td>
-      <td style="color:var(--text-2);font-size:12.5px">${esc(r.Role||'—')}</td>
-      <td style="color:var(--text-2);font-size:12.5px">${esc(r.Location||'—')}</td>
+      <td class="mono" style="color:var(--text-1);font-size:12px">${escapeHTML(r['National ID']||'—')}</td>
+      <td><div class="name-cell"><div class="avatar" style="color:var(--warn)">${initials}</div><span>${safeName}</span></div></td>
+      <td><span class="badge badge-shift">${escapeHTML(normalizeShift(r['Shift'])||'—')}</span></td>
+      <td>${escapeHTML(normalizeProject(r['Project'])||'—')}</td>
+      <td style="color:var(--text-1)">${escapeHTML(r['Role']||'—')}</td>
+      <td style="color:var(--text-1)">${escapeHTML(r['Location']||'—')}</td>
       <td><div class="action-cell">
-        <button class="btn-row" onclick="openEditTraineeModal('${nid}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>Edit</button>
-        <button class="btn-row del" onclick="openDeleteTraineeModal('${nid}','${esc(r.Name||'')}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Del</button>
-        <button class="btn-row move" onclick="openMoveModal('${nid}','${esc(r.Name||'')}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Move</button>
+        <button class="btn-edit" onclick="openEditTraineeModal('${nid}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+        <button class="btn-delete-row" onclick="openDeleteTraineeModal('${nid}','${escapeHTML(r['Name']||'')}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>Delete</button>
+        <button class="btn-move" onclick="openMoveModal('${nid}','${escapeHTML(r['Name']||'')}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Move to Employees</button>
       </div></td>
     </tr>`;
   }).join('');
 }
 
 // ── Dropdown helpers ──
-function allUniqueValues(field,normFn) {
+function uniqueValuesFrom(data, field, normalizeFn) {
   const map=new Map();
-  [...allData,...trainingData].forEach(r=>{let v=(r[field]||'').toString().trim();if(!v)return;if(normFn)v=normFn(v);const k=v.toLowerCase();if(!map.has(k))map.set(k,v);});
+  data.forEach(r=>{let v=(r[field]||'').toString().trim(); if(!v)return; if(normalizeFn)v=normalizeFn(v); const key=v.toLowerCase(); if(!map.has(key))map.set(key,v);});
   return [...map.values()].sort((a,b)=>a.localeCompare(b));
 }
-function populateSelect(selId,otherId,values,current) {
-  const sel=document.getElementById(selId),other=document.getElementById(otherId);
-  sel.innerHTML=values.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('')+'<option value="__other__">+ Add new...</option>';
+
+function populateSelect(selectId, otherId, values, currentValue) {
+  const sel=document.getElementById(selectId), other=document.getElementById(otherId);
+  sel.innerHTML=values.map(v=>`<option value="${escapeHTML(v)}">${escapeHTML(v)}</option>`).join('')+'<option value="__other__">+ Add new...</option>';
   other.style.display='none'; other.value='';
-  if(current){const match=values.find(v=>v.toLowerCase()===current.toLowerCase());if(match){sel.value=match;}else{sel.value='__other__';other.style.display='block';other.value=current;}}
+  if(currentValue){const match=values.find(v=>v.toLowerCase()===currentValue.toLowerCase()); if(match){sel.value=match;}else{sel.value='__other__';other.style.display='block';other.value=currentValue;}}
   else sel.selectedIndex=0;
 }
-function handleSelectOther(sel,otherId){document.getElementById(otherId).style.display=sel.value==='__other__'?'block':'none';}
-function getFieldValue(selId,otherId){const sel=document.getElementById(selId);return sel.value==='__other__'?document.getElementById(otherId).value.trim():sel.value.trim();}
-function populateModalDropdowns(prefix,current) {
-  const shifts=allUniqueValues('Shift',normalizeShift);
-  const roles=allUniqueValues('Role');
-  const projects=allUniqueValues('Project',normalizeProject);
-  const locations=allUniqueValues('Location');
-  populateSelect(`${prefix}Shift`,`${prefix}ShiftOther`,shifts,current?normalizeShift(current.Shift):'');
-  populateSelect(`${prefix}Role`,`${prefix}RoleOther`,roles,current?current.Role:'');
-  populateSelect(`${prefix}Project`,`${prefix}ProjectOther`,projects,current?normalizeProject(current.Project):'');
-  populateSelect(`${prefix}Location`,`${prefix}LocationOther`,locations,current?current.Location:'');
+
+function handleSelectOther(selectEl, otherId) { document.getElementById(otherId).style.display=selectEl.value==='__other__'?'block':'none'; }
+function getFieldValue(selectId, otherId) { const sel=document.getElementById(selectId); return sel.value==='__other__'?document.getElementById(otherId).value.trim():sel.value.trim(); }
+
+function allUniqueValues(field, normalizeFn) {
+  const combined=[...allData,...trainingData];
+  const map=new Map();
+  combined.forEach(r=>{let v=(r[field]||'').toString().trim(); if(!v)return; if(normalizeFn)v=normalizeFn(v); const key=v.toLowerCase(); if(!map.has(key))map.set(key,v);});
+  return [...map.values()].sort((a,b)=>a.localeCompare(b));
 }
 
-// ── Modal helpers ──
-function openModal(id){document.getElementById(id).style.display='flex';}
-function closeModal(id){document.getElementById(id).style.display='none';}
-['addModalOverlay','editModalOverlay','deleteModalOverlay','addTraineeModalOverlay','editTraineeModalOverlay','deleteTraineeModalOverlay','moveModalOverlay'].forEach(id=>{
-  document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)closeModal(id);});
-});
+function populateModalDropdowns(prefix, current) {
+  const shifts   = allUniqueValues('Shift',   normalizeShift);
+  const roles    = allUniqueValues('Role');
+  const projects = allUniqueValues('Project', normalizeProject);
+  const locations= allUniqueValues('Location');
+  populateSelect(`${prefix}Shift`,    `${prefix}ShiftOther`,    shifts,    current?normalizeShift(current['Shift']):'');
+  populateSelect(`${prefix}Role`,     `${prefix}RoleOther`,     roles,     current?current['Role']:'');
+  populateSelect(`${prefix}Project`,  `${prefix}ProjectOther`,  projects,  current?normalizeProject(current['Project']):'');
+  populateSelect(`${prefix}Location`, `${prefix}LocationOther`, locations, current?current['Location']:'');
+}
 
 // ── Add Employee ──
-function openAddModal(){document.getElementById('addFormError').style.display='none';document.getElementById('addEmployeeForm').reset();populateModalDropdowns('add',null);openModal('addModalOverlay');}
-function closeAddModal(){closeModal('addModalOverlay');}
-async function handleAddEmployee(e){
+function openAddModal() { document.getElementById('addFormError').style.display='none'; document.getElementById('addEmployeeForm').reset(); populateModalDropdowns('add',null); document.getElementById('addModalOverlay').style.display='flex'; }
+function closeAddModal() { document.getElementById('addModalOverlay').style.display='none'; }
+document.getElementById('addModalOverlay').addEventListener('click',e=>{if(e.target.id==='addModalOverlay')closeAddModal();});
+
+async function handleAddEmployee(e) {
   e.preventDefault();
   if(!getSession()){showError('Session expired.');closeAddModal();return;}
-  const errDiv=document.getElementById('addFormError'),btn=document.getElementById('addSubmitBtn');
+  const errDiv=document.getElementById('addFormError'), btn=document.getElementById('addSubmitBtn');
   errDiv.style.display='none';
   const payload={'National ID':document.getElementById('addNationalId').value.trim(),'Name':document.getElementById('addName').value.trim(),'Shift':getFieldValue('addShift','addShiftOther'),'Project':getFieldValue('addProject','addProjectOther'),'Role':getFieldValue('addRole','addRoleOther'),'Status':document.getElementById('addStatus').value,'Location':getFieldValue('addLocation','addLocationOther')};
-  if(!payload.Shift||!payload.Role||!payload.Project||!payload.Location){errDiv.textContent='Please fill in all fields.';errDiv.style.display='block';return;}
+  if(!payload['Shift']||!payload['Role']||!payload['Project']||!payload['Location']){errDiv.textContent='Please fill in all fields.';errDiv.style.display='block';return;}
   if(allData.some(r=>String(r['National ID']).trim()===payload['National ID'])){errDiv.textContent='National ID already exists.';errDiv.style.display='block';return;}
-  closeAddModal(); showSuccess(`${payload.Name||'Employee'} added successfully.`);
+  closeAddModal(); showSuccess(`${payload['Name']||'Employee'} added successfully.`);
   const prev=[...allData]; optimisticAdd(payload); btn.disabled=true;
-  callScript('add',payload).catch(ex=>{rollback(prev,undefined);showError('Add failed: '+ex.message);}).finally(()=>{btn.disabled=false;});
+  callScript('add', payload).catch(ex=>{rollback(prev,undefined);showError('Add failed: '+ex.message);}).finally(()=>{btn.disabled=false;});
 }
 
 // ── Edit Employee ──
-function openEditModal(nationalId){
-  const emp=allData.find(r=>String(r['National ID'])===String(nationalId));if(!emp)return;
+function openEditModal(nationalId) {
+  const emp=allData.find(r=>String(r['National ID'])===String(nationalId)); if(!emp)return;
   document.getElementById('editFormError').style.display='none';
   document.getElementById('editNationalId').value=emp['National ID']||'';
-  document.getElementById('editName').value=emp.Name||'';
+  document.getElementById('editName').value=emp['Name']||'';
   populateModalDropdowns('edit',emp);
-  document.getElementById('editStatus').value=isResigned(emp.Status)?'resigned':'working';
-  openModal('editModalOverlay');
+  document.getElementById('editStatus').value=isResigned(emp['Status'])?'resigned':'working';
+  document.getElementById('editModalOverlay').style.display='flex';
 }
-function closeEditModal(){closeModal('editModalOverlay');}
-async function handleEditEmployee(e){
+function closeEditModal() { document.getElementById('editModalOverlay').style.display='none'; }
+document.getElementById('editModalOverlay').addEventListener('click',e=>{if(e.target.id==='editModalOverlay')closeEditModal();});
+
+async function handleEditEmployee(e) {
   e.preventDefault();
   if(!getSession()){showError('Session expired.');closeEditModal();return;}
-  const errDiv=document.getElementById('editFormError'),btn=document.getElementById('editSubmitBtn');
+  const errDiv=document.getElementById('editFormError'), btn=document.getElementById('editSubmitBtn');
   errDiv.style.display='none';
   const nationalId=document.getElementById('editNationalId').value;
   const payload={'National ID':nationalId,'Name':document.getElementById('editName').value.trim(),'Shift':getFieldValue('editShift','editShiftOther'),'Project':getFieldValue('editProject','editProjectOther'),'Role':getFieldValue('editRole','editRoleOther'),'Status':document.getElementById('editStatus').value,'Location':getFieldValue('editLocation','editLocationOther')};
-  if(!payload.Shift||!payload.Role||!payload.Project||!payload.Location){errDiv.textContent='Please fill in all fields.';errDiv.style.display='block';return;}
-  closeEditModal(); showSuccess(`${payload.Name||'Employee'} updated.`);
+  if(!payload['Shift']||!payload['Role']||!payload['Project']||!payload['Location']){errDiv.textContent='Please fill in all fields.';errDiv.style.display='block';return;}
+  closeEditModal(); showSuccess(`${payload['Name']||'Employee'} updated successfully.`);
   const prev=[...allData]; optimisticEdit(nationalId,payload); btn.disabled=true;
-  callScript('edit',payload).catch(ex=>{rollback(prev,undefined);showError('Edit failed: '+ex.message);}).finally(()=>{btn.disabled=false;});
+  callScript('edit', payload).catch(ex=>{rollback(prev,undefined);showError('Edit failed: '+ex.message);}).finally(()=>{btn.disabled=false;});
 }
 
 // ── Delete Employee ──
-function openDeleteModal(id,name){deleteTargetId=id;deleteTargetName=name;document.getElementById('deleteEmpName').textContent=name||'this employee';document.getElementById('deleteConfirmBtn').disabled=false;openModal('deleteModalOverlay');}
-function closeDeleteModal(){closeModal('deleteModalOverlay');deleteTargetId=null;deleteTargetName=null;}
-async function confirmDelete(){
+function openDeleteModal(nationalId,name) { deleteTargetId=nationalId;deleteTargetName=name; document.getElementById('deleteEmpName').textContent=name||'this employee'; document.getElementById('deleteConfirmBtn').disabled=false; document.getElementById('deleteModalOverlay').style.display='flex'; }
+function closeDeleteModal() { document.getElementById('deleteModalOverlay').style.display='none'; deleteTargetId=null;deleteTargetName=null; }
+document.getElementById('deleteModalOverlay').addEventListener('click',e=>{if(e.target.id==='deleteModalOverlay')closeDeleteModal();});
+
+async function confirmDelete() {
   if(!deleteTargetId||!getSession()){showError('Session expired.');closeDeleteModal();return;}
-  const id=deleteTargetId,name=deleteTargetName;
-  closeDeleteModal(); showSuccess(`${name||'Employee'} deleted.`);
+  const id=deleteTargetId, name=deleteTargetName;
+  closeDeleteModal(); showSuccess(`${name||'Employee'} deleted successfully.`);
   const prev=[...allData]; optimisticDelete(id);
-  callScript('delete',{'National ID':id}).catch(ex=>{rollback(prev,undefined);showError('Delete failed: '+ex.message);});
+  callScript('delete', {'National ID':id}).catch(ex=>{rollback(prev,undefined);showError('Delete failed: '+ex.message);});
 }
 
 // ── Add Trainee ──
-function openAddTraineeModal(){document.getElementById('addTraineeFormError').style.display='none';document.getElementById('addTraineeForm').reset();populateModalDropdowns('trnAdd',null);openModal('addTraineeModalOverlay');}
-function closeAddTraineeModal(){closeModal('addTraineeModalOverlay');}
-async function handleAddTrainee(e){
+function openAddTraineeModal() { document.getElementById('addTraineeFormError').style.display='none'; document.getElementById('addTraineeForm').reset(); populateModalDropdowns('trnAdd',null); document.getElementById('addTraineeModalOverlay').style.display='flex'; }
+function closeAddTraineeModal() { document.getElementById('addTraineeModalOverlay').style.display='none'; }
+document.getElementById('addTraineeModalOverlay').addEventListener('click',e=>{if(e.target.id==='addTraineeModalOverlay')closeAddTraineeModal();});
+
+async function handleAddTrainee(e) {
   e.preventDefault();
   if(!getSession()){showError('Session expired.','training');closeAddTraineeModal();return;}
-  const errDiv=document.getElementById('addTraineeFormError'),btn=document.getElementById('addTraineeSubmitBtn');
+  const errDiv=document.getElementById('addTraineeFormError'), btn=document.getElementById('addTraineeSubmitBtn');
   errDiv.style.display='none';
   const payload={'National ID':document.getElementById('trnAddNationalId').value.trim(),'Name':document.getElementById('trnAddName').value.trim(),'Shift':getFieldValue('trnAddShift','trnAddShiftOther'),'Project':getFieldValue('trnAddProject','trnAddProjectOther'),'Role':getFieldValue('trnAddRole','trnAddRoleOther'),'Location':getFieldValue('trnAddLocation','trnAddLocationOther')};
-  if(!payload.Shift||!payload.Role||!payload.Project||!payload.Location){errDiv.textContent='Please fill in all fields.';errDiv.style.display='block';return;}
-  if(trainingData.some(r=>String(r['National ID']).trim()===payload['National ID'])){errDiv.textContent='National ID already exists.';errDiv.style.display='block';return;}
-  closeAddTraineeModal(); showSuccess(`${payload.Name||'Trainee'} added.`,'training');
+  if(!payload['Shift']||!payload['Role']||!payload['Project']||!payload['Location']){errDiv.textContent='Please fill in all fields.';errDiv.style.display='block';return;}
+  if(trainingData.some(r=>String(r['National ID']).trim()===payload['National ID'])){errDiv.textContent='National ID already exists in Training.';errDiv.style.display='block';return;}
+  closeAddTraineeModal(); showSuccess(`${payload['Name']||'Trainee'} added successfully.`,'training');
   const prev=[...trainingData]; optimisticAddTrn(payload); btn.disabled=true;
-  callScript('addTrainee',payload).catch(ex=>{rollback(undefined,prev);showError('Add failed: '+ex.message,'training');}).finally(()=>{btn.disabled=false;});
+  callScript('addTrainee', payload).catch(ex=>{rollback(undefined,prev);showError('Add failed: '+ex.message,'training');}).finally(()=>{btn.disabled=false;});
 }
 
 // ── Edit Trainee ──
-function openEditTraineeModal(nationalId){
-  const trn=trainingData.find(r=>String(r['National ID'])===String(nationalId));if(!trn)return;
+function openEditTraineeModal(nationalId) {
+  const trn=trainingData.find(r=>String(r['National ID'])===String(nationalId)); if(!trn)return;
   document.getElementById('editTraineeFormError').style.display='none';
   document.getElementById('trnEditNationalId').value=trn['National ID']||'';
-  document.getElementById('trnEditName').value=trn.Name||'';
+  document.getElementById('trnEditName').value=trn['Name']||'';
   populateModalDropdowns('trnEdit',trn);
-  openModal('editTraineeModalOverlay');
+  document.getElementById('editTraineeModalOverlay').style.display='flex';
 }
-function closeEditTraineeModal(){closeModal('editTraineeModalOverlay');}
-async function handleEditTrainee(e){
+function closeEditTraineeModal() { document.getElementById('editTraineeModalOverlay').style.display='none'; }
+document.getElementById('editTraineeModalOverlay').addEventListener('click',e=>{if(e.target.id==='editTraineeModalOverlay')closeEditTraineeModal();});
+
+async function handleEditTrainee(e) {
   e.preventDefault();
   if(!getSession()){showError('Session expired.','training');closeEditTraineeModal();return;}
-  const errDiv=document.getElementById('editTraineeFormError'),btn=document.getElementById('editTraineeSubmitBtn');
+  const errDiv=document.getElementById('editTraineeFormError'), btn=document.getElementById('editTraineeSubmitBtn');
   errDiv.style.display='none';
   const nationalId=document.getElementById('trnEditNationalId').value;
   const payload={'National ID':nationalId,'Name':document.getElementById('trnEditName').value.trim(),'Shift':getFieldValue('trnEditShift','trnEditShiftOther'),'Project':getFieldValue('trnEditProject','trnEditProjectOther'),'Role':getFieldValue('trnEditRole','trnEditRoleOther'),'Location':getFieldValue('trnEditLocation','trnEditLocationOther')};
-  if(!payload.Shift||!payload.Role||!payload.Project||!payload.Location){errDiv.textContent='Please fill in all fields.';errDiv.style.display='block';return;}
-  closeEditTraineeModal(); showSuccess(`${payload.Name||'Trainee'} updated.`,'training');
+  if(!payload['Shift']||!payload['Role']||!payload['Project']||!payload['Location']){errDiv.textContent='Please fill in all fields.';errDiv.style.display='block';return;}
+  closeEditTraineeModal(); showSuccess(`${payload['Name']||'Trainee'} updated successfully.`,'training');
   const prev=[...trainingData]; optimisticEditTrn(nationalId,payload); btn.disabled=true;
-  callScript('editTrainee',payload).catch(ex=>{rollback(undefined,prev);showError('Edit failed: '+ex.message,'training');}).finally(()=>{btn.disabled=false;});
+  callScript('editTrainee', payload).catch(ex=>{rollback(undefined,prev);showError('Edit failed: '+ex.message,'training');}).finally(()=>{btn.disabled=false;});
 }
 
 // ── Delete Trainee ──
-function openDeleteTraineeModal(id,name){deleteTraineeTargetId=id;deleteTraineeTargetName=name;document.getElementById('deleteTraineeName').textContent=name||'this trainee';document.getElementById('deleteTraineeConfirmBtn').disabled=false;openModal('deleteTraineeModalOverlay');}
-function closeDeleteTraineeModal(){closeModal('deleteTraineeModalOverlay');deleteTraineeTargetId=null;deleteTraineeTargetName=null;}
-async function confirmDeleteTrainee(){
+function openDeleteTraineeModal(nationalId,name) { deleteTraineeTargetId=nationalId;deleteTraineeTargetName=name; document.getElementById('deleteTraineeName').textContent=name||'this trainee'; document.getElementById('deleteTraineeConfirmBtn').disabled=false; document.getElementById('deleteTraineeModalOverlay').style.display='flex'; }
+function closeDeleteTraineeModal() { document.getElementById('deleteTraineeModalOverlay').style.display='none'; deleteTraineeTargetId=null;deleteTraineeTargetName=null; }
+document.getElementById('deleteTraineeModalOverlay').addEventListener('click',e=>{if(e.target.id==='deleteTraineeModalOverlay')closeDeleteTraineeModal();});
+
+async function confirmDeleteTrainee() {
   if(!deleteTraineeTargetId||!getSession()){showError('Session expired.','training');closeDeleteTraineeModal();return;}
-  const id=deleteTraineeTargetId,name=deleteTraineeTargetName;
-  closeDeleteTraineeModal(); showSuccess(`${name||'Trainee'} deleted.`,'training');
+  const id=deleteTraineeTargetId, name=deleteTraineeTargetName;
+  closeDeleteTraineeModal(); showSuccess(`${name||'Trainee'} deleted successfully.`,'training');
   const prev=[...trainingData]; optimisticDeleteTrn(id);
-  callScript('deleteTrainee',{'National ID':id}).catch(ex=>{rollback(undefined,prev);showError('Delete failed: '+ex.message,'training');});
+  callScript('deleteTrainee', {'National ID':id}).catch(ex=>{rollback(undefined,prev);showError('Delete failed: '+ex.message,'training');});
 }
 
-// ── Move ──
-function openMoveModal(id,name){moveTargetId=id;moveTargetName=name;document.getElementById('moveEmpName').textContent=name||'this trainee';document.getElementById('moveStatus').value='working';document.getElementById('moveConfirmBtn').disabled=false;openModal('moveModalOverlay');}
-function closeMoveModal(){closeModal('moveModalOverlay');moveTargetId=null;moveTargetName=null;}
-async function confirmMove(){
+// ── Move to Employees ──
+function openMoveModal(nationalId,name) { moveTargetId=nationalId;moveTargetName=name; document.getElementById('moveEmpName').textContent=name||'this trainee'; document.getElementById('moveStatus').value='working'; document.getElementById('moveConfirmBtn').disabled=false; document.getElementById('moveModalOverlay').style.display='flex'; }
+function closeMoveModal() { document.getElementById('moveModalOverlay').style.display='none'; moveTargetId=null;moveTargetName=null; }
+document.getElementById('moveModalOverlay').addEventListener('click',e=>{if(e.target.id==='moveModalOverlay')closeMoveModal();});
+
+async function confirmMove() {
   if(!moveTargetId||!getSession()){showError('Session expired.','training');closeMoveModal();return;}
-  const id=moveTargetId,name=moveTargetName,status=document.getElementById('moveStatus').value;
-  closeMoveModal(); showSuccess(`${name||'Trainee'} moved to Employees.`,'training');
-  const prevTrn=[...trainingData],prevEmp=[...allData];
+  const id=moveTargetId, name=moveTargetName, status=document.getElementById('moveStatus').value;
+  closeMoveModal(); showSuccess(`${name||'Trainee'} moved to Employees successfully.`,'training');
+  const prevTrn=[...trainingData], prevEmp=[...allData];
   const trainee=trainingData.find(r=>String(r['National ID'])===String(id));
-  if(trainee){allData.unshift({...trainee,Status:status});populateFilters();applyFilters();}
+  if(trainee){allData.push({...trainee,'Status':status}); populateFilters(); applyFilters();}
   optimisticMoveTrn(id);
-  saveCache();
-  callScript('moveToEmployees',{'National ID':id,Status:status}).catch(ex=>{rollback(prevEmp,prevTrn);showError('Move failed: '+ex.message,'training');});
-}
-
-// ── Yubikey ──
-async function loadYubikeyData(forceRefresh=false) {
-  if(!getSession())return;
-  document.getElementById('ybkLoadingState').style.display='block';
-  document.getElementById('ybkTable').style.display='none';
-  document.getElementById('ybkEmptyState').style.display='none';
-  document.getElementById('ybkErrorBanner').style.display='none';
-  try {
-    const res=await fetch(APPS_SCRIPT_URL+'?sheet=yubikey');
-    if(!res.ok) throw new Error('Failed to fetch');
-    const json=await res.json();
-    if(json.error) throw new Error(json.error);
-    yubikeyData=json.yubikey||{dateColumns:[],rows:[]};
-    yubikeyData.rows=yubikeyData.rows.filter(r=>ybkIsMeti(r));
-    buildDateSelector(); renderYubikeyTable();
-  } catch(ex) {
-    document.getElementById('ybkLoadingState').style.display='none';
-    const b=document.getElementById('ybkErrorBanner');
-    b.style.display='block'; b.textContent='Failed to load: '+ex.message;
-  }
-}
-
-function buildDateSelector() {
-  const dates=yubikeyData.dateColumns||[];
-  const container=document.getElementById('ybkDateSelector');
-  if(!dates.length){container.innerHTML='<span style="font-size:12px;color:var(--text-2)">No dates</span>';return;}
-  if(!selectedYbkDate||!dates.includes(selectedYbkDate)) selectedYbkDate=dates[dates.length-1];
-  container.innerHTML=dates.map(d=>`<button class="date-btn${d===selectedYbkDate?' active':''}" onclick="selectYbkDate('${esc(d)}')">${esc(d)}</button>`).join('');
-}
-function selectYbkDate(d){selectedYbkDate=d;buildDateSelector();renderYubikeyTable();}
-
-function renderYubikeyTable() {
-  const search=(document.getElementById('ybkSearch').value||'').toLowerCase();
-  const statusFilter=document.getElementById('ybkStatusFilter').value;
-  const date=selectedYbkDate;
-  if(!date){document.getElementById('ybkLoadingState').style.display='none';document.getElementById('ybkEmptyState').style.display='block';return;}
-  document.getElementById('ybkDateColHeader').textContent=date;
-  let rows=yubikeyData.rows||[];
-  let present=0,absent=0,training=0;
-  rows.forEach(r=>{const v=r.attendance[date]||'';if(ybkIsPresent(v))present++;if(ybkIsAbsent(v))absent++;if(ybkIsTraining(v))training++;});
-  document.getElementById('ybkTotal').textContent=present+training;
-  document.getElementById('ybkPresent').textContent=present;
-  document.getElementById('ybkAbsent').textContent=absent;
-  document.getElementById('ybkTraining').textContent=training;
-  let filtered=rows.filter(r=>{
-    const v=r.attendance[date]||'';
-    const ms=!search||r.name.toLowerCase().includes(search);
-    const ss=!statusFilter||(statusFilter==='present'&&ybkIsPresent(v))||(statusFilter==='absent'&&ybkIsAbsent(v))||(statusFilter==='training'&&ybkIsTraining(v));
-    return ms&&ss;
-  });
-  document.getElementById('ybkLoadingState').style.display='none';
-  document.getElementById('ybkRowCount').textContent=filtered.length+' records';
-  document.getElementById('ybkFooterInfo').textContent=`Showing ${filtered.length} of ${rows.length}`;
-  document.getElementById('ybkFooterTime').textContent=new Date().toLocaleDateString('en-US');
-  if(!filtered.length){document.getElementById('ybkTable').style.display='none';document.getElementById('ybkEmptyState').style.display='block';return;}
-  document.getElementById('ybkEmptyState').style.display='none';
-  document.getElementById('ybkTable').style.display='table';
-  document.getElementById('ybkTableBody').innerHTML=filtered.map(r=>{
-    const v=r.attendance[date]||'';
-    const attClass=ybkIsPresent(v)?'ybk-p':ybkIsAbsent(v)?'ybk-0':ybkIsTraining(v)?'ybk-t':'';
-    const attLabel=ybkIsPresent(v)?(v.toUpperCase()==='TP'?'TP':'P'):ybkIsAbsent(v)?'0':ybkIsTraining(v)?v.toUpperCase():v||'—';
-    const statusBadge=ybkIsPresent(v)?'<span class="badge badge-working">Present</span>':ybkIsTraining(v)?'<span class="badge badge-training">Training</span>':ybkIsAbsent(v)?'<span class="badge badge-resigned">Absent</span>':'<span style="color:var(--text-2)">—</span>';
-    return `<tr>
-      <td><div class="name-cell"><div class="avatar" style="background:var(--purple)">${initials(r.name)}</div><span style="font-weight:600">${esc(r.name)}</span></div></td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-2)">${esc(r.deviceNo||'—')}</td>
-      <td style="color:var(--text-2)">${esc(r.location||'—')}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--accent)">${esc(r.yubikey||'—')}</td>
-      <td style="text-align:center">${v?`<span class="ybk-att ${attClass}">${esc(attLabel)}</span>`:'—'}</td>
-      <td>${statusBadge}</td>
-    </tr>`;
-  }).join('');
+  saveCacheToStorage();
+  callScript('moveToEmployees', {'National ID':id,'Status':status}).catch(ex=>{rollback(prevEmp,prevTrn);showError('Move failed: '+ex.message,'training');});
 }
 
 // ── Sheets ──
-const SHEETS_DATA=[
-  {category:'Attendance',items:[
-    {name:'GT Morning Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/11Ekahw8ZD6xJfFw0MVu8dKIETMP2mYXXDpV6YPaIHfk/edit?gid=1657040379'},
-    {name:'GT Night Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1qWtkAMkB8aJMyGqNAivuhl8P2bmTfLpY6yLqu4nQPAQ/edit?gid=1218236832'},
-    {name:'Over Night Attendance (Master Sheet)',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1SXlXRnAJk0f2tbNh20yZ_2EDa9bo7HQXaQ-CSlVpxKY/edit?pli=1&gid=999998182'},
-    {name:'S.F Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1PPASHHRwPtyaN7_hiDTjVNihqGv9ZxXmN0_LfaNh32Q/edit?gid=735554126'},
-    {name:'AVP Morning Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1xydLswJHJPS6Vry7P7XcjUMdTRJK1vQ-VatN4B4chLI/edit'},
-    {name:'AVP Night Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1u8wcQg38rRIoE_tnmRi0xD_OCq2XwVQWQj3Eg2mXh4g/edit?gid=15901893'},
-    {name:'AVP Overnight Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1-SIZHQfvsBkEvs_5KRjztTMbOHGDCpN0L38Qp0lvXWI/edit'},
-    {name:'UAE Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1TEOmdfUsFy-p29WB9ttj79zMsbCV344r7uNSbouEWFs/edit?gid=507444073'},
-    {name:'Mapping Overnight Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1NEX_9R-kZYlQT8FLks3_1XnDn9JDr8VCyrvNl7hyd44/edit?gid=59640710'},
-    {name:'Labelerslist Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1J_BvZ6AHD4HcpTVf_iACyTJhcu0hx7ehczucAhN2QhM/edit?gid=1562394029'},
-    {name:'Attendance Delays OP',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1DUFehN3sGupWwkIyZO44IL1izYUSbXggtCUiUbxcxUs/edit?gid=0'},
+const SHEETS_DATA = [
+  { category: 'Attendance', items: [
+    { name: 'GT Morning Attendance',               type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/11Ekahw8ZD6xJfFw0MVu8dKIETMP2mYXXDpV6YPaIHfk/edit?gid=1657040379' },
+    { name: 'GT Night Attendance',                 type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1qWtkAMkB8aJMyGqNAivuhl8P2bmTfLpY6yLqu4nQPAQ/edit?gid=1218236832' },
+    { name: 'Over Night Attendance (Master Sheet)',type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1SXlXRnAJk0f2tbNh20yZ_2EDa9bo7HQXaQ-CSlVpxKY/edit?pli=1&gid=999998182' },
+    { name: 'S.F Attendance',                      type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1PPASHHRwPtyaN7_hiDTjVNihqGv9ZxXmN0_LfaNh32Q/edit?gid=735554126' },
+    { name: 'AVP Morning Attendance',              type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1xydLswJHJPS6Vry7P7XcjUMdTRJK1vQ-VatN4B4chLI/edit' },
+    { name: 'AVP Night Attendance',                type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1u8wcQg38rRIoE_tnmRi0xD_OCq2XwVQWQj3Eg2mXh4g/edit?gid=15901893' },
+    { name: 'AVP Overnight Attendance',            type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1-SIZHQfvsBkEvs_5KRjztTMbOHGDCpN0L38Qp0lvXWI/edit' },
+    { name: 'UAE Attendance',                      type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1TEOmdfUsFy-p29WB9ttj79zMsbCV344r7uNSbouEWFs/edit?gid=507444073' },
+    { name: 'Mapping Overnight Attendance',        type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1NEX_9R-kZYlQT8FLks3_1XnDn9JDr8VCyrvNl7hyd44/edit?gid=59640710' },
+    { name: 'Labelerslist Attendance',             type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1J_BvZ6AHD4HcpTVf_iACyTJhcu0hx7ehczucAhN2QhM/edit?gid=1562394029' },
+    { name: 'Attendance delays OP',                type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1DUFehN3sGupWwkIyZO44IL1izYUSbXggtCUiUbxcxUs/edit?gid=0' },
   ]},
-  {category:'Forms',items:[
-    {name:'Form.meti Portal',type:'form',url:'https://docs.google.com/forms/d/e/1FAIpQLSd2Krysi6kd_KWap5iXtNzCY4S_0Pg_HPVHRi4egEAfIoQ8nA/viewform?fbzx=1749840446210905879'},
-    {name:'Ticket IT Form',type:'form',url:'https://forms.office.com/pages/responsepage.aspx?id=aYQGDwXYz0CRSZQnl3spqoBseVUc2XpLiUQiVakwohlUQzcyQjVEVFhIN0gxVzlFSzJaVzU1S0U3Ni4u&route=shorturl'},
-    {name:'HR Coordination Form',type:'form',url:'https://docs.google.com/forms/d/1usvBwXC1kRc2QIF5hgu1fBJVVErhRlPvvj0CwX7GC5o/edit'},
-    {name:'Official Documents Request',type:'form',url:'https://forms.office.com/pages/responsepage.aspx?id=aYQGDwXYz0CRSZQnl3spqleEX5dr1YZEmF92kQyPQQFUMU1MTU5TSjc0NEdETlhJSjNGWTlBS1JCUSQlQCN0PWcu&origin=QRCode&route=shorturl'},
-    {name:'Job Application Form',type:'form',url:'https://forms.office.com/r/r7c0wmSYxB'},
-    {name:'Training Feedback Form',type:'form',url:'https://docs.google.com/forms/d/e/1FAIpQLSdtzKD3ZI3z6s32rPbayAZf4gKOaCCfWvM1k5BZAq1wkY14CQ/viewform?pli=1'},
-    {name:'Metiportal Admin',type:'form',url:'https://portal-meti.microengineering.ca/'},
+  { category: 'Forms', items: [
+    { name: 'Form.meti portal',                    type: 'form', url: 'https://docs.google.com/forms/d/e/1FAIpQLSd2Krysi6kd_KWap5iXtNzCY4S_0Pg_HPVHRi4egEAfIoQ8nA/viewform?fbzx=1749840446210905879' },
+    { name: 'Ticket IT Form',                      type: 'form', url: 'https://forms.office.com/pages/responsepage.aspx?id=aYQGDwXYz0CRSZQnl3spqoBseVUc2XpLiUQiVakwohlUQzcyQjVEVFhIN0gxVzlFSzJaVzU1S0U3Ni4u&route=shorturl' },
+    { name: 'HR Coordination Form',                type: 'form', url: 'https://docs.google.com/forms/d/1usvBwXC1kRc2QIF5hgu1fBJVVErhRlPvvj0CwX7GC5o/edit' },
+    { name: 'Official Documents Request Form',     type: 'form', url: 'https://forms.office.com/pages/responsepage.aspx?id=aYQGDwXYz0CRSZQnl3spqleEX5dr1YZEmF92kQyPQQFUMU1MTU5TSjc0NEdETlhJSjNGWTlBS1JCUSQlQCN0PWcu&origin=QRCode&route=shorturl' },
+    { name: 'Job Application Form',                type: 'form', url: 'https://forms.office.com/r/r7c0wmSYxB' },
+    { name: 'Training Feedback Form',              type: 'form', url: 'https://docs.google.com/forms/d/e/1FAIpQLSdtzKD3ZI3z6s32rPbayAZf4gKOaCCfWvM1k5BZAq1wkY14CQ/viewform?pli=1' },
+    { name: 'Metiportal_Admin',                    type: 'form', url: 'https://portal-meti.microengineering.ca/' },
   ]},
-  {category:'Operations & Reports',items:[
-    {name:'Yubikey Sheet',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1RvdCM39Dz4-IT2k-w9sj0Ks7ExvdDACYGTceDDa41ks/edit?gid=282349957'},
-    {name:'Onboarding',type:'sheet',url:'https://microengineeringgroup-my.sharepoint.com/:x:/r/personal/mohamed_ayman_microengineering_ca/_layouts/15/Doc.aspx?sourcedoc=%7BDF1DED35-1ED4-4803-A7DA-A14D4BE78AFA%7D&file=Labeling_Training_OnBoarding_Process.xlsx&action=default&mobileredirect=true'},
-    {name:'Over Time Operation',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1R2045uoA6ICYqEuLB-wC2rsqbcM9lMbaFmM-nCw_Jko/edit?gid=682881054'},
-    {name:'IT Issues Follow Up',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1YRA6octdldd3QTQtJiXX9bkueGPfR7-i9I4QHGQfUU0/edit?usp=drivesdk'},
-    {name:'Labeler OverTime',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1W2zitOpu5hamNuGQVVfZr0gCNqtsNEVntVes-80CoBc/edit?gid=383404338'},
-    {name:'Violation Report',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1pQ6hxfVJmkaS0VtxyWhAG40Dj2HOY053SMgYm3OTdUg/edit?gid=0'},
-    {name:'الأوراق المسلمة',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1V_FnuaBV4s9vLHYizGwPl-AFc5MMA1eviSw7iouxV6Q/edit?gid=0'},
-    {name:'Master New Hire Dataset',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1t3IATJAHtlrMur9QTuqcrbzEypi_oLOwnWA9c8WmrRw/edit?gid=0'},
+  { category: 'Operations & Reports', items: [
+    { name: 'Yupikey sheet',                       type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1RvdCM39Dz4-IT2k-w9sj0Ks7ExvdDACYGTceDDa41ks/edit?gid=282349957' },
+    { name: 'Onboarding',                          type: 'sheet', url: 'https://microengineeringgroup-my.sharepoint.com/:x:/r/personal/mohamed_ayman_microengineering_ca/_layouts/15/Doc.aspx?sourcedoc=%7BDF1DED35-1ED4-4803-A7DA-A14D4BE78AFA%7D&file=Labeling_Training_OnBoarding_Process.xlsx&action=default&mobileredirect=true' },
+    { name: 'Over Time Operation',                 type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1R2045uoA6ICYqEuLB-wC2rsqbcM9lMbaFmM-nCw_Jko/edit?gid=682881054' },
+    { name: 'IT Issues Follow Up',                 type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1YRA6octdldd3QTQtJiXX9bkueGPfR7-i9I4QHGQfUU0/edit?usp=drivesdk' },
+    { name: 'Labeler OverTime',                    type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1W2zitOpu5hamNuGQVVfZr0gCNqtsNEVntVes-80CoBc/edit?gid=383404338' },
+    { name: 'Violation Report',                    type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1pQ6hxfVJmkaS0VtxyWhAG40Dj2HOY053SMgYm3OTdUg/edit?gid=0' },
+    { name: 'الأوراق المسلمة',                     type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1V_FnuaBV4s9vLHYizGwPl-AFc5MMA1eviSw7iouxV6Q/edit?gid=0' },
+    { name: 'Master New Hire - Dataset',           type: 'sheet', url: 'https://docs.google.com/spreadsheets/d/1t3IATJAHtlrMur9QTuqcrbzEypi_oLOwnWA9c8WmrRw/edit?gid=0' },
   ]},
 ];
 
-const sheetSvg='<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>';
-const formSvg='<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
-const arrowSvg='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+function sheetIconSvg(type) {
+  if(type==='form') return '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
+  return '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>';
+}
 
 function renderSheets() {
   const q=(document.getElementById('sheetsSearchInput').value||'').toLowerCase();
-  let html='';
+  const container=document.getElementById('sheetsContainer');
+  let anyResults=false, html='';
   SHEETS_DATA.forEach(group=>{
     const items=group.items.filter(it=>!q||it.name.toLowerCase().includes(q));
-    if(!items.length)return;
-    html+=`<div class="sheets-cat">
-      <div class="sheets-cat-head"><span class="sheets-cat-title">${esc(group.category)}</span><span class="sheets-cat-count">${items.length}</span></div>
+    if(items.length===0)return;
+    anyResults=true;
+    html+=`<div class="sheets-category">
+      <div class="sheets-category-head"><span class="sheets-category-title">${escapeHTML(group.category)}</span><span class="sheets-category-count">${items.length}</span></div>
       <div class="sheets-grid">${items.map(it=>`
-        <a class="sheet-item" href="${esc(it.url)}" target="_blank" rel="noopener noreferrer">
-          <div class="sheet-ico ${it.type}">${it.type==='form'?formSvg:sheetSvg}</div>
-          <div class="sheet-info"><div class="sheet-name">${esc(it.name)}</div><div class="sheet-type">${it.type}</div></div>
-          <div class="sheet-arrow">${arrowSvg}</div>
+        <a class="sheet-card" href="${escapeHTML(it.url)}" target="_blank" rel="noopener noreferrer">
+          <div class="sheet-icon ${it.type==='form'?'form':''}">${sheetIconSvg(it.type)}</div>
+          <div class="sheet-info"><div class="sheet-name">${escapeHTML(it.name)}</div><div class="sheet-type">${it.type==='form'?'Form':'Sheet'}</div></div>
+          <svg class="sheet-open" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         </a>`).join('')}
       </div>
     </div>`;
   });
-  document.getElementById('sheetsContainer').innerHTML=html||'<div style="color:var(--text-2);font-size:13px">No results</div>';
+  container.innerHTML=anyResults?html:`<div class="sheets-empty">No sheets match your search</div>`;
 }
 </script>
 </body>
