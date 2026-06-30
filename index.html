@@ -964,27 +964,15 @@ function renderNasrCityReport(rows, date) {
   const wlaRows = nasrRows.filter(r => ybkIsWLA(r.deviceNo));
   const wlaCount = wlaRows.length;
 
-  const qtcSubKey = r => {
-    const v = String(r.deviceNo||'').trim().toUpperCase();
-    if (v === 'TRAINING TEAM') return 'Training Team';
-    if (v === 'QUALITY TEAM') return 'Quality Team';
-    if (v === 'QTC') return 'QTC';
-    return null;
-  };
-  const trainingTeamRows = nasrRows.filter(r => qtcSubKey(r) === 'Training Team');
-  const qualityTeamRows  = nasrRows.filter(r => qtcSubKey(r) === 'Quality Team');
-  const qtcOnlyRows      = nasrRows.filter(r => qtcSubKey(r) === 'QTC');
+  // ✅ Hiring Team = everyone (non-WLA) whose attendance status on this date is Training (T/T1/T2/T3)
+  const hiringTeamRows = nasrRows.filter(r => !ybkIsWLA(r.deviceNo) && ybkIsTraining(r.attendance[date] || ''));
+  const hiringTeamCount = hiringTeamRows.length;
 
   const stlCount = 1; // fixed, per request
-  const stlTrainingQuality = stlCount + trainingTeamRows.length + qualityTeamRows.length + qtcOnlyRows.length;
+  const stlTrainingQuality = stlCount + hiringTeamCount;
 
-  // Hiring Team = Training Team (per user)
-  const hiringTeamCount = trainingTeamRows.length;
-
-  const labelerRows = nasrRows.filter(r => !ybkIsWLA(r.deviceNo) && qtcSubKey(r) === null && /labeler/i.test(r.role || ''));
-  // role isn't part of yubikey rows by default — fall back to matching against allData by national id isn't available here,
-  // so instead treat "labelers" as everyone not in WLA/QTC-group (the remaining bucket), which matches the report's intent.
-  const labelerPool = nasrRows.filter(r => !ybkIsWLA(r.deviceNo) && qtcSubKey(r) === null);
+  // ✅ Labelers = everyone left after removing WLA and the Training/Hiring group above
+  const labelerPool = nasrRows.filter(r => !ybkIsWLA(r.deviceNo) && !hiringTeamRows.includes(r));
   const labelerCount = labelerPool.length;
   const labelerAbsentCount = labelerPool.filter(r => ybkIsAbsent(r.attendance[date] || '')).length;
 
