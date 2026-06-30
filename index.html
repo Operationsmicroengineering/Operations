@@ -742,16 +742,22 @@ function renderSiteCards(rows, date) {
 
     // ✅ Insert the Nasr City flash drive count card right after the Nasr City site card
     if (group.key === 'nasr_city') {
-      // Nasr City buffer count (people based in Nasr City with attendance === "-"/"E", OR with no yubikey value recorded at all, regardless of attendance status)
-      let nasrCityBufferTotal = 0;
+      // ✅ Nasr City buffer breakdown: anyone (non-WLA) in Nasr City with attendance "-"/"E" OR no yubikey value at all.
+      // Split by what their attendance status WOULD classify as: Training, Present (Production), or Absent.
+      let nasrCityBufferTraining = 0, nasrCityBufferProduction = 0, nasrCityBufferAbsent = 0;
       rows.forEach(r => {
         const loc = (r.location || '').trim().toLowerCase();
         if (getSiteForLocation(loc) !== 'nasr_city') return;
         if (ybkIsWLA(r.deviceNo)) return; // WLA handled separately, has no real yubikey field by design
         const v = r.attendance[date] || '';
         const noYubikeyValue = !String(r.yubikey || '').trim();
-        if (ybkIsBuffer(v) || noYubikeyValue) nasrCityBufferTotal++;
+        if (!ybkIsBuffer(v) && !noYubikeyValue) return; // has a real yubikey and a normal status — not buffer
+        if (ybkIsTraining(v)) nasrCityBufferTraining++;
+        else if (ybkIsPresent(v)) nasrCityBufferProduction++;
+        else if (ybkIsAbsent(v)) nasrCityBufferAbsent++;
+        else nasrCityBufferAbsent++; // dash/E with no clearer status — bucket under Absent as a fallback
       });
+      const nasrCityBufferTotal = nasrCityBufferTraining + nasrCityBufferProduction + nasrCityBufferAbsent;
 
       html += `
       <div class="site-card">
@@ -786,6 +792,18 @@ function renderSiteCards(rows, date) {
           <div style="display:flex;align-items:center;gap:6px">
             <div class="site-totals">
               <div class="site-total-item"><div class="site-total-val" style="color:var(--text-0)">${nasrCityBufferTotal}</div><div class="site-total-lbl">Total</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="site-card-body" style="display:block">
+          <div class="site-locations-grid">
+            <div class="site-loc-card">
+              <div class="site-loc-name">Breakdown</div>
+              <div class="site-loc-stats">
+                <div class="site-loc-stat"><div class="site-loc-stat-val" style="color:var(--ok)">${nasrCityBufferProduction}</div><div class="site-loc-stat-lbl">Production</div></div>
+                <div class="site-loc-stat"><div class="site-loc-stat-val" style="color:var(--bad)">${nasrCityBufferAbsent}</div><div class="site-loc-stat-lbl">Absent</div></div>
+                <div class="site-loc-stat"><div class="site-loc-stat-val" style="color:var(--warn)">${nasrCityBufferTraining}</div><div class="site-loc-stat-lbl">Training</div></div>
+              </div>
             </div>
           </div>
         </div>
