@@ -471,7 +471,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyZNTzCagi159VHeS4Iv91NAn8uXJkF_bIxOlr4piqb0ytSX65D5YdQjyLsacQ8NIabMg/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyZxZAm3jpErYEaMNgTkVJ4bmyA6Y9YYAQSmrbKWcnTDwe3BW9IwKOlXaAzx2dBSWI1ng/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -637,9 +637,16 @@ async function loadData(forceVisible=false){
   }finally{isSyncing=false;}
 }
 
-function callScript(action,payload){
-  fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,data:payload})}).catch(()=>{});
-  return Promise.resolve({success:true});
+async function callScript(action, payload) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action, data: payload })
+  });
+  const json = await res.json();
+  if (json.error) throw new Error(json.error);
+  loadData(true);
+  return json;
 }
 
 // ── Yubikey ──
@@ -796,14 +803,10 @@ function toggleSiteCard(key) {
 }
 
 // ✅ BUFFER + WLA + QTC SPECIAL CARDS RENDERER
-// Buffer card: people whose attendance === "-" on the selected date, EXCLUDING WLA and QTC teams.
-// WLA card: all rows where Device No. === "WLA", split by their attendance value (Present/Buffer/etc).
-// QTC card: all rows where Device No. === "QTC" (Training/Quality Team), split by NC vs SF location bucket.
 function renderSpecialCards(rows, date) {
   const container = document.getElementById('ybkSpecialCards');
   if (!date) { container.innerHTML = ''; return; }
 
-  // ── WLA (Device No. === "WLA"), split by their attendance status ──
   const wlaRows = rows.filter(r => ybkIsWLA(r.deviceNo));
   let wlaPresent = 0, wlaTraining = 0, wlaAbsent = 0, wlaOther = 0;
   wlaRows.forEach(r => {
@@ -815,7 +818,6 @@ function renderSpecialCards(rows, date) {
   });
   const wlaTotal = wlaRows.length;
 
-  // ── QTC group (Device No. = QTC / Training Team / Quality Team), split by sub-team then NC vs SF ──
   const qtcRows = rows.filter(r => ybkIsQTC(r.deviceNo));
   const qtcSubKey = r => {
     const v = String(r.deviceNo||'').trim().toUpperCase();
@@ -823,7 +825,7 @@ function renderSpecialCards(rows, date) {
     if (v === 'QUALITY TEAM') return 'Quality Team';
     return 'QTC';
   };
-  const qtcGroups = new Map(); // subTeam -> Map(bucket -> {present, absent, training})
+  const qtcGroups = new Map();
   qtcRows.forEach(r => {
     const sub = qtcSubKey(r);
     const bucket = getQtcBucket(r.location);
@@ -919,15 +921,6 @@ function renderSpecialCards(rows, date) {
   `;
 }
 
-// ✅ NASR CITY DAILY REPORT
-// Builds the "All Yubikeys GT are in place..." style message, scoped to Nasr City only.
-// Breakdown:
-//   Total yubikey      = everyone in Nasr City with an actual yubikey value, excluding Buffer (no flash), INCLUDING WLA.
-//   yubikey with labelers   = Nasr City, has yubikey, not WLA, not QTC-group, Role contains "Labeler" (incl. Senior Labeler)
-//   yubikey Absent Labelers = same Labelers pool above, but attendance === "0" on selected date
-//   yubikey STL, Training, Quality = fixed at 1 (per user request) + Training Team / Quality Team people in Nasr City with a yubikey
-//   yubikey with hiring team = Training Team people in Nasr City with a yubikey (Hiring Team = Training Team)
-//   yubikey Wla        = WLA team members located in Nasr City with a yubikey
 function renderNasrCityReport(rows, date) {
   const el = document.getElementById('nasrCityReportText');
   if (!el) return;
@@ -942,23 +935,18 @@ function renderNasrCityReport(rows, date) {
 
   const nasrRowsAll = rows.filter(inNasrCity);
 
-  // ✅ WLA team: counted by Present status on this date (NOT by yubikey field — their flash drive number is unknown)
   const wlaRows = nasrRowsAll.filter(r => ybkIsWLA(r.deviceNo) && ybkIsPresent(r.attendance[date] || ''));
   const wlaCount = wlaRows.length;
 
-  // ✅ Everyone else (non-WLA) needs an actual recorded yubikey to count toward the report
   const nasrRows = nasrRowsAll.filter(r => !ybkIsWLA(r.deviceNo)).filter(hasYubikey);
 
-  // ✅ Hiring Team = everyone whose attendance status on this date is Training (T/T1/T2/T3)
   const hiringTeamRows = nasrRows.filter(r => ybkIsTraining(r.attendance[date] || ''));
   const hiringTeamCount = hiringTeamRows.length;
 
-  const stlTrainingQuality = 1; // fixed value, per request
+  const stlTrainingQuality = 1;
 
-  // ✅ Labelers = everyone Present today (excludes WLA + Training/Hiring group); should match the Present count shown in the Nasr City site card
   const labelerPool = nasrRows.filter(r => !hiringTeamRows.includes(r) && ybkIsPresent(r.attendance[date] || ''));
   const labelerCount = labelerPool.length;
-  // ✅ Absent Labelers: counted separately from the same non-WLA/non-Training pool
   const labelerAbsentPool = nasrRows.filter(r => !hiringTeamRows.includes(r) && ybkIsAbsent(r.attendance[date] || ''));
   const labelerAbsentCount = labelerAbsentPool.length;
 
@@ -984,7 +972,6 @@ function copyNasrCityReport() {
   navigator.clipboard.writeText(text).then(() => {
     showSuccess('Report copied to clipboard.');
   }).catch(() => {
-    // fallback for older browsers
     const ta = document.createElement('textarea');
     ta.value = text;
     document.body.appendChild(ta);
@@ -995,13 +982,6 @@ function copyNasrCityReport() {
   });
 }
 
-// ✅ ST. FATIMA DAILY REPORT
-// Format:
-//   Total       = everyone in St. Fatima with an actual yubikey value (excludes Buffer/Empty)
-//   With Labelers = Present count in St. Fatima (matches the Present number on the St. Fatima site card)
-//   Absent Labelers = Absent count in St. Fatima
-//   Empty       = Buffer count in St. Fatima (devices marked Empty/no yubikey assigned)
-//   Training    = Training count in St. Fatima
 function renderStFatimaReport(rows, date) {
   const el = document.getElementById('stFatimaReportText');
   if (!el) return;
@@ -1023,7 +1003,6 @@ function renderStFatimaReport(rows, date) {
   const absentLabelersCount = withYubikey.filter(r => ybkIsAbsent(r.attendance[date] || '')).length;
   const trainingCount = withYubikey.filter(r => ybkIsTraining(r.attendance[date] || '')).length;
 
-  // Empty = Buffer (no yubikey assigned), regardless of attendance status
   const emptyCount = sfRowsAll.filter(r => {
     const v = r.attendance[date] || '';
     return ybkIsBuffer(v) || noYubikeyValue(r);
@@ -1075,27 +1054,20 @@ function renderYubikeyTable(){
   document.getElementById('ybkDateColHeader').textContent=date;
   let rows=yubikeyData.rows||[];
 
-  // ✅ Stats: Present/Training count toward Total Yubikeys. WLA counts in (not separated out).
-  // QTC people are excluded from the top stat counts (Quality/Training team handled separately).
-  // Buffer (-) people are NOT counted toward Total Yubikeys (they don't have one).
   let present=0,absent=0,training=0;
   rows.forEach(r=>{
-    if(ybkIsQTC(r.deviceNo))return; // QTC excluded from top stats — own card
+    if(ybkIsQTC(r.deviceNo))return;
     const v=r.attendance[date]||'';
-    if(ybkIsBuffer(v))return; // excluded from all top counts — they're in the Buffer card instead
-    if(!String(r.yubikey||'').trim())return; // ✅ no yubikey value recorded → Buffer, not Present/Absent/Training
+    if(ybkIsBuffer(v))return;
+    if(!String(r.yubikey||'').trim())return;
     if(ybkIsPresent(v))present++;
     else if(ybkIsAbsent(v))absent++;
     else if(ybkIsTraining(v))training++;
   });
 
-  // ✅ رسم الـ site cards (excludes WLA + QTC + Buffer)
   renderSiteCards(rows, date);
-  // ✅ رسم الـ Buffer + WLA + QTC cards
   renderSpecialCards(rows, date);
-  // ✅ رسم تقرير Nasr City اليومي
   renderNasrCityReport(rows, date);
-  // ✅ رسم تقرير St. Fatima اليومي
   renderStFatimaReport(rows, date);
 
   document.getElementById('ybkTotal').textContent=present+training;
@@ -1103,15 +1075,13 @@ function renderYubikeyTable(){
   document.getElementById('ybkAbsent').textContent=absent;
   document.getElementById('ybkTraining').textContent=training;
 
-  // فلتر الجدول — بيشيل الـ locations اللي مش في أي site (71, Blank Emails, Unknown)
-  // لكن سيب الـ WLA و QTC ظاهرين في الجدول العادي كمان (مع علامة) عشان تقدر تدور عليهم لو حبيت
   let filtered=rows.filter(r=>{
     const loc=(r.location||'').toLowerCase().trim();
     const isWla=ybkIsWLA(r.deviceNo);
     const isQtc=ybkIsQTC(r.deviceNo);
     const inSite=getSiteForLocation(loc)!==null;
-    if(!inSite && !isWla && !isQtc)return false; // ✅ إخفاء 71, Blank Emails, Unknown (إلا لو WLA/QTC)
-    if(!isWla && !String(r.yubikey||'').trim())return false; // ✅ نحسب بس اللي معاهم فلاشة فعلية
+    if(!inSite && !isWla && !isQtc)return false;
+    if(!isWla && !String(r.yubikey||'').trim())return false;
     const v=r.attendance[date]||'';
     const ms=!search||r.name.toLowerCase().includes(search);
     const ss=!statusFilter||(statusFilter==='present'&&ybkIsPresent(v))||(statusFilter==='absent'&&ybkIsAbsent(v))||(statusFilter==='training'&&ybkIsTraining(v));
@@ -1146,7 +1116,6 @@ function renderYubikeyTable(){
   }).join('');
 }
 
-// ── Optimistic ──
 function optimisticAdd(p){allData.unshift(p);populateFilters();applyFilters();saveCache();}
 function optimisticEdit(id,p){const i=allData.findIndex(r=>String(r['National ID'])===String(id));if(i!==-1){allData[i]={...allData[i],...p};populateFilters();applyFilters();saveCache();}}
 function optimisticDelete(id){allData=allData.filter(r=>String(r['National ID'])!==String(id));populateFilters();applyFilters();saveCache();}
@@ -1156,7 +1125,6 @@ function optimisticDeleteTrn(id){trainingData=trainingData.filter(r=>String(r['N
 function optimisticMoveTrn(id){optimisticDeleteTrn(id);}
 function rollback(prevEmp,prevTrn){if(prevEmp!==undefined){allData=prevEmp;populateFilters();applyFilters();}if(prevTrn!==undefined){trainingData=prevTrn;populateTrainingFilters();renderTrainingStats();renderTrainingTable();}saveCache();}
 
-// ── Views ──
 function showView(view){
   ['employees','training','yubikey','sheets'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
@@ -1170,7 +1138,6 @@ function showView(view){
 function showError(msg,scope){const id=scope==='training'?'trainingErrorBanner':'errorBanner';const b=document.getElementById(id);b.style.display='block';b.textContent=msg;document.getElementById(scope==='training'?'trainingSuccessBanner':'successBanner').style.display='none';}
 function showSuccess(msg,scope){const id=scope==='training'?'trainingSuccessBanner':'successBanner';const b=document.getElementById(id);b.style.display='block';b.textContent=msg;document.getElementById(scope==='training'?'trainingErrorBanner':'errorBanner').style.display='none';setTimeout(()=>b.style.display='none',4000);}
 
-// ── Employees ──
 function populateFilters(){
   const sm=new Map();allData.forEach(r=>{const n=normalizeShift(r['Shift']);if(n&&!sm.has(n.toLowerCase()))sm.set(n.toLowerCase(),n);});const shifts=[...sm.values()].sort();
   const pm=new Map();allData.forEach(r=>{const p=(r['Project']||'').trim();if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),normalizeProject(p));});const projects=[...pm.values()].sort();
@@ -1218,7 +1185,6 @@ function renderTable(data){
   }).join('');
 }
 
-// ── Training ──
 function populateTrainingFilters(){
   const pm=new Map();trainingData.forEach(r=>{const p=(r['Project']||'').trim();if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),normalizeProject(p));});const projects=[...pm.values()].sort();
   const sm=new Map();trainingData.forEach(r=>{const s=normalizeShift(r['Shift']);if(s&&!sm.has(s.toLowerCase()))sm.set(s.toLowerCase(),s);});const shifts=[...sm.values()].sort();
@@ -1252,7 +1218,6 @@ function renderTrainingTable(){
   }).join('');
 }
 
-// ── Dropdown helpers ──
 function allUniqueValues(field,normFn){const map=new Map();[...allData,...trainingData].forEach(r=>{let v=(r[field]||'').toString().trim();if(!v)return;if(normFn)v=normFn(v);const k=v.toLowerCase();if(!map.has(k))map.set(k,v);});return[...map.values()].sort((a,b)=>a.localeCompare(b));}
 function populateSelect(selId,otherId,values,current){const sel=document.getElementById(selId),other=document.getElementById(otherId);sel.innerHTML=values.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('')+'<option value="__other__">+ Add new...</option>';other.style.display='none';other.value='';if(current){const match=values.find(v=>v.toLowerCase()===current.toLowerCase());if(match){sel.value=match;}else{sel.value='__other__';other.style.display='block';other.value=current;}}else sel.selectedIndex=0;}
 function handleSelectOther(sel,otherId){document.getElementById(otherId).style.display=sel.value==='__other__'?'block':'none';}
@@ -1265,7 +1230,6 @@ function populateModalDropdowns(prefix,current){
   populateSelect(`${prefix}Location`,`${prefix}LocationOther`,locations,current?current['Location']:'');
 }
 
-// ── Add Employee ──
 function openAddModal(){document.getElementById('addFormError').style.display='none';document.getElementById('addEmployeeForm').reset();populateModalDropdowns('add',null);document.getElementById('addModalOverlay').style.display='flex';}
 function closeAddModal(){document.getElementById('addModalOverlay').style.display='none';}
 document.getElementById('addModalOverlay').addEventListener('click',e=>{if(e.target.id==='addModalOverlay')closeAddModal();});
@@ -1280,7 +1244,6 @@ async function handleAddEmployee(e){
   callScript('add',payload).catch(ex=>{rollback(prev,undefined);showError('Add failed: '+ex.message);}).finally(()=>{btn.disabled=false;});
 }
 
-// ── Edit Employee ──
 function openEditModal(nationalId){const emp=allData.find(r=>String(r['National ID'])===String(nationalId));if(!emp)return;document.getElementById('editFormError').style.display='none';document.getElementById('editNationalId').value=emp['National ID']||'';document.getElementById('editName').value=emp['Name']||'';populateModalDropdowns('edit',emp);document.getElementById('editStatus').value=isResigned(emp['Status'])?'resigned':'working';document.getElementById('editModalOverlay').style.display='flex';}
 function closeEditModal(){document.getElementById('editModalOverlay').style.display='none';}
 document.getElementById('editModalOverlay').addEventListener('click',e=>{if(e.target.id==='editModalOverlay')closeEditModal();});
@@ -1295,7 +1258,6 @@ async function handleEditEmployee(e){
   callScript('edit',payload).catch(ex=>{rollback(prev,undefined);showError('Edit failed: '+ex.message);}).finally(()=>{btn.disabled=false;});
 }
 
-// ── Delete Employee ──
 function openDeleteModal(id,name){deleteTargetId=id;deleteTargetName=name;document.getElementById('deleteEmpName').textContent=name||'this employee';document.getElementById('deleteConfirmBtn').disabled=false;document.getElementById('deleteModalOverlay').style.display='flex';}
 function closeDeleteModal(){document.getElementById('deleteModalOverlay').style.display='none';deleteTargetId=null;deleteTargetName=null;}
 document.getElementById('deleteModalOverlay').addEventListener('click',e=>{if(e.target.id==='deleteModalOverlay')closeDeleteModal();});
@@ -1306,7 +1268,6 @@ async function confirmDelete(){
   callScript('delete',{'National ID':id}).catch(ex=>{rollback(prev,undefined);showError('Delete failed: '+ex.message);});
 }
 
-// ── Add Trainee ──
 function openAddTraineeModal(){document.getElementById('addTraineeFormError').style.display='none';document.getElementById('addTraineeForm').reset();populateModalDropdowns('trnAdd',null);document.getElementById('addTraineeModalOverlay').style.display='flex';}
 function closeAddTraineeModal(){document.getElementById('addTraineeModalOverlay').style.display='none';}
 document.getElementById('addTraineeModalOverlay').addEventListener('click',e=>{if(e.target.id==='addTraineeModalOverlay')closeAddTraineeModal();});
@@ -1321,7 +1282,6 @@ async function handleAddTrainee(e){
   callScript('addTrainee',payload).catch(ex=>{rollback(undefined,prev);showError('Add failed: '+ex.message,'training');}).finally(()=>{btn.disabled=false;});
 }
 
-// ── Edit Trainee ──
 function openEditTraineeModal(nationalId){const trn=trainingData.find(r=>String(r['National ID'])===String(nationalId));if(!trn)return;document.getElementById('editTraineeFormError').style.display='none';document.getElementById('trnEditNationalId').value=trn['National ID']||'';document.getElementById('trnEditName').value=trn['Name']||'';populateModalDropdowns('trnEdit',trn);document.getElementById('editTraineeModalOverlay').style.display='flex';}
 function closeEditTraineeModal(){document.getElementById('editTraineeModalOverlay').style.display='none';}
 document.getElementById('editTraineeModalOverlay').addEventListener('click',e=>{if(e.target.id==='editTraineeModalOverlay')closeEditTraineeModal();});
@@ -1336,7 +1296,6 @@ async function handleEditTrainee(e){
   callScript('editTrainee',payload).catch(ex=>{rollback(undefined,prev);showError('Edit failed: '+ex.message,'training');}).finally(()=>{btn.disabled=false;});
 }
 
-// ── Delete Trainee ──
 function openDeleteTraineeModal(id,name){deleteTraineeTargetId=id;deleteTraineeTargetName=name;document.getElementById('deleteTraineeName').textContent=name||'this trainee';document.getElementById('deleteTraineeConfirmBtn').disabled=false;document.getElementById('deleteTraineeModalOverlay').style.display='flex';}
 function closeDeleteTraineeModal(){document.getElementById('deleteTraineeModalOverlay').style.display='none';deleteTraineeTargetId=null;deleteTraineeTargetName=null;}
 document.getElementById('deleteTraineeModalOverlay').addEventListener('click',e=>{if(e.target.id==='deleteTraineeModalOverlay')closeDeleteTraineeModal();});
@@ -1347,7 +1306,6 @@ async function confirmDeleteTrainee(){
   callScript('deleteTrainee',{'National ID':id}).catch(ex=>{rollback(undefined,prev);showError('Delete failed: '+ex.message,'training');});
 }
 
-// ── Move ──
 function openMoveModal(id,name){moveTargetId=id;moveTargetName=name;document.getElementById('moveEmpName').textContent=name||'this trainee';document.getElementById('moveStatus').value='working';document.getElementById('moveConfirmBtn').disabled=false;document.getElementById('moveModalOverlay').style.display='flex';}
 function closeMoveModal(){document.getElementById('moveModalOverlay').style.display='none';moveTargetId=null;moveTargetName=null;}
 document.getElementById('moveModalOverlay').addEventListener('click',e=>{if(e.target.id==='moveModalOverlay')closeMoveModal();});
@@ -1362,7 +1320,6 @@ async function confirmMove(){
   callScript('moveToEmployees',{'National ID':id,'Status':status}).catch(ex=>{rollback(prevEmp,prevTrn);showError('Move failed: '+ex.message,'training');});
 }
 
-// ── Sheets ──
 const SHEETS_DATA=[
   {category:'Attendance',items:[
     {name:'GT Morning Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/11Ekahw8ZD6xJfFw0MVu8dKIETMP2mYXXDpV6YPaIHfk/edit?gid=1657040379'},
