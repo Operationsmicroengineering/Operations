@@ -184,17 +184,40 @@
   .ybk-history-table th { font-size:9.5px; padding:10px 14px; }
   .ybk-history-table td { padding:11px 14px; font-size:13px; }
   .ybk-date-col { min-width:70px; text-align:center; }
-  .ybk-location-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-bottom:1.5rem; }
-  .ybk-loc-card { background:var(--bg-1); border:1px solid var(--line); border-radius:10px; padding:1rem 1.2rem; box-shadow:var(--shadow-card); }
-  .ybk-loc-title { font-size:13px; font-weight:700; color:var(--text-0); margin-bottom:10px; }
-  .ybk-loc-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
-  .ybk-loc-stat { text-align:center; background:var(--bg-2); border-radius:6px; padding:6px 4px; }
-  .ybk-loc-stat-val { font-size:18px; font-weight:800; font-variant-numeric:tabular-nums; }
-  .ybk-loc-stat-lbl { font-family:JetBrains Mono,monospace; font-size:9px; color:var(--text-2); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px; }
+
+  /* ═══════════════════════════════════════════
+     SITE CARDS — Nasr City / St. Fatima
+  ═══════════════════════════════════════════ */
+  .ybk-sites-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px; margin-bottom:1.5rem; }
+  .site-card { background:var(--bg-1); border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-card); transition:border-color 0.2s; }
+  .site-card:hover { border-color:var(--purple-line); }
+  .site-card-header { padding:1.1rem 1.4rem; cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none; transition:background 0.15s; }
+  .site-card-header:hover { background:var(--bg-2); }
+  .site-card-left { display:flex; align-items:center; gap:12px; }
+  .site-icon { width:38px; height:38px; border-radius:9px; background:var(--purple-dim); border:1px solid var(--purple-line); color:var(--purple); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .site-name { font-size:15px; font-weight:700; color:var(--text-0); }
+  .site-sub { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--text-2); letter-spacing:0.5px; margin-top:2px; }
+  .site-totals { display:flex; align-items:center; gap:18px; }
+  .site-total-item { text-align:center; }
+  .site-total-val { font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1; }
+  .site-total-lbl { font-family:'JetBrains Mono',monospace; font-size:8.5px; color:var(--text-2); text-transform:uppercase; letter-spacing:0.5px; margin-top:3px; }
+  .site-chevron { color:var(--text-2); transition:transform 0.25s; flex-shrink:0; margin-left:8px; }
+  .site-card.open .site-chevron { transform:rotate(180deg); }
+  .site-card-body { display:none; border-top:1px solid var(--line); padding:1rem 1.4rem 1.2rem; }
+  .site-card.open .site-card-body { display:block; }
+  .site-locations-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; }
+  .site-loc-card { background:var(--bg-2); border:1px solid var(--line); border-radius:8px; padding:0.85rem 1rem; }
+  .site-loc-name { font-size:12px; font-weight:700; color:var(--text-0); margin-bottom:8px; }
+  .site-loc-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; }
+  .site-loc-stat { text-align:center; background:var(--bg-1); border-radius:5px; padding:5px 3px; }
+  .site-loc-stat-val { font-size:16px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .site-loc-stat-lbl { font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text-2); text-transform:uppercase; letter-spacing:0.3px; margin-top:2px; }
+
   @media (max-width:640px) {
     main { padding:1.25rem; } nav { padding:0 1.25rem; }
     .nav-brand-text .subtitle { display:none; } .nav-user { display:none; }
     .form-row { grid-template-columns:1fr; } .nav-tab span.tab-label-full { display:none; }
+    .site-totals { gap:10px; } .site-total-val { font-size:18px; }
   }
 </style>
 </head>
@@ -251,6 +274,7 @@
   </nav>
 
   <main>
+    <!-- EMPLOYEES VIEW -->
     <div id="employeesView">
       <div class="error-banner" id="errorBanner"></div>
       <div class="success-banner" id="successBanner"></div>
@@ -289,6 +313,7 @@
       </div>
     </div>
 
+    <!-- TRAINING VIEW -->
     <div id="trainingView" style="display:none">
       <div class="error-banner" id="trainingErrorBanner"></div>
       <div class="success-banner" id="trainingSuccessBanner"></div>
@@ -317,6 +342,7 @@
       </div>
     </div>
 
+    <!-- YUBIKEY VIEW -->
     <div id="yubikeyView" style="display:none">
       <div class="error-banner" id="ybkErrorBanner"></div>
       <div class="ybk-summary-grid">
@@ -325,16 +351,24 @@
         <div class="ybk-summary-card" style="--sc-tint:var(--bad-dim)"><div class="ybk-summary-label">Absent</div><div class="ybk-summary-value" id="ybkAbsent" style="color:var(--bad)">—</div></div>
         <div class="ybk-summary-card" style="--sc-tint:var(--warn-dim)"><div class="ybk-summary-label">Training</div><div class="ybk-summary-value" id="ybkTraining" style="color:var(--warn)">—</div></div>
       </div>
+
+      <!-- Date selector + Refresh -->
       <div class="toolbar" style="margin-bottom:1.5rem">
         <span class="ybk-date-label">Select date:</span>
         <div class="ybk-date-selector" id="ybkDateSelector"><span style="font-size:13px;color:var(--text-2)">Loading dates...</span></div>
         <div style="margin-left:auto"><button class="btn-ghost" onclick="loadYubikeyData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button></div>
       </div>
+
+      <!-- Search + Status filter -->
       <div class="toolbar">
         <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="ybkSearch" placeholder="Search by name..." oninput="renderYubikeyTable()"></div>
         <select id="ybkStatusFilter" onchange="renderYubikeyTable()"><option value="">All statuses</option><option value="present">Present (P / TP)</option><option value="absent">Absent (0)</option><option value="training">Training (T)</option></select>
       </div>
-      <div class="ybk-location-grid" id="ybkLocationGrid"></div>
+
+      <!-- ✅ Site Cards (Nasr City + St. Fatima) -->
+      <div class="ybk-sites-grid" id="ybkSitesGrid"></div>
+
+      <!-- Records table -->
       <div class="ybk-history-card">
         <div class="ybk-history-header"><span class="ybk-history-title">Yubikey records</span><span class="table-count" id="ybkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
         <div class="ybk-scroll">
@@ -346,6 +380,7 @@
       </div>
     </div>
 
+    <!-- SHEETS VIEW -->
     <div id="sheetsView" style="display:none">
       <div class="sheets-toolbar"><div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="sheetsSearchInput" placeholder="Search sheets and forms..." oninput="renderSheets()"></div></div>
       <div id="sheetsContainer"></div>
@@ -378,30 +413,52 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyYibhV1E0TaG3JDrVof5B3WgqO0n0zZScMDKJodRORH7nD4xUzr7upTzZUtVg0Vsc7Lg/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxXvcbn7S3rwUYERAXNwjNaJkfBf9f7M9znSai_fZpue0l4sD59IaRELOYGsxz-VuMq-g/exec';
 
-// ── Cache في localStorage (يفضل بعد إغلاق المتصفح) ──
 const CACHE_KEY     = 'ops_cache_v3';
-const CACHE_MAX_AGE = 10 * 60 * 1000; // 10 دقايق
+const CACHE_MAX_AGE = 10 * 60 * 1000;
 const YBK_CACHE_KEY = 'ops_ybk_cache_v3';
+
+// ✅ Site grouping config — لو أضفت location جديد بس حطه هنا
+const SITE_GROUPS = [
+  {
+    key: 'nasr_city',
+    name: 'Nasr City',
+    color: 'var(--signal)',
+    dimColor: 'var(--signal-dim)',
+    lineColor: 'var(--signal-line)',
+    locations: ['room 102', 'room 106', 'room 108', 'nc']
+  },
+  {
+    key: 'st_fatima',
+    name: 'St. Fatima',
+    color: 'var(--ok)',
+    dimColor: 'var(--ok-dim)',
+    lineColor: 'rgba(61,214,140,0.3)',
+    locations: ['s.f', 'sf', 'st']
+  }
+];
+
+// Location → site label (normalized)
+function getSiteForLocation(loc) {
+  const n = (loc || '').toLowerCase().trim();
+  for (const g of SITE_GROUPS) {
+    if (g.locations.includes(n)) return g.key;
+  }
+  return null;
+}
 
 function saveCache() {
   try { localStorage.setItem(CACHE_KEY, JSON.stringify({employees:allData,training:trainingData,ts:Date.now()})); } catch {}
 }
 function loadCache() {
-  try {
-    const r = JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
-    return r && Date.now()-r.ts < CACHE_MAX_AGE ? r : null;
-  } catch { return null; }
+  try { const r=JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); return r&&Date.now()-r.ts<CACHE_MAX_AGE?r:null; } catch { return null; }
 }
 function saveYbkCache() {
   try { localStorage.setItem(YBK_CACHE_KEY, JSON.stringify({data:yubikeyData,ts:Date.now()})); } catch {}
 }
 function loadYbkCache() {
-  try {
-    const r = JSON.parse(localStorage.getItem(YBK_CACHE_KEY)||'null');
-    return r && Date.now()-r.ts < CACHE_MAX_AGE ? r : null;
-  } catch { return null; }
+  try { const r=JSON.parse(localStorage.getItem(YBK_CACHE_KEY)||'null'); return r&&Date.now()-r.ts<CACHE_MAX_AGE?r:null; } catch { return null; }
 }
 
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
@@ -418,7 +475,6 @@ function isResigned(s){return s&&(s.toLowerCase().includes('resign')||s.toLowerC
 function ybkIsPresent(v){const u=String(v||'').trim().toUpperCase();return u==='P'||u==='TP';}
 function ybkIsAbsent(v){return String(v||'').trim()==='0';}
 function ybkIsTraining(v){const u=String(v||'').trim().toUpperCase();return u==='T'||u==='T1'||u==='T2'||u==='T3';}
-function ybkIsMeti(r){return METI_EMAILS.has((r.email||'').trim().toLowerCase());}
 function ybkAttClass(v){if(ybkIsPresent(v))return'ybk-att-p';if(ybkIsAbsent(v))return'ybk-att-0';if(ybkIsTraining(v))return'ybk-att-t';return'';}
 function ybkAttLabel(v){if(ybkIsPresent(v))return v.toUpperCase()==='TP'?'TP':'P';if(ybkIsAbsent(v))return'0';if(ybkIsTraining(v))return v.toUpperCase();return v||'—';}
 
@@ -463,8 +519,6 @@ function showDashboard(){
   document.getElementById('loginSection').style.display='none';
   document.getElementById('dashboardSection').style.display='block';
   document.getElementById('navUserEmail').textContent=getSession()?.user?.email||'';
-
-  // عرض الكاش فوراً — الصفحة تبان في أقل من ثانية
   const cached=loadCache();
   if(cached){
     allData=cached.employees||[];trainingData=cached.training||[];
@@ -504,7 +558,6 @@ async function loadData(forceVisible=false){
 }
 
 function callScript(action,payload){
-  // Fire and forget — مش بنستنى الرد خالص
   fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,data:payload})}).catch(()=>{});
   return Promise.resolve({success:true});
 }
@@ -539,31 +592,136 @@ function buildDateSelector(){
 }
 function selectYbkDate(d){selectedYbkDate=d;buildDateSelector();renderYubikeyTable();}
 
+// ✅ SITE CARDS RENDERER
+function renderSiteCards(rows, date) {
+  const grid = document.getElementById('ybkSitesGrid');
+  if (!date) { grid.innerHTML = ''; return; }
+
+  // احسب stats لكل location
+  const locStats = new Map();
+  rows.forEach(r => {
+    const loc = (r.location || '').trim();
+    if (!loc) return;
+    if (!locStats.has(loc)) locStats.set(loc, {present:0, absent:0, training:0});
+    const v = r.attendance[date] || '';
+    const s = locStats.get(loc);
+    if (ybkIsPresent(v)) s.present++;
+    else if (ybkIsAbsent(v)) s.absent++;
+    else if (ybkIsTraining(v)) s.training++;
+  });
+
+  // ابني HTML لكل site group
+  let html = '';
+  for (const group of SITE_GROUPS) {
+    // لوكيشنات اللي في الداتا فعلاً
+    const foundLocs = [];
+    locStats.forEach((s, loc) => {
+      if (group.locations.includes(loc.toLowerCase())) foundLocs.push({loc, s});
+    });
+    if (!foundLocs.length) continue;
+
+    // مجموع الـ site
+    const total = foundLocs.reduce((a,x)=>({present:a.present+x.s.present, absent:a.absent+x.s.absent, training:a.training+x.s.training}), {present:0,absent:0,training:0});
+
+    // لوكيشن cards
+    const locCardsHtml = foundLocs
+      .sort((a,b)=>a.loc.localeCompare(b.loc))
+      .map(({loc, s}) => `
+        <div class="site-loc-card">
+          <div class="site-loc-name">${esc(loc)}</div>
+          <div class="site-loc-stats">
+            <div class="site-loc-stat"><div class="site-loc-stat-val" style="color:var(--ok)">${s.present}</div><div class="site-loc-stat-lbl">Present</div></div>
+            <div class="site-loc-stat"><div class="site-loc-stat-val" style="color:var(--bad)">${s.absent}</div><div class="site-loc-stat-lbl">Absent</div></div>
+            <div class="site-loc-stat"><div class="site-loc-stat-val" style="color:var(--warn)">${s.training}</div><div class="site-loc-stat-lbl">Training</div></div>
+          </div>
+        </div>`).join('');
+
+    html += `
+      <div class="site-card" id="siteCard_${group.key}">
+        <div class="site-card-header" onclick="toggleSiteCard('${group.key}')">
+          <div class="site-card-left">
+            <div class="site-icon" style="background:${group.dimColor};border-color:${group.lineColor};color:${group.color}">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <div class="site-name">${esc(group.name)}</div>
+              <div class="site-sub">${foundLocs.length} location${foundLocs.length>1?'s':''}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div class="site-totals">
+              <div class="site-total-item"><div class="site-total-val" style="color:var(--ok)">${total.present}</div><div class="site-total-lbl">Present</div></div>
+              <div class="site-total-item"><div class="site-total-val" style="color:var(--bad)">${total.absent}</div><div class="site-total-lbl">Absent</div></div>
+              <div class="site-total-item"><div class="site-total-val" style="color:var(--warn)">${total.training}</div><div class="site-total-lbl">Training</div></div>
+            </div>
+            <svg class="site-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="site-card-body">
+          <div class="site-locations-grid">${locCardsHtml}</div>
+        </div>
+      </div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function toggleSiteCard(key) {
+  const card = document.getElementById('siteCard_' + key);
+  if (card) card.classList.toggle('open');
+}
+
 function renderYubikeyTable(){
   const search=(document.getElementById('ybkSearch').value||'').toLowerCase();
   const statusFilter=document.getElementById('ybkStatusFilter').value;
   const date=selectedYbkDate;
-  if(!date){document.getElementById('ybkLoadingState').style.display='none';document.getElementById('ybkEmptyState').style.display='block';return;}
+  if(!date){
+    document.getElementById('ybkLoadingState').style.display='none';
+    document.getElementById('ybkEmptyState').style.display='block';
+    document.getElementById('ybkSitesGrid').innerHTML='';
+    return;
+  }
   document.getElementById('ybkDateColHeader').textContent=date;
   let rows=yubikeyData.rows||[];
   let present=0,absent=0,training=0;
-  rows.forEach(r=>{const v=r.attendance[date]||'';if(ybkIsPresent(v))present++;if(ybkIsAbsent(v))absent++;if(ybkIsTraining(v))training++;});
-  // Location breakdown
-  const locMap=new Map();
-  rows.forEach(r=>{const loc=r.location||"Unknown";if(!locMap.has(loc))locMap.set(loc,{present:0,absent:0,training:0});const v=r.attendance[date]||"";if(ybkIsPresent(v))locMap.get(loc).present++;else if(ybkIsAbsent(v))locMap.get(loc).absent++;else if(ybkIsTraining(v))locMap.get(loc).training++;});
-  document.getElementById("ybkLocationGrid").innerHTML=[...locMap.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([loc,s])=>`<div class="ybk-loc-card"><div class="ybk-loc-title">${esc(loc)}</div><div class="ybk-loc-stats"><div class="ybk-loc-stat"><div class="ybk-loc-stat-val" style="color:var(--ok)">${s.present}</div><div class="ybk-loc-stat-lbl">Present</div></div><div class="ybk-loc-stat"><div class="ybk-loc-stat-val" style="color:var(--bad)">${s.absent}</div><div class="ybk-loc-stat-lbl">Absent</div></div><div class="ybk-loc-stat"><div class="ybk-loc-stat-val" style="color:var(--warn)">${s.training}</div><div class="ybk-loc-stat-lbl">Training</div></div></div></div>`).join("");
+  rows.forEach(r=>{const v=r.attendance[date]||'';if(ybkIsPresent(v))present++;else if(ybkIsAbsent(v))absent++;else if(ybkIsTraining(v))training++;});
+
+  // ✅ رسم الـ site cards
+  renderSiteCards(rows, date);
+
   document.getElementById('ybkTotal').textContent=present+training;
   document.getElementById('ybkPresent').textContent=present;
   document.getElementById('ybkAbsent').textContent=absent;
   document.getElementById('ybkTraining').textContent=training;
-  let filtered=rows.filter(r=>{const v=r.attendance[date]||'';const ms=!search||r.name.toLowerCase().includes(search);const ss=!statusFilter||(statusFilter==='present'&&ybkIsPresent(v))||(statusFilter==='absent'&&ybkIsAbsent(v))||(statusFilter==='training'&&ybkIsTraining(v));return ms&&ss;});
+
+  // فلتر الجدول — بيشيل الـ locations اللي مش في أي site (71, Blank Emails, Unknown)
+  let filtered=rows.filter(r=>{
+    const loc=(r.location||'').toLowerCase().trim();
+    const inSite=getSiteForLocation(loc)!==null;
+    if(!inSite)return false; // ✅ إخفاء 71, Blank Emails, Unknown
+    const v=r.attendance[date]||'';
+    const ms=!search||r.name.toLowerCase().includes(search);
+    const ss=!statusFilter||(statusFilter==='present'&&ybkIsPresent(v))||(statusFilter==='absent'&&ybkIsAbsent(v))||(statusFilter==='training'&&ybkIsTraining(v));
+    return ms&&ss;
+  });
+
   document.getElementById('ybkLoadingState').style.display='none';
   document.getElementById('ybkRowCount').textContent=filtered.length+' records';
-  document.getElementById('ybkFooterInfo').textContent=`Showing ${filtered.length} of ${rows.length} employees`;
+  document.getElementById('ybkFooterInfo').textContent=`Showing ${filtered.length} employees`;
   document.getElementById('ybkFooterTime').textContent=new Date().toLocaleDateString('en-US');
-  if(!filtered.length){document.getElementById('ybkTable').style.display='none';document.getElementById('ybkEmptyState').style.display='block';return;}
-  document.getElementById('ybkEmptyState').style.display='none';document.getElementById('ybkTable').style.display='table';
-  document.getElementById('ybkTableBody').innerHTML=filtered.map(r=>{const v=r.attendance[date]||'';const initials=esc(r.name.split(' ').map(w=>w[0]).slice(0,2).join(''));return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.deviceNo||'—')}</td><td style="color:var(--text-1)">${esc(r.location||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${ybkAttClass(v)}">${esc(ybkAttLabel(v))}</span>`:'—'}</td><td>${ybkIsPresent(v)?'<span class="badge badge-active">Present</span>':ybkIsTraining(v)?'<span class="badge badge-training">Training</span>':ybkIsAbsent(v)?'<span class="badge badge-resigned">Absent</span>':'<span style="color:var(--text-2);font-size:12px">—</span>'}</td></tr>`;}).join('');
+
+  if(!filtered.length){
+    document.getElementById('ybkTable').style.display='none';
+    document.getElementById('ybkEmptyState').style.display='block';
+    return;
+  }
+  document.getElementById('ybkEmptyState').style.display='none';
+  document.getElementById('ybkTable').style.display='table';
+  document.getElementById('ybkTableBody').innerHTML=filtered.map(r=>{
+    const v=r.attendance[date]||'';
+    const initials=esc(r.name.split(' ').map(w=>w[0]).slice(0,2).join(''));
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.deviceNo||'—')}</td><td style="color:var(--text-1)">${esc(r.location||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${ybkAttClass(v)}">${esc(ybkAttLabel(v))}</span>`:'—'}</td><td>${ybkIsPresent(v)?'<span class="badge badge-active">Present</span>':ybkIsTraining(v)?'<span class="badge badge-training">Training</span>':ybkIsAbsent(v)?'<span class="badge badge-resigned">Absent</span>':'<span style="color:var(--text-2);font-size:12px">—</span>'}</td></tr>`;
+  }).join('');
 }
 
 // ── Optimistic ──
