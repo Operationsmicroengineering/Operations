@@ -741,13 +741,15 @@ function renderSiteCards(rows, date) {
 
     // ✅ Insert the Nasr City flash drive count card right after the Nasr City site card
     if (group.key === 'nasr_city') {
-      // Nasr City buffer count (people based in Nasr City with attendance === "-", i.e. no yubikey assigned)
+      // Nasr City buffer count (people based in Nasr City with attendance === "-"/"E", OR with no yubikey value recorded at all, regardless of attendance status)
       let nasrCityBufferTotal = 0;
       rows.forEach(r => {
         const loc = (r.location || '').trim().toLowerCase();
         if (getSiteForLocation(loc) !== 'nasr_city') return;
+        if (ybkIsWLA(r.deviceNo)) return; // WLA handled separately, has no real yubikey field by design
         const v = r.attendance[date] || '';
-        if (ybkIsBuffer(v)) nasrCityBufferTotal++;
+        const noYubikeyValue = !String(r.yubikey || '').trim();
+        if (ybkIsBuffer(v) || noYubikeyValue) nasrCityBufferTotal++;
       });
 
       html += `
