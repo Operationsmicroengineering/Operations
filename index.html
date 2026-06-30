@@ -215,7 +215,7 @@
   .site-loc-stat-lbl { font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text-2); text-transform:uppercase; letter-spacing:0.3px; margin-top:2px; }
 
   /* ═══════════════════════════════════════════
-     BUFFER + WLA SPECIAL CARDS
+     BUFFER + WLA + QTC SPECIAL CARDS
   ═══════════════════════════════════════════ */
   .special-cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin-bottom:1.5rem; }
   .special-card { background:var(--bg-1); border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-card); }
@@ -233,6 +233,12 @@
   .special-card-row-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
   .special-card-row-val { font-size:18px; font-weight:800; font-variant-numeric:tabular-nums; }
   .special-card-empty { padding:1.5rem 1.4rem; text-align:center; color:var(--text-2); font-size:12.5px; }
+  .qtc-loc-block { background:var(--bg-2); border:1px solid var(--line); border-radius:8px; padding:0.75rem 1rem; }
+  .qtc-loc-title { font-size:12px; font-weight:700; color:var(--text-0); margin-bottom:8px; }
+  .qtc-loc-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .qtc-loc-stat { text-align:center; background:var(--bg-1); border-radius:6px; padding:6px 4px; }
+  .qtc-loc-stat-val { font-size:16px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .qtc-loc-stat-lbl { font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text-2); text-transform:uppercase; letter-spacing:0.3px; margin-top:2px; }
 
   @media (max-width:640px) {
     main { padding:1.25rem; } nav { padding:0 1.25rem; }
@@ -389,7 +395,7 @@
       <!-- ✅ Site Cards (Nasr City + St. Fatima) -->
       <div class="ybk-sites-grid" id="ybkSitesGrid"></div>
 
-      <!-- ✅ Buffer + WLA Special Cards -->
+      <!-- ✅ Buffer + WLA + QTC Special Cards -->
       <div class="special-cards-grid" id="ybkSpecialCards"></div>
 
       <!-- Records table -->
@@ -472,6 +478,16 @@ function getSiteForLocation(loc) {
   return null;
 }
 
+// ✅ Maps a raw location string to a simple "NC" or "SF" bucket label for QTC card grouping.
+// NC bucket = anything tagged under the nasr_city site group OR literally "nc".
+// SF bucket = anything tagged under the st_fatima site group.
+function getQtcBucket(loc) {
+  const site = getSiteForLocation(loc);
+  if (site === 'nasr_city') return 'NC';
+  if (site === 'st_fatima') return 'SF';
+  return 'Other';
+}
+
 function saveCache() {
   try { localStorage.setItem(CACHE_KEY, JSON.stringify({employees:allData,training:trainingData,ts:Date.now()})); } catch {}
 }
@@ -503,6 +519,8 @@ function ybkIsTraining(v){const u=String(v||'').trim().toUpperCase();return u===
 function ybkIsBuffer(v){const t=String(v||'').trim();return t==='-'||t==='–'||t==='—';}
 // ✅ WLA = Device No. column equals "WLA" (case-insensitive)
 function ybkIsWLA(deviceNo){return String(deviceNo||'').trim().toUpperCase()==='WLA';}
+// ✅ QTC = Device No. column equals "QTC" (case-insensitive) — Training/Quality Team
+function ybkIsQTC(deviceNo){return String(deviceNo||'').trim().toUpperCase()==='QTC';}
 function ybkAttClass(v){if(ybkIsPresent(v))return'ybk-att-p';if(ybkIsAbsent(v))return'ybk-att-0';if(ybkIsTraining(v))return'ybk-att-t';if(ybkIsBuffer(v))return'ybk-att-buf';return'';}
 function ybkAttLabel(v){if(ybkIsPresent(v))return v.toUpperCase()==='TP'?'TP':'P';if(ybkIsAbsent(v))return'0';if(ybkIsTraining(v))return v.toUpperCase();if(ybkIsBuffer(v))return'—';return v||'—';}
 
@@ -621,7 +639,7 @@ function buildDateSelector(){
 function selectYbkDate(d){selectedYbkDate=d;buildDateSelector();renderYubikeyTable();}
 
 // ✅ SITE CARDS RENDERER
-// Note: WLA rows are excluded from site cards (they get their own card),
+// Note: WLA and QTC rows are excluded from site cards (each gets its own card),
 // and Buffer rows (attendance === "-") are excluded too (they get their own card).
 function renderSiteCards(rows, date) {
   const grid = document.getElementById('ybkSitesGrid');
@@ -632,6 +650,7 @@ function renderSiteCards(rows, date) {
     const loc = (r.location || '').trim();
     if (!loc) return;
     if (ybkIsWLA(r.deviceNo)) return; // WLA team has its own card
+    if (ybkIsQTC(r.deviceNo)) return; // QTC team has its own card
     const v = r.attendance[date] || '';
     if (ybkIsBuffer(v)) return; // Buffer has its own card
 
@@ -699,18 +718,16 @@ function toggleSiteCard(key) {
   if (card) card.classList.toggle('open');
 }
 
-// ✅ BUFFER + WLA SPECIAL CARDS RENDERER
-// Buffer card: people whose attendance === "-" on the selected date, EXCLUDING WLA team.
-//   Split by what their "status" would otherwise look like — but since attendance IS "-",
-//   we split Buffer by the row's nearest classification context: Training-tagged buffer rows
-//   come from people whose Location/Role marks them under Training; default bucket is "General Buffer".
+// ✅ BUFFER + WLA + QTC SPECIAL CARDS RENDERER
+// Buffer card: people whose attendance === "-" on the selected date, EXCLUDING WLA and QTC teams.
 // WLA card: all rows where Device No. === "WLA", split by their attendance value (Present/Buffer/etc).
+// QTC card: all rows where Device No. === "QTC" (Training/Quality Team), split by NC vs SF location bucket.
 function renderSpecialCards(rows, date) {
   const container = document.getElementById('ybkSpecialCards');
   if (!date) { container.innerHTML = ''; return; }
 
-  // ── Buffer (non-WLA people with attendance === "-") ──
-  const bufferRows = rows.filter(r => !ybkIsWLA(r.deviceNo) && ybkIsBuffer(r.attendance[date] || ''));
+  // ── Buffer (non-WLA, non-QTC people with attendance === "-") ──
+  const bufferRows = rows.filter(r => !ybkIsWLA(r.deviceNo) && !ybkIsQTC(r.deviceNo) && ybkIsBuffer(r.attendance[date] || ''));
   const bufferByLocation = new Map();
   bufferRows.forEach(r => {
     const loc = (r.location || 'Unknown').trim() || 'Unknown';
@@ -730,6 +747,21 @@ function renderSpecialCards(rows, date) {
     else wlaOther++;
   });
   const wlaTotal = wlaRows.length;
+
+  // ── QTC (Device No. === "QTC"), split by NC vs SF location bucket ──
+  const qtcRows = rows.filter(r => ybkIsQTC(r.deviceNo));
+  const qtcBuckets = new Map(); // bucket -> {present, absent, training}
+  qtcRows.forEach(r => {
+    const bucket = getQtcBucket(r.location);
+    if (!qtcBuckets.has(bucket)) qtcBuckets.set(bucket, {present:0, absent:0, training:0});
+    const v = r.attendance[date] || '';
+    const s = qtcBuckets.get(bucket);
+    if (ybkIsPresent(v)) s.present++;
+    else if (ybkIsAbsent(v)) s.absent++;
+    else if (ybkIsTraining(v)) s.training++;
+  });
+  const qtcTotal = qtcRows.length;
+  const qtcOrder = ['NC', 'SF', 'Other'];
 
   const bufferRowsHtml = bufferByLocation.size
     ? [...bufferByLocation.entries()].sort((a,b)=>b[1]-a[1]).map(([loc,count]) => `
@@ -758,6 +790,21 @@ function renderSpecialCards(rows, date) {
     </div>
     ${wlaOther ? `<div class="special-card-row"><span class="special-card-row-label"><span class="special-card-row-dot" style="background:var(--text-2)"></span>Other</span><span class="special-card-row-val" style="color:var(--text-0)">${wlaOther}</span></div>` : ''}
   `;
+
+  const qtcBlocksHtml = qtcBuckets.size
+    ? qtcOrder.filter(b => qtcBuckets.has(b)).map(bucket => {
+        const s = qtcBuckets.get(bucket);
+        return `
+        <div class="qtc-loc-block">
+          <div class="qtc-loc-title">${esc(bucket)}</div>
+          <div class="qtc-loc-stats">
+            <div class="qtc-loc-stat"><div class="qtc-loc-stat-val" style="color:var(--ok)">${s.present}</div><div class="qtc-loc-stat-lbl">Present</div></div>
+            <div class="qtc-loc-stat"><div class="qtc-loc-stat-val" style="color:var(--bad)">${s.absent}</div><div class="qtc-loc-stat-lbl">Absent</div></div>
+            <div class="qtc-loc-stat"><div class="qtc-loc-stat-val" style="color:var(--warn)">${s.training}</div><div class="qtc-loc-stat-lbl">Training</div></div>
+          </div>
+        </div>`;
+      }).join('')
+    : '';
 
   container.innerHTML = `
     <div class="special-card">
@@ -800,6 +847,26 @@ function renderSpecialCards(rows, date) {
         ${wlaTotal ? wlaRowsHtml : '<div class="special-card-empty">No WLA records for this date</div>'}
       </div>
     </div>
+    <div class="special-card">
+      <div class="special-card-header">
+        <div class="special-card-title">
+          <div class="special-card-icon" style="background:var(--warn-dim);border:1px solid var(--warn-line);color:var(--warn)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div>
+            <div class="special-card-name">QTC Team</div>
+            <div class="special-card-sub">DEVICE NO. = QTC · TRAINING / QUALITY</div>
+          </div>
+        </div>
+        <div class="special-card-total">
+          <div class="special-card-total-val" style="color:var(--warn)">${qtcTotal}</div>
+          <div class="special-card-total-lbl">Total</div>
+        </div>
+      </div>
+      <div class="special-card-body">
+        ${qtcTotal ? qtcBlocksHtml : '<div class="special-card-empty">No QTC records for this date</div>'}
+      </div>
+    </div>
   `;
 }
 
@@ -817,10 +884,12 @@ function renderYubikeyTable(){
   document.getElementById('ybkDateColHeader').textContent=date;
   let rows=yubikeyData.rows||[];
 
-  // ✅ Stats: Present/Training count toward Total Yubikeys. WLA counts as Present (not separated out).
+  // ✅ Stats: Present/Training count toward Total Yubikeys. WLA counts in (not separated out).
+  // QTC people are excluded from the top stat counts (Quality/Training team handled separately).
   // Buffer (-) people are NOT counted toward Total Yubikeys (they don't have one).
   let present=0,absent=0,training=0;
   rows.forEach(r=>{
+    if(ybkIsQTC(r.deviceNo))return; // QTC excluded from top stats — own card
     const v=r.attendance[date]||'';
     if(ybkIsBuffer(v))return; // excluded from all top counts — they're in the Buffer card instead
     if(ybkIsPresent(v))present++;
@@ -828,9 +897,9 @@ function renderYubikeyTable(){
     else if(ybkIsTraining(v))training++;
   });
 
-  // ✅ رسم الـ site cards (excludes WLA + Buffer)
+  // ✅ رسم الـ site cards (excludes WLA + QTC + Buffer)
   renderSiteCards(rows, date);
-  // ✅ رسم الـ Buffer + WLA cards
+  // ✅ رسم الـ Buffer + WLA + QTC cards
   renderSpecialCards(rows, date);
 
   document.getElementById('ybkTotal').textContent=present+training;
@@ -839,12 +908,13 @@ function renderYubikeyTable(){
   document.getElementById('ybkTraining').textContent=training;
 
   // فلتر الجدول — بيشيل الـ locations اللي مش في أي site (71, Blank Emails, Unknown)
-  // لكن سيب الـ WLA ظاهرين في الجدول العادي كمان (مع علامة) عشان تقدر تدور عليهم لو حبيت
+  // لكن سيب الـ WLA و QTC ظاهرين في الجدول العادي كمان (مع علامة) عشان تقدر تدور عليهم لو حبيت
   let filtered=rows.filter(r=>{
     const loc=(r.location||'').toLowerCase().trim();
     const isWla=ybkIsWLA(r.deviceNo);
+    const isQtc=ybkIsQTC(r.deviceNo);
     const inSite=getSiteForLocation(loc)!==null;
-    if(!inSite && !isWla)return false; // ✅ إخفاء 71, Blank Emails, Unknown (إلا لو WLA)
+    if(!inSite && !isWla && !isQtc)return false; // ✅ إخفاء 71, Blank Emails, Unknown (إلا لو WLA/QTC)
     const v=r.attendance[date]||'';
     const ms=!search||r.name.toLowerCase().includes(search);
     const ss=!statusFilter||(statusFilter==='present'&&ybkIsPresent(v))||(statusFilter==='absent'&&ybkIsAbsent(v))||(statusFilter==='training'&&ybkIsTraining(v))||(statusFilter==='buffer'&&ybkIsBuffer(v));
@@ -867,13 +937,15 @@ function renderYubikeyTable(){
     const v=r.attendance[date]||'';
     const initials=esc(r.name.split(' ').map(w=>w[0]).slice(0,2).join(''));
     const isWla=ybkIsWLA(r.deviceNo);
+    const isQtc=ybkIsQTC(r.deviceNo);
     let statusBadge;
     if(ybkIsPresent(v))statusBadge='<span class="badge badge-active">Present</span>';
     else if(ybkIsTraining(v))statusBadge='<span class="badge badge-training">Training</span>';
     else if(ybkIsAbsent(v))statusBadge='<span class="badge badge-resigned">Absent</span>';
     else if(ybkIsBuffer(v))statusBadge='<span class="badge" style="background:var(--bg-2);color:var(--text-1);border:1px solid var(--line)">Buffer</span>';
     else statusBadge='<span style="color:var(--text-2);font-size:12px">—</span>';
-    return`<tr><td><div class="name-cell"><div class="avatar" style="color:${isWla?'var(--purple)':'var(--purple)'}">${initials}</div><span style="font-weight:600">${esc(r.name)}</span>${isWla?' <span class="badge" style="background:var(--purple-dim);color:var(--purple);margin-left:6px">WLA</span>':''}</div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.deviceNo||'—')}</td><td style="color:var(--text-1)">${esc(r.location||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${ybkAttClass(v)}">${esc(ybkAttLabel(v))}</span>`:'—'}</td><td>${statusBadge}</td></tr>`;
+    const teamBadge = isWla ? ' <span class="badge" style="background:var(--purple-dim);color:var(--purple);margin-left:6px">WLA</span>' : (isQtc ? ' <span class="badge" style="background:var(--warn-dim);color:var(--warn);margin-left:6px">QTC</span>' : '');
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span>${teamBadge}</div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.deviceNo||'—')}</td><td style="color:var(--text-1)">${esc(r.location||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${ybkAttClass(v)}">${esc(ybkAttLabel(v))}</span>`:'—'}</td><td>${statusBadge}</td></tr>`;
   }).join('');
 }
 
