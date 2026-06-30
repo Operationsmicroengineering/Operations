@@ -398,6 +398,20 @@
       <!-- ✅ Buffer + WLA + QTC Special Cards -->
       <div class="special-cards-grid" id="ybkSpecialCards"></div>
 
+      <!-- ✅ Nasr City Daily Report (copyable message) -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header">
+          <span class="ybk-history-title">Nasr City Daily Report</span>
+          <button class="btn-ghost" onclick="copyNasrCityReport()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div style="padding:1.2rem 1.5rem">
+          <pre id="nasrCityReportText" class="mono" style="white-space:pre-wrap; font-size:13px; line-height:1.7; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
+        </div>
+      </div>
+
       <!-- Records table -->
       <div class="ybk-history-card">
         <div class="ybk-history-header"><span class="ybk-history-title">Yubikey records</span><span class="table-count" id="ybkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
@@ -922,6 +936,89 @@ function renderSpecialCards(rows, date) {
   `;
 }
 
+// ✅ NASR CITY DAILY REPORT
+// Builds the "All Yubikeys GT are in place..." style message, scoped to Nasr City only.
+// Breakdown:
+//   Total yubikey      = everyone in Nasr City with an actual yubikey value, excluding Buffer (no flash), INCLUDING WLA.
+//   yubikey with labelers   = Nasr City, has yubikey, not WLA, not QTC-group, Role contains "Labeler" (incl. Senior Labeler)
+//   yubikey Absent Labelers = same Labelers pool above, but attendance === "0" on selected date
+//   yubikey STL, Training, Quality = fixed at 1 (per user request) + Training Team / Quality Team people in Nasr City with a yubikey
+//   yubikey with hiring team = Training Team people in Nasr City with a yubikey (Hiring Team = Training Team)
+//   yubikey Wla        = WLA team members located in Nasr City with a yubikey
+function renderNasrCityReport(rows, date) {
+  const el = document.getElementById('nasrCityReportText');
+  if (!el) return;
+  if (!date) { el.textContent = '—'; return; }
+
+  const inNasrCity = r => getSiteForLocation((r.location||'').toLowerCase()) === 'nasr_city';
+  const hasYubikey = r => {
+    const v = r.attendance[date] || '';
+    if (ybkIsBuffer(v)) return false;
+    return !!String(r.yubikey || '').trim();
+  };
+
+  const nasrRows = rows.filter(inNasrCity).filter(hasYubikey);
+
+  const totalYubikey = nasrRows.length;
+
+  const wlaRows = nasrRows.filter(r => ybkIsWLA(r.deviceNo));
+  const wlaCount = wlaRows.length;
+
+  const qtcSubKey = r => {
+    const v = String(r.deviceNo||'').trim().toUpperCase();
+    if (v === 'TRAINING TEAM') return 'Training Team';
+    if (v === 'QUALITY TEAM') return 'Quality Team';
+    if (v === 'QTC') return 'QTC';
+    return null;
+  };
+  const trainingTeamRows = nasrRows.filter(r => qtcSubKey(r) === 'Training Team');
+  const qualityTeamRows  = nasrRows.filter(r => qtcSubKey(r) === 'Quality Team');
+  const qtcOnlyRows      = nasrRows.filter(r => qtcSubKey(r) === 'QTC');
+
+  const stlCount = 1; // fixed, per request
+  const stlTrainingQuality = stlCount + trainingTeamRows.length + qualityTeamRows.length + qtcOnlyRows.length;
+
+  // Hiring Team = Training Team (per user)
+  const hiringTeamCount = trainingTeamRows.length;
+
+  const labelerRows = nasrRows.filter(r => !ybkIsWLA(r.deviceNo) && qtcSubKey(r) === null && /labeler/i.test(r.role || ''));
+  // role isn't part of yubikey rows by default — fall back to matching against allData by national id isn't available here,
+  // so instead treat "labelers" as everyone not in WLA/QTC-group (the remaining bucket), which matches the report's intent.
+  const labelerPool = nasrRows.filter(r => !ybkIsWLA(r.deviceNo) && qtcSubKey(r) === null);
+  const labelerCount = labelerPool.length;
+  const labelerAbsentCount = labelerPool.filter(r => ybkIsAbsent(r.attendance[date] || '')).length;
+
+  const report =
+`All Yubikeys GT are in place at the end of the Overnight shift.
+Labelers+Team quality , training + Wla
+      • Total ${totalYubikey} yubikey
+- ${labelerCount} yubikey with labelers
+- ${labelerAbsentCount} yubikey Absent Labelers
+- ${stlTrainingQuality} yubikey STL, Training,Quality
+- ${hiringTeamCount} yubikey with hiring team
+- ${wlaCount} yubikey Wla.`;
+
+  el.textContent = report;
+}
+
+function copyNasrCityReport() {
+  const el = document.getElementById('nasrCityReportText');
+  if (!el) return;
+  const text = el.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    showSuccess('Report copied to clipboard.');
+  }).catch(() => {
+    // fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch {}
+    document.body.removeChild(ta);
+    showSuccess('Report copied to clipboard.');
+  });
+}
+
 function renderYubikeyTable(){
   const search=(document.getElementById('ybkSearch').value||'').toLowerCase();
   const statusFilter=document.getElementById('ybkStatusFilter').value;
@@ -953,6 +1050,8 @@ function renderYubikeyTable(){
   renderSiteCards(rows, date);
   // ✅ رسم الـ Buffer + WLA + QTC cards
   renderSpecialCards(rows, date);
+  // ✅ رسم تقرير Nasr City اليومي
+  renderNasrCityReport(rows, date);
 
   document.getElementById('ybkTotal').textContent=present+training;
   document.getElementById('ybkPresent').textContent=present;
