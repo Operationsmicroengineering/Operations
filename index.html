@@ -546,6 +546,10 @@ function ybkIsTraining(v){const u=String(v||'').trim().toUpperCase();return u===
 // ✅ Buffer = attendance value is exactly "-" (dash) → meaning "no yubikey assigned"
 // ✅ Buffer also includes "E" (Empty device — no actual yubikey assigned)
 function ybkIsBuffer(v){const t=String(v||'').trim().toUpperCase();return t==='-'||t==='–'||t==='—'||t==='E';}
+// ✅ "no flash drive" check for the Yubikey column itself — the literal word "Empty" in this
+// column means a real, physical flash drive IS assigned to that person (it was just reassigned/renamed),
+// so it must NOT be treated the same as a truly blank cell (which means no flash drive at all).
+function ybkHasNoFlash(yubikeyVal){ const t = String(yubikeyVal||'').trim(); return t === ''; }
 // ✅ WLA = Device No. column equals "WLA" (case-insensitive)
 function ybkIsWLA(deviceNo){return String(deviceNo||'').trim().toUpperCase()==='WLA';}
 // ✅ QTC = Device No. column equals "QTC" (case-insensitive) — Training/Quality Team
