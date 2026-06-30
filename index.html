@@ -985,22 +985,26 @@ function renderNasrCityReport(rows, date) {
     return !!String(r.yubikey || '').trim();
   };
 
-  const nasrRows = rows.filter(inNasrCity).filter(hasYubikey);
+  const nasrRowsAll = rows.filter(inNasrCity);
 
-  const totalYubikey = nasrRows.length;
-
-  const wlaRows = nasrRows.filter(r => ybkIsWLA(r.deviceNo));
+  // ✅ WLA team: counted by Present status on this date (NOT by yubikey field — their flash drive number is unknown)
+  const wlaRows = nasrRowsAll.filter(r => ybkIsWLA(r.deviceNo) && ybkIsPresent(r.attendance[date] || ''));
   const wlaCount = wlaRows.length;
 
-  // ✅ Hiring Team = everyone (non-WLA) whose attendance status on this date is Training (T/T1/T2/T3)
-  const hiringTeamRows = nasrRows.filter(r => !ybkIsWLA(r.deviceNo) && ybkIsTraining(r.attendance[date] || ''));
+  // ✅ Everyone else (non-WLA) needs an actual recorded yubikey to count toward the report
+  const nasrRows = nasrRowsAll.filter(r => !ybkIsWLA(r.deviceNo)).filter(hasYubikey);
+
+  const totalYubikey = nasrRows.length + wlaCount;
+
+  // ✅ Hiring Team = everyone whose attendance status on this date is Training (T/T1/T2/T3)
+  const hiringTeamRows = nasrRows.filter(r => ybkIsTraining(r.attendance[date] || ''));
   const hiringTeamCount = hiringTeamRows.length;
 
   const stlCount = 1; // fixed, per request
   const stlTrainingQuality = stlCount + hiringTeamCount;
 
-  // ✅ Labelers = everyone left after removing WLA and the Training/Hiring group above
-  const labelerPool = nasrRows.filter(r => !ybkIsWLA(r.deviceNo) && !hiringTeamRows.includes(r));
+  // ✅ Labelers = everyone left after removing the Training/Hiring group above (WLA already excluded from nasrRows)
+  const labelerPool = nasrRows.filter(r => !hiringTeamRows.includes(r));
   const labelerCount = labelerPool.length;
   const labelerAbsentCount = labelerPool.filter(r => ybkIsAbsent(r.attendance[date] || '')).length;
 
