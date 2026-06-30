@@ -177,6 +177,7 @@
   .ybk-att-p { background:var(--ok-dim); color:var(--ok); }
   .ybk-att-0 { background:var(--bad-dim); color:var(--bad); }
   .ybk-att-t { background:var(--warn-dim); color:var(--warn); }
+  .ybk-att-buf { background:var(--bg-2); color:var(--text-1); border:1px solid var(--line); }
   .ybk-history-card { background:var(--bg-1); border:1px solid var(--line); border-radius:10px; overflow:hidden; box-shadow:var(--shadow-card); }
   .ybk-history-header { padding:1rem 1.5rem; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
   .ybk-history-title { font-size:13px; font-weight:700; color:var(--text-0); }
@@ -212,6 +213,26 @@
   .site-loc-stat { text-align:center; background:var(--bg-1); border-radius:5px; padding:5px 3px; }
   .site-loc-stat-val { font-size:16px; font-weight:800; font-variant-numeric:tabular-nums; }
   .site-loc-stat-lbl { font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--text-2); text-transform:uppercase; letter-spacing:0.3px; margin-top:2px; }
+
+  /* ═══════════════════════════════════════════
+     BUFFER + WLA SPECIAL CARDS
+  ═══════════════════════════════════════════ */
+  .special-cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin-bottom:1.5rem; }
+  .special-card { background:var(--bg-1); border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-card); }
+  .special-card-header { padding:1.1rem 1.4rem; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); }
+  .special-card-title { display:flex; align-items:center; gap:10px; }
+  .special-card-icon { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .special-card-name { font-size:14px; font-weight:700; color:var(--text-0); }
+  .special-card-sub { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--text-2); letter-spacing:0.5px; margin-top:2px; }
+  .special-card-total { text-align:right; }
+  .special-card-total-val { font-size:26px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1; }
+  .special-card-total-lbl { font-family:'JetBrains Mono',monospace; font-size:8.5px; color:var(--text-2); text-transform:uppercase; letter-spacing:0.5px; margin-top:3px; }
+  .special-card-body { padding:1rem 1.4rem; display:flex; flex-direction:column; gap:8px; }
+  .special-card-row { display:flex; align-items:center; justify-content:space-between; background:var(--bg-2); border:1px solid var(--line); border-radius:8px; padding:0.65rem 1rem; }
+  .special-card-row-label { font-size:12.5px; color:var(--text-1); font-weight:500; display:flex; align-items:center; gap:7px; }
+  .special-card-row-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .special-card-row-val { font-size:18px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .special-card-empty { padding:1.5rem 1.4rem; text-align:center; color:var(--text-2); font-size:12.5px; }
 
   @media (max-width:640px) {
     main { padding:1.25rem; } nav { padding:0 1.25rem; }
@@ -362,11 +383,14 @@
       <!-- Search + Status filter -->
       <div class="toolbar">
         <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="ybkSearch" placeholder="Search by name..." oninput="renderYubikeyTable()"></div>
-        <select id="ybkStatusFilter" onchange="renderYubikeyTable()"><option value="">All statuses</option><option value="present">Present (P / TP)</option><option value="absent">Absent (0)</option><option value="training">Training (T)</option></select>
+        <select id="ybkStatusFilter" onchange="renderYubikeyTable()"><option value="">All statuses</option><option value="present">Present (P / TP)</option><option value="absent">Absent (0)</option><option value="training">Training (T)</option><option value="buffer">Buffer (—)</option></select>
       </div>
 
       <!-- ✅ Site Cards (Nasr City + St. Fatima) -->
       <div class="ybk-sites-grid" id="ybkSitesGrid"></div>
+
+      <!-- ✅ Buffer + WLA Special Cards -->
+      <div class="special-cards-grid" id="ybkSpecialCards"></div>
 
       <!-- Records table -->
       <div class="ybk-history-card">
@@ -475,8 +499,12 @@ function isResigned(s){return s&&(s.toLowerCase().includes('resign')||s.toLowerC
 function ybkIsPresent(v){const u=String(v||'').trim().toUpperCase();return u==='P'||u==='TP';}
 function ybkIsAbsent(v){return String(v||'').trim()==='0';}
 function ybkIsTraining(v){const u=String(v||'').trim().toUpperCase();return u==='T'||u==='T1'||u==='T2'||u==='T3';}
-function ybkAttClass(v){if(ybkIsPresent(v))return'ybk-att-p';if(ybkIsAbsent(v))return'ybk-att-0';if(ybkIsTraining(v))return'ybk-att-t';return'';}
-function ybkAttLabel(v){if(ybkIsPresent(v))return v.toUpperCase()==='TP'?'TP':'P';if(ybkIsAbsent(v))return'0';if(ybkIsTraining(v))return v.toUpperCase();return v||'—';}
+// ✅ Buffer = attendance value is exactly "-" (dash) → meaning "no yubikey assigned"
+function ybkIsBuffer(v){const t=String(v||'').trim();return t==='-'||t==='–'||t==='—';}
+// ✅ WLA = Device No. column equals "WLA" (case-insensitive)
+function ybkIsWLA(deviceNo){return String(deviceNo||'').trim().toUpperCase()==='WLA';}
+function ybkAttClass(v){if(ybkIsPresent(v))return'ybk-att-p';if(ybkIsAbsent(v))return'ybk-att-0';if(ybkIsTraining(v))return'ybk-att-t';if(ybkIsBuffer(v))return'ybk-att-buf';return'';}
+function ybkAttLabel(v){if(ybkIsPresent(v))return v.toUpperCase()==='TP'?'TP':'P';if(ybkIsAbsent(v))return'0';if(ybkIsTraining(v))return v.toUpperCase();if(ybkIsBuffer(v))return'—';return v||'—';}
 
 function setSyncState(state,text){const dot=document.getElementById('syncDot'),span=document.getElementById('syncText');dot.className='sync-dot'+(state==='syncing'?' syncing':state==='error'?' error':'');span.textContent=text;}
 function getSession(){if(session)return session;try{const r=sessionStorage.getItem(SESSION_KEY);return r?(session=JSON.parse(r)):null;}catch{return null;}}
@@ -593,37 +621,37 @@ function buildDateSelector(){
 function selectYbkDate(d){selectedYbkDate=d;buildDateSelector();renderYubikeyTable();}
 
 // ✅ SITE CARDS RENDERER
+// Note: WLA rows are excluded from site cards (they get their own card),
+// and Buffer rows (attendance === "-") are excluded too (they get their own card).
 function renderSiteCards(rows, date) {
   const grid = document.getElementById('ybkSitesGrid');
   if (!date) { grid.innerHTML = ''; return; }
 
-  // احسب stats لكل location
   const locStats = new Map();
   rows.forEach(r => {
     const loc = (r.location || '').trim();
     if (!loc) return;
-    if (!locStats.has(loc)) locStats.set(loc, {present:0, absent:0, training:0});
+    if (ybkIsWLA(r.deviceNo)) return; // WLA team has its own card
     const v = r.attendance[date] || '';
+    if (ybkIsBuffer(v)) return; // Buffer has its own card
+
+    if (!locStats.has(loc)) locStats.set(loc, {present:0, absent:0, training:0});
     const s = locStats.get(loc);
     if (ybkIsPresent(v)) s.present++;
     else if (ybkIsAbsent(v)) s.absent++;
     else if (ybkIsTraining(v)) s.training++;
   });
 
-  // ابني HTML لكل site group
   let html = '';
   for (const group of SITE_GROUPS) {
-    // لوكيشنات اللي في الداتا فعلاً
     const foundLocs = [];
     locStats.forEach((s, loc) => {
       if (group.locations.includes(loc.toLowerCase())) foundLocs.push({loc, s});
     });
     if (!foundLocs.length) continue;
 
-    // مجموع الـ site
     const total = foundLocs.reduce((a,x)=>({present:a.present+x.s.present, absent:a.absent+x.s.absent, training:a.training+x.s.training}), {present:0,absent:0,training:0});
 
-    // لوكيشن cards
     const locCardsHtml = foundLocs
       .sort((a,b)=>a.loc.localeCompare(b.loc))
       .map(({loc, s}) => `
@@ -671,6 +699,110 @@ function toggleSiteCard(key) {
   if (card) card.classList.toggle('open');
 }
 
+// ✅ BUFFER + WLA SPECIAL CARDS RENDERER
+// Buffer card: people whose attendance === "-" on the selected date, EXCLUDING WLA team.
+//   Split by what their "status" would otherwise look like — but since attendance IS "-",
+//   we split Buffer by the row's nearest classification context: Training-tagged buffer rows
+//   come from people whose Location/Role marks them under Training; default bucket is "General Buffer".
+// WLA card: all rows where Device No. === "WLA", split by their attendance value (Present/Buffer/etc).
+function renderSpecialCards(rows, date) {
+  const container = document.getElementById('ybkSpecialCards');
+  if (!date) { container.innerHTML = ''; return; }
+
+  // ── Buffer (non-WLA people with attendance === "-") ──
+  const bufferRows = rows.filter(r => !ybkIsWLA(r.deviceNo) && ybkIsBuffer(r.attendance[date] || ''));
+  const bufferByLocation = new Map();
+  bufferRows.forEach(r => {
+    const loc = (r.location || 'Unknown').trim() || 'Unknown';
+    bufferByLocation.set(loc, (bufferByLocation.get(loc) || 0) + 1);
+  });
+  const bufferTotal = bufferRows.length;
+
+  // ── WLA (Device No. === "WLA"), split by their attendance status ──
+  const wlaRows = rows.filter(r => ybkIsWLA(r.deviceNo));
+  let wlaPresent = 0, wlaTraining = 0, wlaAbsent = 0, wlaBuffer = 0, wlaOther = 0;
+  wlaRows.forEach(r => {
+    const v = r.attendance[date] || '';
+    if (ybkIsPresent(v)) wlaPresent++;
+    else if (ybkIsTraining(v)) wlaTraining++;
+    else if (ybkIsAbsent(v)) wlaAbsent++;
+    else if (ybkIsBuffer(v)) wlaBuffer++;
+    else wlaOther++;
+  });
+  const wlaTotal = wlaRows.length;
+
+  const bufferRowsHtml = bufferByLocation.size
+    ? [...bufferByLocation.entries()].sort((a,b)=>b[1]-a[1]).map(([loc,count]) => `
+        <div class="special-card-row">
+          <span class="special-card-row-label"><span class="special-card-row-dot" style="background:var(--text-2)"></span>${esc(loc)}</span>
+          <span class="special-card-row-val" style="color:var(--text-0)">${count}</span>
+        </div>`).join('')
+    : '';
+
+  const wlaRowsHtml = `
+    <div class="special-card-row">
+      <span class="special-card-row-label"><span class="special-card-row-dot" style="background:var(--ok)"></span>Present</span>
+      <span class="special-card-row-val" style="color:var(--ok)">${wlaPresent}</span>
+    </div>
+    <div class="special-card-row">
+      <span class="special-card-row-label"><span class="special-card-row-dot" style="background:var(--warn)"></span>Training</span>
+      <span class="special-card-row-val" style="color:var(--warn)">${wlaTraining}</span>
+    </div>
+    <div class="special-card-row">
+      <span class="special-card-row-label"><span class="special-card-row-dot" style="background:var(--bad)"></span>Absent</span>
+      <span class="special-card-row-val" style="color:var(--bad)">${wlaAbsent}</span>
+    </div>
+    <div class="special-card-row">
+      <span class="special-card-row-label"><span class="special-card-row-dot" style="background:var(--text-2)"></span>Buffer (—)</span>
+      <span class="special-card-row-val" style="color:var(--text-0)">${wlaBuffer}</span>
+    </div>
+    ${wlaOther ? `<div class="special-card-row"><span class="special-card-row-label"><span class="special-card-row-dot" style="background:var(--text-2)"></span>Other</span><span class="special-card-row-val" style="color:var(--text-0)">${wlaOther}</span></div>` : ''}
+  `;
+
+  container.innerHTML = `
+    <div class="special-card">
+      <div class="special-card-header">
+        <div class="special-card-title">
+          <div class="special-card-icon" style="background:var(--bg-2);border:1px solid var(--line);color:var(--text-1)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+          <div>
+            <div class="special-card-name">Buffer</div>
+            <div class="special-card-sub">NO YUBIKEY ASSIGNED</div>
+          </div>
+        </div>
+        <div class="special-card-total">
+          <div class="special-card-total-val" style="color:var(--text-0)">${bufferTotal}</div>
+          <div class="special-card-total-lbl">Total</div>
+        </div>
+      </div>
+      <div class="special-card-body">
+        ${bufferRowsHtml || '<div class="special-card-empty">No buffer records for this date</div>'}
+      </div>
+    </div>
+    <div class="special-card">
+      <div class="special-card-header">
+        <div class="special-card-title">
+          <div class="special-card-icon" style="background:var(--purple-dim);border:1px solid var(--purple-line);color:var(--purple)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div>
+            <div class="special-card-name">WLA Team</div>
+            <div class="special-card-sub">DEVICE NO. = WLA</div>
+          </div>
+        </div>
+        <div class="special-card-total">
+          <div class="special-card-total-val" style="color:var(--purple)">${wlaTotal}</div>
+          <div class="special-card-total-lbl">Total</div>
+        </div>
+      </div>
+      <div class="special-card-body">
+        ${wlaTotal ? wlaRowsHtml : '<div class="special-card-empty">No WLA records for this date</div>'}
+      </div>
+    </div>
+  `;
+}
+
 function renderYubikeyTable(){
   const search=(document.getElementById('ybkSearch').value||'').toLowerCase();
   const statusFilter=document.getElementById('ybkStatusFilter').value;
@@ -679,15 +811,27 @@ function renderYubikeyTable(){
     document.getElementById('ybkLoadingState').style.display='none';
     document.getElementById('ybkEmptyState').style.display='block';
     document.getElementById('ybkSitesGrid').innerHTML='';
+    document.getElementById('ybkSpecialCards').innerHTML='';
     return;
   }
   document.getElementById('ybkDateColHeader').textContent=date;
   let rows=yubikeyData.rows||[];
-  let present=0,absent=0,training=0;
-  rows.forEach(r=>{const v=r.attendance[date]||'';if(ybkIsPresent(v))present++;else if(ybkIsAbsent(v))absent++;else if(ybkIsTraining(v))training++;});
 
-  // ✅ رسم الـ site cards
+  // ✅ Stats: Present/Training count toward Total Yubikeys. WLA counts as Present (not separated out).
+  // Buffer (-) people are NOT counted toward Total Yubikeys (they don't have one).
+  let present=0,absent=0,training=0;
+  rows.forEach(r=>{
+    const v=r.attendance[date]||'';
+    if(ybkIsBuffer(v))return; // excluded from all top counts — they're in the Buffer card instead
+    if(ybkIsPresent(v))present++;
+    else if(ybkIsAbsent(v))absent++;
+    else if(ybkIsTraining(v))training++;
+  });
+
+  // ✅ رسم الـ site cards (excludes WLA + Buffer)
   renderSiteCards(rows, date);
+  // ✅ رسم الـ Buffer + WLA cards
+  renderSpecialCards(rows, date);
 
   document.getElementById('ybkTotal').textContent=present+training;
   document.getElementById('ybkPresent').textContent=present;
@@ -695,13 +839,15 @@ function renderYubikeyTable(){
   document.getElementById('ybkTraining').textContent=training;
 
   // فلتر الجدول — بيشيل الـ locations اللي مش في أي site (71, Blank Emails, Unknown)
+  // لكن سيب الـ WLA ظاهرين في الجدول العادي كمان (مع علامة) عشان تقدر تدور عليهم لو حبيت
   let filtered=rows.filter(r=>{
     const loc=(r.location||'').toLowerCase().trim();
+    const isWla=ybkIsWLA(r.deviceNo);
     const inSite=getSiteForLocation(loc)!==null;
-    if(!inSite)return false; // ✅ إخفاء 71, Blank Emails, Unknown
+    if(!inSite && !isWla)return false; // ✅ إخفاء 71, Blank Emails, Unknown (إلا لو WLA)
     const v=r.attendance[date]||'';
     const ms=!search||r.name.toLowerCase().includes(search);
-    const ss=!statusFilter||(statusFilter==='present'&&ybkIsPresent(v))||(statusFilter==='absent'&&ybkIsAbsent(v))||(statusFilter==='training'&&ybkIsTraining(v));
+    const ss=!statusFilter||(statusFilter==='present'&&ybkIsPresent(v))||(statusFilter==='absent'&&ybkIsAbsent(v))||(statusFilter==='training'&&ybkIsTraining(v))||(statusFilter==='buffer'&&ybkIsBuffer(v));
     return ms&&ss;
   });
 
@@ -720,7 +866,14 @@ function renderYubikeyTable(){
   document.getElementById('ybkTableBody').innerHTML=filtered.map(r=>{
     const v=r.attendance[date]||'';
     const initials=esc(r.name.split(' ').map(w=>w[0]).slice(0,2).join(''));
-    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.deviceNo||'—')}</td><td style="color:var(--text-1)">${esc(r.location||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${ybkAttClass(v)}">${esc(ybkAttLabel(v))}</span>`:'—'}</td><td>${ybkIsPresent(v)?'<span class="badge badge-active">Present</span>':ybkIsTraining(v)?'<span class="badge badge-training">Training</span>':ybkIsAbsent(v)?'<span class="badge badge-resigned">Absent</span>':'<span style="color:var(--text-2);font-size:12px">—</span>'}</td></tr>`;
+    const isWla=ybkIsWLA(r.deviceNo);
+    let statusBadge;
+    if(ybkIsPresent(v))statusBadge='<span class="badge badge-active">Present</span>';
+    else if(ybkIsTraining(v))statusBadge='<span class="badge badge-training">Training</span>';
+    else if(ybkIsAbsent(v))statusBadge='<span class="badge badge-resigned">Absent</span>';
+    else if(ybkIsBuffer(v))statusBadge='<span class="badge" style="background:var(--bg-2);color:var(--text-1);border:1px solid var(--line)">Buffer</span>';
+    else statusBadge='<span style="color:var(--text-2);font-size:12px">—</span>';
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:${isWla?'var(--purple)':'var(--purple)'}">${initials}</div><span style="font-weight:600">${esc(r.name)}</span>${isWla?' <span class="badge" style="background:var(--purple-dim);color:var(--purple);margin-left:6px">WLA</span>':''}</div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.deviceNo||'—')}</td><td style="color:var(--text-1)">${esc(r.location||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${ybkAttClass(v)}">${esc(ybkAttLabel(v))}</span>`:'—'}</td><td>${statusBadge}</td></tr>`;
   }).join('');
 }
 
