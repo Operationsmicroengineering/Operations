@@ -430,7 +430,21 @@
         </div>
       </div>
 
-      <!-- ✅ AVP ON records table -->
+      <!-- ✅ AVP Buffer Daily Report (copyable message) -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header">
+          <span class="ybk-history-title">AVP Buffer Attendance</span>
+          <button class="btn-ghost" onclick="copyAvpBufferReport()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div style="padding:1.2rem 1.5rem">
+          <pre id="avpBufferReportText" class="mono" style="white-space:pre-wrap; font-size:13px; line-height:1.7; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
+        </div>
+      </div>
+
+      <!-- ✅ AVP ON records -->
       <div class="ybk-history-card" style="margin-bottom:1.5rem">
         <div class="ybk-history-header"><span class="ybk-history-title">AVP ON records</span><span class="table-count" id="avpRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
         <div class="ybk-scroll">
@@ -438,6 +452,16 @@
           <div class="empty" id="avpEmptyState" style="display:none"><div>No records found</div></div>
         </div>
         <div class="table-footer"><span id="avpFooterInfo">—</span><span id="avpFooterTime">—</span></div>
+      </div>
+
+      <!-- ✅ AVP Buffer records -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header"><span class="ybk-history-title">AVP Buffer records</span><span class="table-count" id="avpBufferRowCount" style="color:var(--text-1);background:var(--bg-2);border-color:var(--line)">—</span></div>
+        <div class="ybk-scroll">
+          <table class="ybk-history-table" id="avpBufferTable" style="display:none;min-width:600px"><thead><tr><th>Name</th><th>PC No.</th><th>AVP Yubikey</th><th>Role</th><th class="ybk-date-col" id="avpBufferDateColHeader">Date</th><th class="no-sort">Status</th></tr></thead><tbody id="avpBufferTableBody"></tbody></table>
+          <div class="empty" id="avpBufferEmptyState" style="display:none"><div>No buffer records found</div></div>
+        </div>
+        <div class="table-footer"><span id="avpBufferFooterInfo">—</span><span id="avpBufferFooterTime">—</span></div>
       </div>
 
       <!-- Records table -->
@@ -700,7 +724,7 @@ async function loadAvpData(){
     const json=await res.json();
     if(json.error)throw new Error(json.error);
     avpData=json.avp||{dateColumns:[],rows:[]};
-    buildAvpDateSelector();renderAvpReport();renderAvpTable();
+    buildAvpDateSelector();renderAvpReport();renderAvpTable();renderAvpBufferReport();renderAvpBufferTable();
   }catch(ex){
     const el=document.getElementById('avpReportText');
     if(el)el.textContent='Failed to load AVP data: '+ex.message;
@@ -714,7 +738,7 @@ function buildAvpDateSelector(){
   if(!selectedAvpDate||!dates.includes(selectedAvpDate))selectedAvpDate=dates[dates.length-1];
   container.innerHTML=dates.map(d=>`<button class="ybk-date-btn${d===selectedAvpDate?' active':''}" onclick="selectAvpDate('${esc(d)}')">${esc(d)}</button>`).join('');
 }
-function selectAvpDate(d){selectedAvpDate=d;buildAvpDateSelector();renderAvpReport();renderAvpTable();}
+function selectAvpDate(d){selectedAvpDate=d;buildAvpDateSelector();renderAvpReport();renderAvpTable();renderAvpBufferReport();renderAvpBufferTable();}
 
 function renderAvpReport(){
   const el=document.getElementById('avpReportText');
@@ -758,7 +782,87 @@ function copyAvpReport(){
   });
 }
 
-function renderAvpTable(){
+function renderAvpBufferReport(){
+  const el=document.getElementById('avpBufferReportText');
+  if(!el)return;
+  const date=selectedAvpDate;
+  if(!date){el.textContent='—';return;}
+  // ✅ عكس فلترة التقرير الأساسي — هنا بس اللي مالهمش يوبيكي فعلي (Buffer أو فاضي)
+  const rows=(avpData.rows||[]).filter(r=>{
+    const yk=String(r.yubikey||'').trim().toUpperCase();
+    return yk==='' || yk==='BUFFER';
+  });
+  let present=0,absent=0,empty=0,training=0;
+  rows.forEach(r=>{
+    const v=r.attendance[date]||'';
+    if(!v)return;
+    if(avpIsPresent(v))present++;
+    else if(avpIsAbsent(v))absent++;
+    else if(avpIsEmpty(v))empty++;
+    else if(avpIsTraining(v))training++;
+  });
+  el.textContent=
+`Attendance:
+• Present: ${present}
+• Absent: ${absent}
+• Empty: ${empty}
+• Training : ${training}`;
+}
+
+function copyAvpBufferReport(){
+  const el=document.getElementById('avpBufferReportText');
+  if(!el)return;
+  const text=el.textContent||'';
+  navigator.clipboard.writeText(text).then(()=>{
+    showSuccess('Report copied to clipboard.');
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');}catch{}
+    document.body.removeChild(ta);
+    showSuccess('Report copied to clipboard.');
+  });
+}
+
+function renderAvpBufferTable(){
+  const date=selectedAvpDate;
+  const tableEl=document.getElementById('avpBufferTable');
+  const emptyEl=document.getElementById('avpBufferEmptyState');
+  if(!date){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    document.getElementById('avpBufferRowCount').textContent='—';
+    return;
+  }
+  document.getElementById('avpBufferDateColHeader').textContent=date;
+  const rows=(avpData.rows||[]).filter(r=>{
+    const yk=String(r.yubikey||'').trim().toUpperCase();
+    return yk==='' || yk==='BUFFER';
+  });
+
+  document.getElementById('avpBufferRowCount').textContent=rows.length+' records';
+  document.getElementById('avpBufferFooterInfo').textContent=`Showing ${rows.length} employees`;
+  document.getElementById('avpBufferFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!rows.length){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    return;
+  }
+  emptyEl.style.display='none';
+  tableEl.style.display='table';
+  document.getElementById('avpBufferTableBody').innerHTML=rows.map(r=>{
+    const v=r.attendance[date]||'';
+    const initials=esc((r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    let statusBadge;
+    if(avpIsPresent(v))statusBadge='<span class="badge badge-active">Present</span>';
+    else if(avpIsTraining(v))statusBadge='<span class="badge badge-training">Training</span>';
+    else if(avpIsAbsent(v))statusBadge='<span class="badge badge-resigned">Absent</span>';
+    else if(avpIsEmpty(v))statusBadge='<span class="badge" style="background:var(--bg-2);color:var(--text-1);border:1px solid var(--line)">Empty</span>';
+    else statusBadge='<span style="color:var(--text-2);font-size:12px">—</span>';
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--text-1)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.pcNo||'—')}</td><td class="mono" style="color:var(--text-2);font-size:12px">${esc(r.yubikey||'—')}</td><td style="color:var(--text-1)">${esc(r.role||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${avpIsPresent(v)?'ybk-att-p':avpIsAbsent(v)?'ybk-att-0':avpIsTraining(v)?'ybk-att-t':'ybk-att-buf'}">${esc(v)}</span>`:'—'}</td><td>${statusBadge}</td></tr>`;
+  }).join('');
+}
   const date=selectedAvpDate;
   const tableEl=document.getElementById('avpTable');
   const emptyEl=document.getElementById('avpEmptyState');
