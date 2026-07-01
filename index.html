@@ -415,6 +415,25 @@
     <div id="yubikeyView" style="display:none">
       <div class="error-banner" id="ybkErrorBanner"></div>
 
+      <!-- ✅ Shift selector: Overnight / Morning / Night -->
+      <div class="ybk-project-cards">
+        <div class="ybk-project-card active" id="ybkShiftCard_overnight" onclick="selectYbkShift('overnight')">
+          <div class="ybk-project-card-name">Overnight</div>
+          <div class="ybk-project-card-sub">GT · AVP · Mapping</div>
+        </div>
+        <div class="ybk-project-card" id="ybkShiftCard_morning" onclick="selectYbkShift('morning')">
+          <div class="ybk-project-card-name">Morning</div>
+          <div class="ybk-project-card-sub">Coming soon</div>
+        </div>
+        <div class="ybk-project-card" id="ybkShiftCard_night" onclick="selectYbkShift('night')">
+          <div class="ybk-project-card-name">Night</div>
+          <div class="ybk-project-card-sub">Coming soon</div>
+        </div>
+      </div>
+
+      <!-- ═══════════ OVERNIGHT SHIFT ═══════════ -->
+      <div id="ybkShift_overnight" class="ybk-shift-section">
+
       <!-- ✅ Project selector: GT / AVP / Mapping -->
       <div class="ybk-project-cards">
         <div class="ybk-project-card active" id="ybkProjectCard_gt" onclick="selectYbkProject('gt')">
@@ -580,6 +599,18 @@
       </div>
       </div>
       <!-- ═══════════ END MAPPING SECTION ═══════════ -->
+      </div>
+      <!-- ═══════════ END OVERNIGHT SHIFT ═══════════ -->
+
+      <!-- ═══════════ MORNING SHIFT (placeholder) ═══════════ -->
+      <div id="ybkShift_morning" class="ybk-shift-section" style="display:none">
+        <div class="ybk-history-card"><div style="padding:3rem;text-align:center;color:var(--text-1);font-size:14px">No Morning shift data yet — coming soon.</div></div>
+      </div>
+
+      <!-- ═══════════ NIGHT SHIFT (placeholder) ═══════════ -->
+      <div id="ybkShift_night" class="ybk-shift-section" style="display:none">
+        <div class="ybk-history-card"><div style="padding:3rem;text-align:center;color:var(--text-1);font-size:14px">No Night shift data yet — coming soon.</div></div>
+      </div>
     </div>
 
     <!-- SHEETS VIEW -->
@@ -615,7 +646,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxdQjxSWjDu4wk6HKlwqgcB4NoR40wJvrCaTIo9YCzAIx8B79O8YnD1Dgr8pl3Bm8kD4A/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyRKTISv8FEjKMY2H1gK7EEYop3_IpF-HCfmODuW_ywIvUvpZOAo-B9uPXdzaDkV8R7lA/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -867,6 +898,15 @@ function selectYbkProject(key){
     const sec=document.getElementById('ybkSection_'+k);
     if(sec)sec.style.display=(k===key?'block':'none');
     const card=document.getElementById('ybkProjectCard_'+k);
+    if(card)card.classList.toggle('active',k===key);
+  });
+}
+
+function selectYbkShift(key){
+  ['overnight','morning','night'].forEach(k=>{
+    const sec=document.getElementById('ybkShift_'+k);
+    if(sec)sec.style.display=(k===key?'block':'none');
+    const card=document.getElementById('ybkShiftCard_'+k);
     if(card)card.classList.toggle('active',k===key);
   });
 }
