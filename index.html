@@ -430,6 +430,16 @@
         </div>
       </div>
 
+      <!-- ✅ AVP ON records table -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header"><span class="ybk-history-title">AVP ON records</span><span class="table-count" id="avpRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
+        <div class="ybk-scroll">
+          <table class="ybk-history-table" id="avpTable" style="display:none;min-width:600px"><thead><tr><th>Name</th><th>PC No.</th><th>AVP Yubikey</th><th>Role</th><th class="ybk-date-col" id="avpDateColHeader">Date</th><th class="no-sort">Status</th></tr></thead><tbody id="avpTableBody"></tbody></table>
+          <div class="empty" id="avpEmptyState" style="display:none"><div>No records found</div></div>
+        </div>
+        <div class="table-footer"><span id="avpFooterInfo">—</span><span id="avpFooterTime">—</span></div>
+      </div>
+
       <!-- Records table -->
       <div class="ybk-history-card">
         <div class="ybk-history-header"><span class="ybk-history-title">Yubikey records</span><span class="table-count" id="ybkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
@@ -690,7 +700,7 @@ async function loadAvpData(){
     const json=await res.json();
     if(json.error)throw new Error(json.error);
     avpData=json.avp||{dateColumns:[],rows:[]};
-    buildAvpDateSelector();renderAvpReport();
+    buildAvpDateSelector();renderAvpReport();renderAvpTable();
   }catch(ex){
     const el=document.getElementById('avpReportText');
     if(el)el.textContent='Failed to load AVP data: '+ex.message;
@@ -704,7 +714,7 @@ function buildAvpDateSelector(){
   if(!selectedAvpDate||!dates.includes(selectedAvpDate))selectedAvpDate=dates[dates.length-1];
   container.innerHTML=dates.map(d=>`<button class="ybk-date-btn${d===selectedAvpDate?' active':''}" onclick="selectAvpDate('${esc(d)}')">${esc(d)}</button>`).join('');
 }
-function selectAvpDate(d){selectedAvpDate=d;buildAvpDateSelector();renderAvpReport();}
+function selectAvpDate(d){selectedAvpDate=d;buildAvpDateSelector();renderAvpReport();renderAvpTable();}
 
 function renderAvpReport(){
   const el=document.getElementById('avpReportText');
@@ -746,6 +756,47 @@ function copyAvpReport(){
     document.body.removeChild(ta);
     showSuccess('Report copied to clipboard.');
   });
+}
+
+function renderAvpTable(){
+  const date=selectedAvpDate;
+  const tableEl=document.getElementById('avpTable');
+  const emptyEl=document.getElementById('avpEmptyState');
+  if(!date){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    document.getElementById('avpRowCount').textContent='—';
+    return;
+  }
+  document.getElementById('avpDateColHeader').textContent=date;
+  // ✅ نفس فلترة التقرير — استبعاد أي حد مالوش يوبيكي فعلي (Buffer أو فاضي)
+  const rows=(avpData.rows||[]).filter(r=>{
+    const yk=String(r.yubikey||'').trim().toUpperCase();
+    return yk!=='' && yk!=='BUFFER';
+  });
+
+  document.getElementById('avpRowCount').textContent=rows.length+' records';
+  document.getElementById('avpFooterInfo').textContent=`Showing ${rows.length} employees`;
+  document.getElementById('avpFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!rows.length){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    return;
+  }
+  emptyEl.style.display='none';
+  tableEl.style.display='table';
+  document.getElementById('avpTableBody').innerHTML=rows.map(r=>{
+    const v=r.attendance[date]||'';
+    const initials=esc((r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    let statusBadge;
+    if(avpIsPresent(v))statusBadge='<span class="badge badge-active">Present</span>';
+    else if(avpIsTraining(v))statusBadge='<span class="badge badge-training">Training</span>';
+    else if(avpIsAbsent(v))statusBadge='<span class="badge badge-resigned">Absent</span>';
+    else if(avpIsEmpty(v))statusBadge='<span class="badge" style="background:var(--bg-2);color:var(--text-1);border:1px solid var(--line)">Empty</span>';
+    else statusBadge='<span style="color:var(--text-2);font-size:12px">—</span>';
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.pcNo||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td style="color:var(--text-1)">${esc(r.role||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${avpIsPresent(v)?'ybk-att-p':avpIsAbsent(v)?'ybk-att-0':avpIsTraining(v)?'ybk-att-t':'ybk-att-buf'}">${esc(v)}</span>`:'—'}</td><td>${statusBadge}</td></tr>`;
+  }).join('');
 }
 
 // ✅ SITE CARDS RENDERER
