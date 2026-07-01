@@ -412,18 +412,6 @@
         <div class="ybk-date-selector" id="ybkDateSelector"><span style="font-size:13px;color:var(--text-2)">Loading dates...</span></div>
       </div>
 
-      <!-- Search + Status filter -->
-      <div class="toolbar">
-        <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="ybkSearch" placeholder="Search by name..." oninput="renderYubikeyTable()"></div>
-        <select id="ybkStatusFilter" onchange="renderYubikeyTable()"><option value="">All statuses</option><option value="present">Present (P / TP)</option><option value="absent">Absent (0)</option><option value="training">Training (T)</option></select>
-      </div>
-
-      <!-- ✅ Site Cards (Nasr City + St. Fatima) -->
-      <div class="ybk-sites-grid" id="ybkSitesGrid"></div>
-
-      <!-- ✅ Buffer + WLA + QTC Special Cards -->
-      <div class="special-cards-grid" id="ybkSpecialCards"></div>
-
       <!-- ✅ St. Fatima Daily Report (copyable message) -->
       <div class="ybk-history-card" style="margin-bottom:1.5rem">
         <div class="ybk-history-header">
@@ -1579,14 +1567,12 @@ function copyStFatimaReport() {
 }
 
 function renderYubikeyTable(){
-  const search=(document.getElementById('ybkSearch').value||'').toLowerCase();
-  const statusFilter=document.getElementById('ybkStatusFilter').value;
+  const search='';
+  const statusFilter='';
   const date=selectedYbkDate;
   if(!date){
     document.getElementById('ybkLoadingState').style.display='none';
     document.getElementById('ybkEmptyState').style.display='block';
-    document.getElementById('ybkSitesGrid').innerHTML='';
-    document.getElementById('ybkSpecialCards').innerHTML='';
     return;
   }
   document.getElementById('ybkDateColHeader').textContent=date;
@@ -1603,8 +1589,6 @@ function renderYubikeyTable(){
     else if(ybkIsTraining(v))training++;
   });
 
-  renderSiteCards(rows, date);
-  renderSpecialCards(rows, date);
   renderStFatimaReport(rows, date);
 
   let filtered=rows.filter(r=>{
