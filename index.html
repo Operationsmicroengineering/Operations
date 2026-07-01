@@ -169,6 +169,13 @@
   .ybk-date-btn.active { background:var(--purple); color:#0a0714; border-color:var(--purple); }
   .ybk-date-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1px; color:var(--text-2); text-transform:uppercase; font-weight:600; white-space:nowrap; }
   .ybk-summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:1.5rem; }
+  .ybk-project-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:1.5rem; }
+  .ybk-project-card { background:var(--bg-1); border:1px solid var(--line); border-radius:12px; padding:1.4rem 1.5rem; cursor:pointer; text-align:center; transition:all 0.15s; box-shadow:var(--shadow-card); }
+  .ybk-project-card:hover { border-color:var(--signal-line); transform:translateY(-2px); }
+  .ybk-project-card.active { border-color:var(--signal); background:var(--signal-dim); }
+  .ybk-project-card-name { font-size:17px; font-weight:800; color:var(--text-0); letter-spacing:0.5px; }
+  .ybk-project-card.active .ybk-project-card-name { color:var(--signal); }
+  .ybk-project-card-sub { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-2); margin-top:5px; text-transform:uppercase; letter-spacing:0.5px; }
   .ybk-summary-card { background:var(--bg-1); border:1px solid var(--line); border-radius:10px; padding:1.1rem 1.3rem; position:relative; overflow:hidden; box-shadow:var(--shadow-card); }
   .ybk-summary-card::after { content:''; position:absolute; top:-14px; left:-14px; width:64px; height:64px; border-radius:50%; background:var(--sc-tint,var(--purple-dim)); opacity:0.6; filter:blur(2px); }
   .ybk-summary-label { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:1px; color:var(--text-2); text-transform:uppercase; font-weight:600; margin-bottom:6px; position:relative; z-index:1; }
@@ -377,18 +384,32 @@
     <!-- YUBIKEY VIEW -->
     <div id="yubikeyView" style="display:none">
       <div class="error-banner" id="ybkErrorBanner"></div>
-      <div class="ybk-summary-grid">
-        <div class="ybk-summary-card" style="--sc-tint:var(--purple-dim)"><div class="ybk-summary-label">Total Yubikeys</div><div class="ybk-summary-value" id="ybkTotal" style="color:var(--purple)">—</div></div>
-        <div class="ybk-summary-card" style="--sc-tint:var(--ok-dim)"><div class="ybk-summary-label">Present</div><div class="ybk-summary-value" id="ybkPresent" style="color:var(--ok)">—</div></div>
-        <div class="ybk-summary-card" style="--sc-tint:var(--bad-dim)"><div class="ybk-summary-label">Absent</div><div class="ybk-summary-value" id="ybkAbsent" style="color:var(--bad)">—</div></div>
-        <div class="ybk-summary-card" style="--sc-tint:var(--warn-dim)"><div class="ybk-summary-label">Training</div><div class="ybk-summary-value" id="ybkTraining" style="color:var(--warn)">—</div></div>
+
+      <!-- ✅ Project selector: GT / AVP / Mapping -->
+      <div class="ybk-project-cards">
+        <div class="ybk-project-card active" id="ybkProjectCard_gt" onclick="selectYbkProject('gt')">
+          <div class="ybk-project-card-name">GT</div>
+          <div class="ybk-project-card-sub">Yubikey Attendance</div>
+        </div>
+        <div class="ybk-project-card" id="ybkProjectCard_avp" onclick="selectYbkProject('avp')">
+          <div class="ybk-project-card-name">AVP</div>
+          <div class="ybk-project-card-sub">St. Fatima</div>
+        </div>
+        <div class="ybk-project-card" id="ybkProjectCard_mapping" onclick="selectYbkProject('mapping')">
+          <div class="ybk-project-card-name">Mapping</div>
+          <div class="ybk-project-card-sub">Overnight</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1.5rem">
+        <button class="btn-ghost" onclick="loadYubikeyData(true);loadAvpData();loadMappingData()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
       </div>
 
-      <!-- Date selector + Refresh -->
+      <!-- ═══════════ GT SECTION ═══════════ -->
+      <div id="ybkSection_gt" class="ybk-project-section">
+      <!-- Date selector -->
       <div class="toolbar" style="margin-bottom:1.5rem">
         <span class="ybk-date-label">Select date:</span>
         <div class="ybk-date-selector" id="ybkDateSelector"><span style="font-size:13px;color:var(--text-2)">Loading dates...</span></div>
-        <div style="margin-left:auto"><button class="btn-ghost" onclick="loadYubikeyData(true);loadAvpData();loadMappingData()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button></div>
       </div>
 
       <!-- Search + Status filter -->
@@ -416,6 +437,22 @@
           <pre id="stFatimaReportText" class="mono" style="white-space:pre-wrap; font-size:13px; line-height:1.7; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
         </div>
       </div>
+
+      <!-- Records table -->
+      <div class="ybk-history-card">
+        <div class="ybk-history-header"><span class="ybk-history-title">Yubikey records</span><span class="table-count" id="ybkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
+        <div class="ybk-scroll">
+          <div class="loading" id="ybkLoadingState"><div class="spinner"></div>Loading Yubikey data...</div>
+          <table class="ybk-history-table" id="ybkTable" style="display:none;min-width:600px"><thead><tr><th>Name</th><th>Device No.</th><th>Location</th><th>Yubikey</th><th class="ybk-date-col" id="ybkDateColHeader">Date</th><th class="no-sort">Status</th></tr></thead><tbody id="ybkTableBody"></tbody></table>
+          <div class="empty" id="ybkEmptyState" style="display:none"><div>No records found</div></div>
+        </div>
+        <div class="table-footer"><span id="ybkFooterInfo">—</span><span id="ybkFooterTime">—</span></div>
+      </div>
+      </div>
+      <!-- ═══════════ END GT SECTION ═══════════ -->
+
+      <!-- ═══════════ AVP SECTION ═══════════ -->
+      <div id="ybkSection_avp" class="ybk-project-section" style="display:none">
 
       <!-- ✅ AVP - St. Fatima Daily Report (copyable message) -->
       <div class="ybk-history-card" style="margin-bottom:1.5rem">
@@ -467,6 +504,11 @@
         </div>
         <div class="table-footer"><span id="avpBufferFooterInfo">—</span><span id="avpBufferFooterTime">—</span></div>
       </div>
+      </div>
+      <!-- ═══════════ END AVP SECTION ═══════════ -->
+
+      <!-- ═══════════ MAPPING SECTION ═══════════ -->
+      <div id="ybkSection_mapping" class="ybk-project-section" style="display:none">
 
       <!-- ✅ Mapping YubiKeys Daily Report (copyable message) -->
       <div class="ybk-history-card" style="margin-bottom:1.5rem">
@@ -518,17 +560,8 @@
         </div>
         <div class="table-footer"><span id="mappingBufferFooterInfo">—</span><span id="mappingBufferFooterTime">—</span></div>
       </div>
-
-      <!-- Records table -->
-      <div class="ybk-history-card">
-        <div class="ybk-history-header"><span class="ybk-history-title">Yubikey records</span><span class="table-count" id="ybkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
-        <div class="ybk-scroll">
-          <div class="loading" id="ybkLoadingState"><div class="spinner"></div>Loading Yubikey data...</div>
-          <table class="ybk-history-table" id="ybkTable" style="display:none;min-width:600px"><thead><tr><th>Name</th><th>Device No.</th><th>Location</th><th>Yubikey</th><th class="ybk-date-col" id="ybkDateColHeader">Date</th><th class="no-sort">Status</th></tr></thead><tbody id="ybkTableBody"></tbody></table>
-          <div class="empty" id="ybkEmptyState" style="display:none"><div>No records found</div></div>
-        </div>
-        <div class="table-footer"><span id="ybkFooterInfo">—</span><span id="ybkFooterTime">—</span></div>
       </div>
+      <!-- ═══════════ END MAPPING SECTION ═══════════ -->
     </div>
 
     <!-- SHEETS VIEW -->
@@ -779,6 +812,15 @@ function buildDateSelector(){
   container.innerHTML=dates.map(d=>`<button class="ybk-date-btn${d===selectedYbkDate?' active':''}" onclick="selectYbkDate('${esc(d)}')">${esc(d)}</button>`).join('');
 }
 function selectYbkDate(d){selectedYbkDate=d;buildDateSelector();renderYubikeyTable();}
+
+function selectYbkProject(key){
+  ['gt','avp','mapping'].forEach(k=>{
+    const sec=document.getElementById('ybkSection_'+k);
+    if(sec)sec.style.display=(k===key?'block':'none');
+    const card=document.getElementById('ybkProjectCard_'+k);
+    if(card)card.classList.toggle('active',k===key);
+  });
+}
 
 // ── AVP ON ──
 async function loadAvpData(){
@@ -1564,11 +1606,6 @@ function renderYubikeyTable(){
   renderSiteCards(rows, date);
   renderSpecialCards(rows, date);
   renderStFatimaReport(rows, date);
-
-  document.getElementById('ybkTotal').textContent=present+training;
-  document.getElementById('ybkPresent').textContent=present;
-  document.getElementById('ybkAbsent').textContent=absent;
-  document.getElementById('ybkTraining').textContent=training;
 
   let filtered=rows.filter(r=>{
     const loc=(r.location||'').toLowerCase().trim();
