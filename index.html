@@ -399,20 +399,6 @@
       <!-- ✅ Buffer + WLA + QTC Special Cards -->
       <div class="special-cards-grid" id="ybkSpecialCards"></div>
 
-      <!-- ✅ Nasr City Daily Report (copyable message) -->
-      <div class="ybk-history-card" style="margin-bottom:1.5rem">
-        <div class="ybk-history-header">
-          <span class="ybk-history-title">Nasr City Daily Report</span>
-          <button class="btn-ghost" onclick="copyNasrCityReport()">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copy
-          </button>
-        </div>
-        <div style="padding:1.2rem 1.5rem">
-          <pre id="nasrCityReportText" class="mono" style="white-space:pre-wrap; font-size:13px; line-height:1.7; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
-        </div>
-      </div>
-
       <!-- ✅ St. Fatima Daily Report (copyable message) -->
       <div class="ybk-history-card" style="margin-bottom:1.5rem">
         <div class="ybk-history-header">
@@ -497,14 +483,6 @@ const YBK_CACHE_KEY = 'ops_ybk_cache_v3';
 
 // ✅ Site grouping config — لو أضفت location جديد بس حطه هنا
 const SITE_GROUPS = [
-  {
-    key: 'nasr_city',
-    name: 'Nasr City',
-    color: 'var(--signal)',
-    dimColor: 'var(--signal-dim)',
-    lineColor: 'var(--signal-line)',
-    locations: ['room 102', 'room 106', 'room 108', 'nc']
-  },
   {
     key: 'st_fatima',
     name: 'St. Fatima',
@@ -1158,7 +1136,6 @@ function renderYubikeyTable(){
 
   renderSiteCards(rows, date);
   renderSpecialCards(rows, date);
-  renderNasrCityReport(rows, date);
   renderStFatimaReport(rows, date);
 
   document.getElementById('ybkTotal').textContent=present+training;
