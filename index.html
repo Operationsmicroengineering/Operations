@@ -329,6 +329,10 @@
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M12 12h.01"/><path d="M7 12h.01"/><path d="M17 12h.01"/></svg>
         <span class="tab-label-full">Yubikeys Report</span>
       </button>
+      <button class="nav-tab" id="tabViolationBtn" onclick="showView('violation')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span class="tab-label-full">Violation Report</span>
+      </button>
       <button class="nav-tab" id="tabSheetsBtn" onclick="showView('sheets')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         <span class="tab-label-full">Sheets</span>
@@ -613,6 +617,25 @@
       </div>
     </div>
 
+    <!-- VIOLATION REPORT VIEW -->
+    <div id="violationView" style="display:none">
+      <div class="error-banner" id="violationErrorBanner"></div>
+      <div class="toolbar">
+        <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="violationSearchInput" placeholder="Search by name..." oninput="renderViolationTable()"></div>
+        <select id="violationProjectFilter" onchange="renderViolationTable()"><option value="">All projects</option></select>
+        <button class="btn-ghost" onclick="loadViolationData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><span class="table-title">Violation records</span><span class="table-count" id="violationRowCount">—</span></div>
+        <div class="table-wrap">
+          <div class="loading" id="violationLoadingState"><div class="spinner"></div>Loading violation report...</div>
+          <table id="violationTable" style="display:none"><thead><tr><th>Date</th><th>Pc</th><th>Name</th><th>Shift</th><th>Project</th><th>Room</th><th>OPS Name</th><th>Action</th><th>Case</th><th>Note</th></tr></thead><tbody id="violationTableBody"></tbody></table>
+          <div class="empty" id="violationEmptyState" style="display:none"><div>No violation records found</div></div>
+        </div>
+        <div class="table-footer"><span id="violationFooterInfo">—</span><span id="violationFooterTime">—</span></div>
+      </div>
+    </div>
+
     <!-- SHEETS VIEW -->
     <div id="sheetsView" style="display:none">
       <div class="sheets-toolbar"><div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="sheetsSearchInput" placeholder="Search sheets and forms..." oninput="renderSheets()"></div></div>
@@ -646,7 +669,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzXDx3Y5vQMQP2vYjOUABYxOl0m_tri41hmQ1zd0VjJKqoxC5YVFQtLKEsUFeXmGyGJIg/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbz0ltbBXHGmoRSfrxjvmYjxxxqSN6_TrxuM8NhWgnfFAZPpw0pP9fNXANy6q_fa9fjIlg/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -698,7 +721,7 @@ function loadYbkCache() {
 
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
-let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]};
+let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[];
 let sortCol='', sortAsc=true, pollTimer=null, session=null, isSyncing=false;
 let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null;
 
@@ -1276,6 +1299,61 @@ function renderMappingBufferTable(){
   }).join('');
 }
 
+// ── Violation Report ──
+async function loadViolationData(forceRefresh=false){
+  if(!getSession())return;
+  document.getElementById('violationLoadingState').style.display=(violationData.length>0)?'none':'block';
+  document.getElementById('violationErrorBanner').style.display='none';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=violation'+(forceRefresh?'&force=1':''));
+    if(!res.ok)throw new Error('Failed to fetch violation data');
+    const json=await res.json();
+    if(json.error)throw new Error(json.error);
+    violationData=json.violation||[];
+    populateViolationFilters();
+    renderViolationTable();
+  }catch(ex){
+    document.getElementById('violationLoadingState').style.display='none';
+    const b=document.getElementById('violationErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;
+  }
+}
+
+function populateViolationFilters(){
+  const pm=new Map();
+  violationData.forEach(r=>{const p=(r['Project']||'').trim();if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),p);});
+  const projects=[...pm.values()].sort();
+  const sel=document.getElementById('violationProjectFilter'),prev=sel.value;
+  sel.innerHTML='<option value="">All projects</option>';
+  projects.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;sel.appendChild(o);});
+  if(projects.includes(prev))sel.value=prev;
+}
+
+function renderViolationTable(){
+  const search=(document.getElementById('violationSearchInput').value||'').toLowerCase();
+  const project=document.getElementById('violationProjectFilter').value;
+  const data=violationData.filter(r=>{
+    const ms=!search||(r['Name']||'').toLowerCase().includes(search)||(r['Pc']||'').toLowerCase().includes(search);
+    const mp=!project||(r['Project']||'').trim().toLowerCase()===project.toLowerCase();
+    return ms&&mp;
+  });
+
+  document.getElementById('violationLoadingState').style.display='none';
+  document.getElementById('violationRowCount').textContent=data.length+' records';
+  document.getElementById('violationFooterInfo').textContent=`Showing ${data.length} of ${violationData.length} records`;
+  document.getElementById('violationFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!data.length){
+    document.getElementById('violationTable').style.display='none';
+    document.getElementById('violationEmptyState').style.display='block';
+    return;
+  }
+  document.getElementById('violationEmptyState').style.display='none';
+  document.getElementById('violationTable').style.display='table';
+  document.getElementById('violationTableBody').innerHTML=data.map(r=>{
+    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Date']||'—')}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Pc']||'—')}</td><td style="font-weight:600">${esc(r['Name']||'—')}</td><td><span class="badge badge-shift">${esc(r['Shift']||'—')}</span></td><td>${esc(r['Project']||'—')}</td><td style="color:var(--text-1)">${esc(r['Room']||'—')}</td><td style="color:var(--text-1)">${esc(r['OPS Name']||'—')}</td><td style="color:var(--text-1)">${esc(r['Action']||'—')}</td><td style="color:var(--text-1)">${esc(r['Case']||'—')}</td><td style="color:var(--text-1)">${esc(r['Note']||'—')}</td></tr>`;
+  }).join('');
+}
+
 function renderAvpTable(){
   const date=selectedAvpDate;
   const tableEl=document.getElementById('avpTable');
@@ -1742,7 +1820,7 @@ function optimisticMoveTrn(id){optimisticDeleteTrn(id);}
 function rollback(prevEmp,prevTrn){if(prevEmp!==undefined){allData=prevEmp;populateFilters();applyFilters();}if(prevTrn!==undefined){trainingData=prevTrn;populateTrainingFilters();renderTrainingStats();renderTrainingTable();}saveCache();}
 
 function showView(view){
-  ['employees','training','yubikey','sheets'].forEach(v=>{
+  ['employees','training','yubikey','violation','sheets'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
     const btn=document.getElementById('tab'+v[0].toUpperCase()+v.slice(1)+'Btn');
     if(btn)btn.classList.toggle('active',v===view);
@@ -1751,6 +1829,7 @@ function showView(view){
   if(view==='yubikey'&&yubikeyData.rows.length===0)loadYubikeyData();
   if(view==='yubikey'&&avpData.rows.length===0)loadAvpData();
   if(view==='yubikey'&&mappingData.rows.length===0)loadMappingData();
+  if(view==='violation'&&violationData.length===0)loadViolationData();
 }
 
 function showError(msg,scope){const id=scope==='training'?'trainingErrorBanner':'errorBanner';const b=document.getElementById(id);b.style.display='block';b.textContent=msg;document.getElementById(scope==='training'?'trainingSuccessBanner':'successBanner').style.display='none';}
