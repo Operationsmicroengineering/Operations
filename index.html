@@ -715,7 +715,7 @@ const AVP_DISTRIBUTION = { TL: 1, QC: 5, USL: 5, SD: 30, PL: 8, SIM: 15 };
 // ✅ AVP ON attendance value classifiers
 function avpIsPresent(v){const u=String(v||'').trim().toUpperCase();return u==='P'||u==='ATTEND';}
 function avpIsAbsent(v){const u=String(v||'').trim().toUpperCase();return u==='0'||u==='ABSENT';}
-function avpIsEmpty(v){const u=String(v||'').trim().toUpperCase();return u===''||u==='EMPTY';}
+function avpIsEmpty(v){const u=String(v||'').trim().toUpperCase();return u===''||u==='EMPTY'||u==='E';}
 function avpIsTraining(v){const u=String(v||'').trim().toUpperCase();return u==='T'||u==='TRAINING';}
 
 function esc(v){if(v==null)return'';return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');}
