@@ -646,7 +646,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbz5LvVICU-SgCgTXToM5ZD8JOFauDgUuJU_DW5KHJIcTGMLjNKPMrbwKpWHnvSrns-4hw/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzXDx3Y5vQMQP2vYjOUABYxOl0m_tri41hmQ1zd0VjJKqoxC5YVFQtLKEsUFeXmGyGJIg/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -715,7 +715,7 @@ const AVP_DISTRIBUTION = { TL: 1, QC: 5, USL: 5, SD: 30, PL: 8, SIM: 15 };
 // ✅ AVP ON attendance value classifiers
 function avpIsPresent(v){const u=String(v||'').trim().toUpperCase();return u==='P'||u==='ATTEND';}
 function avpIsAbsent(v){const u=String(v||'').trim().toUpperCase();return u==='0'||u==='ABSENT';}
-function avpIsEmpty(v){const u=String(v||'').trim().toUpperCase();return u==='EMPTY';}
+function avpIsEmpty(v){const u=String(v||'').trim().toUpperCase();return u===''||u==='EMPTY';}
 function avpIsTraining(v){const u=String(v||'').trim().toUpperCase();return u==='T'||u==='TRAINING';}
 
 function esc(v){if(v==null)return'';return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');}
@@ -949,7 +949,6 @@ function renderAvpReport(){
   let present=0,absent=0,empty=0,training=0;
   rows.forEach(r=>{
     const v=r.attendance[date]||'';
-    if(!v)return;
     if(avpIsPresent(v))present++;
     else if(avpIsAbsent(v))absent++;
     else if(avpIsEmpty(v))empty++;
@@ -1314,7 +1313,7 @@ function renderAvpTable(){
     else if(avpIsAbsent(v))statusBadge='<span class="badge badge-resigned">Absent</span>';
     else if(avpIsEmpty(v))statusBadge='<span class="badge" style="background:var(--bg-2);color:var(--text-1);border:1px solid var(--line)">Empty</span>';
     else statusBadge='<span style="color:var(--text-2);font-size:12px">—</span>';
-    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.pcNo||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td style="color:var(--text-1)">${esc(r.role||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${avpIsPresent(v)?'ybk-att-p':avpIsAbsent(v)?'ybk-att-0':avpIsTraining(v)?'ybk-att-t':'ybk-att-buf'}">${esc(v)}</span>`:'—'}</td><td>${statusBadge}</td></tr>`;
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.pcNo||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td style="color:var(--text-1)">${esc(r.role||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${avpIsPresent(v)?'ybk-att-p':avpIsAbsent(v)?'ybk-att-0':avpIsTraining(v)?'ybk-att-t':'ybk-att-buf'}">${esc(v)}</span>`:'<span class="ybk-att-cell ybk-att-buf">E</span>'}</td><td>${statusBadge}</td></tr>`;
   }).join('');
 }
 
