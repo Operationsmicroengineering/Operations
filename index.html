@@ -1326,27 +1326,15 @@ async function loadViolationData(forceRefresh=false){
 }
 
 function populateViolationFilters(){
-  const pm=new Map();
-  violationData.forEach(r=>{const p=(r['Project']||'').trim();if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),p);});
-  const projects=[...pm.values()].sort();
-  const sel=document.getElementById('violationProjectFilter'),prev=sel.value;
-  sel.innerHTML='<option value="">All projects</option>';
-  projects.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;sel.appendChild(o);});
-  if(projects.includes(prev))sel.value=prev;
+  // no-op: search/filter toolbar was removed; kept as a hook in case it's needed again later
 }
 
 function renderViolationTable(){
-  const search=(document.getElementById('violationSearchInput').value||'').toLowerCase();
-  const project=document.getElementById('violationProjectFilter').value;
-  const data=violationData.filter(r=>{
-    const ms=!search||(r['Name']||'').toLowerCase().includes(search)||(r['Pc']||'').toLowerCase().includes(search);
-    const mp=!project||(r['Project']||'').trim().toLowerCase()===project.toLowerCase();
-    return ms&&mp;
-  });
+  const data=violationData;
 
   document.getElementById('violationLoadingState').style.display='none';
   document.getElementById('violationRowCount').textContent=data.length+' records';
-  document.getElementById('violationFooterInfo').textContent=`Showing ${data.length} of ${violationData.length} records`;
+  document.getElementById('violationFooterInfo').textContent=`Showing ${data.length} records`;
   document.getElementById('violationFooterTime').textContent=new Date().toLocaleDateString('en-US');
 
   if(!data.length){
