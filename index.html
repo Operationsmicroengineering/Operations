@@ -624,6 +624,7 @@
       <div class="toolbar">
         <button class="btn-ghost" onclick="loadViolationData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
         <button class="btn-primary" onclick="openAddViolationModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Violation</button>
+        <button class="btn-ghost" onclick="openManageOptionsModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Manage Options</button>
       </div>
       <div class="table-card">
         <div class="table-header"><span class="table-title">Violation records</span><span class="table-count" id="violationRowCount">—</span></div>
@@ -674,11 +675,22 @@
 <!-- DELETE VIOLATION MODAL -->
 <div class="modal-overlay" id="deleteViolationModalOverlay"><div class="modal-card delete-modal-card"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete violation</span><button class="modal-close" onclick="closeDeleteViolationModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>Are you sure?</h3><p>You're about to permanently delete this violation record for <span class="delete-name-highlight" id="deleteViolationName">this entry</span>. This cannot be undone.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteViolationModal()">Cancel</button><button type="button" class="btn-confirm-delete" id="deleteViolationConfirmBtn" onclick="confirmDeleteViolation()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button></div></div></div>
 
+<!-- MANAGE VIOLATION OPTIONS MODAL -->
+<div class="modal-overlay" id="manageOptionsModalOverlay"><div class="modal-card" style="max-width:560px"><div class="modal-header"><span class="modal-title">Manage dropdown options</span><button class="modal-close" onclick="closeManageOptionsModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body">
+  <div class="form-error" id="manageOptionsFormError"></div>
+  <p style="font-size:12.5px;color:var(--text-1);margin-bottom:1.2rem;line-height:1.6">Add or remove the choices people see in the Add/Edit violation form. Changes apply everywhere, for everyone.</p>
+  <div id="manageOptionsFields"></div>
+  <div class="modal-footer" style="padding:1.1rem 0 0 0;border-top:none">
+    <button type="button" class="btn-ghost" onclick="closeManageOptionsModal()">Cancel</button>
+    <button type="button" class="btn-primary" id="manageOptionsSaveBtn" onclick="saveViolationOptions()">Save changes</button>
+  </div>
+</div></div></div>
+
 <script>
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbx9XAxgm82W7OWgtTRIjs443d3oCKmuxEh7R0ma8N9ebqznL-fjIVQ4TLhOgqwLVQt0zg/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwfEAWSvPlczu2Ao-tPle_mjFkzSVHHXDmpUhsL5etquogohze7CjXXt5ZorWYv58FZ/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1417,19 +1429,105 @@ function copyViolationReport(rowNum){
 }
 
 // ── Add Violation modal ──
-// ✅ قوائم ثابتة مطابقة لخيارات الـ Data Validation الحقيقية في الشيت — عدّل من هنا لو اتغيرت
-const VIOLATION_OPTIONS = {
-  Shift: ['Morning', 'Night', 'Over Night'],
-  Project: ['Gt', 'Avp', 'Mapping', 'poc'],
-  Room: ['Room 102', 'Room 106', 'Room 108', 'Floor 2', 'Floor4'],
+// ✅ قوائم افتراضية (fallback) — بيتم استبدالها بالقيم المحفوظة على السيرفر بمجرد ما تحمّل
+let VIOLATION_OPTIONS = {
+  'Shift': ['Morning', 'Night', 'Over Night'],
+  'Project': ['Gt', 'Avp', 'Mapping', 'poc'],
+  'Room': ['Room 102', 'Room 106', 'Room 108', 'Floor 2', 'Floor4'],
   'OPS Name': ['Islam kadry', 'Ahmed Alaa', 'Mohamed Moataz', 'Ahmed Hassan', 'Mohamed Magdy', 'HEBA MAHMOUD', 'ezzat', 'Mohamed Kamal']
 };
+
+async function loadViolationOptions(){
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=violationOptions');
+    if(!res.ok)return;
+    const json=await res.json();
+    if(json.violationOptions)VIOLATION_OPTIONS=json.violationOptions;
+  }catch(ex){ /* يفضل شغال بالقوائم الافتراضية لو السيرفر مش متاح */ }
+}
 
 function populateViolationModalDropdowns(){
   populateSelect('violAddShift','violAddShiftOther',VIOLATION_OPTIONS['Shift'],'');
   populateSelect('violAddProject','violAddProjectOther',VIOLATION_OPTIONS['Project'],'');
   populateSelect('violAddRoom','violAddRoomOther',VIOLATION_OPTIONS['Room'],'');
   populateSelect('violAddOpsName','violAddOpsNameOther',VIOLATION_OPTIONS['OPS Name'],'');
+}
+
+// ── Manage Options modal ──
+let manageOptionsDraft=null;
+
+function openManageOptionsModal(){
+  manageOptionsDraft={
+    'Shift':[...(VIOLATION_OPTIONS['Shift']||[])],
+    'Project':[...(VIOLATION_OPTIONS['Project']||[])],
+    'Room':[...(VIOLATION_OPTIONS['Room']||[])],
+    'OPS Name':[...(VIOLATION_OPTIONS['OPS Name']||[])]
+  };
+  document.getElementById('manageOptionsFormError').style.display='none';
+  renderManageOptionsFields();
+  document.getElementById('manageOptionsModalOverlay').style.display='flex';
+}
+function closeManageOptionsModal(){document.getElementById('manageOptionsModalOverlay').style.display='none';manageOptionsDraft=null;}
+document.getElementById('manageOptionsModalOverlay').addEventListener('click',e=>{if(e.target.id==='manageOptionsModalOverlay')closeManageOptionsModal();});
+
+function renderManageOptionsFields(){
+  const fields=['Shift','Project','Room','OPS Name'];
+  document.getElementById('manageOptionsFields').innerHTML=fields.map(field=>{
+    const items=manageOptionsDraft[field]||[];
+    const chips=items.map((val,idx)=>`
+      <span style="display:inline-flex;align-items:center;gap:6px;background:var(--bg-2);border:1px solid var(--line);border-radius:20px;padding:4px 6px 4px 12px;font-size:12.5px;color:var(--text-0);margin:0 6px 6px 0">
+        ${esc(val)}
+        <button type="button" onclick="removeManageOption('${field}',${idx})" style="background:var(--bad-dim);color:var(--bad);border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center">×</button>
+      </span>`).join('');
+    const fieldId=field.replace(/\s+/g,'');
+    return `
+      <div class="form-group">
+        <label>${esc(field)}</label>
+        <div style="display:flex;flex-wrap:wrap;margin-bottom:8px">${chips||'<span style="color:var(--text-2);font-size:12.5px">No options yet</span>'}</div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="manageOptionsInput_${fieldId}" class="form-control" placeholder="Add new ${esc(field)}..." onkeydown="if(event.key==='Enter'){event.preventDefault();addManageOption('${field}','${fieldId}')}">
+          <button type="button" class="btn-ghost" style="white-space:nowrap" onclick="addManageOption('${field}','${fieldId}')">+ Add</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function addManageOption(field,fieldId){
+  const input=document.getElementById('manageOptionsInput_'+fieldId);
+  const val=input.value.trim();
+  if(!val)return;
+  if(!manageOptionsDraft[field].some(v=>v.toLowerCase()===val.toLowerCase())){
+    manageOptionsDraft[field].push(val);
+  }
+  input.value='';
+  renderManageOptionsFields();
+}
+
+function removeManageOption(field,idx){
+  manageOptionsDraft[field].splice(idx,1);
+  renderManageOptionsFields();
+}
+
+async function saveViolationOptions(){
+  const errDiv=document.getElementById('manageOptionsFormError'),btn=document.getElementById('manageOptionsSaveBtn');
+  errDiv.style.display='none';
+  btn.disabled=true;
+  try{
+    await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'updateViolationOptions',data:manageOptionsDraft})
+    });
+    await new Promise(r=>setTimeout(r,600));
+    VIOLATION_OPTIONS=manageOptionsDraft;
+    closeManageOptionsModal();
+    showSuccess('Dropdown options updated successfully.','violation');
+  }catch(ex){
+    errDiv.textContent='Save failed: '+ex.message;errDiv.style.display='block';
+  }finally{
+    btn.disabled=false;
+  }
 }
 
 function openAddViolationModal(){
@@ -2026,6 +2124,7 @@ function showView(view){
   if(view==='yubikey'&&avpData.rows.length===0)loadAvpData();
   if(view==='yubikey'&&mappingData.rows.length===0)loadMappingData();
   if(view==='violation'&&violationData.length===0)loadViolationData();
+  if(view==='violation')loadViolationOptions();
 }
 
 function bannerIds(scope){
