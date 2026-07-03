@@ -629,7 +629,7 @@
         <div class="table-header"><span class="table-title">Violation records</span><span class="table-count" id="violationRowCount">—</span></div>
         <div class="table-wrap">
           <div class="loading" id="violationLoadingState"><div class="spinner"></div>Loading violation report...</div>
-          <table id="violationTable" style="display:none"><thead><tr><th>Date</th><th>Pc</th><th>Name</th><th>Shift</th><th>Project</th><th>Room</th><th>OPS Name</th><th>Action</th><th>Case</th><th>Note</th></tr></thead><tbody id="violationTableBody"></tbody></table>
+          <table id="violationTable" style="display:none"><thead><tr><th>Date</th><th>Pc</th><th>Name</th><th>Shift</th><th>Project</th><th>Room</th><th>OPS Name</th><th>Action</th><th>Case</th><th>Note</th><th class="no-sort"></th></tr></thead><tbody id="violationTableBody"></tbody></table>
           <div class="empty" id="violationEmptyState" style="display:none"><div>No violation records found</div></div>
         </div>
         <div class="table-footer"><span id="violationFooterInfo">—</span><span id="violationFooterTime">—</span></div>
@@ -668,11 +668,17 @@
 <!-- ADD VIOLATION MODAL -->
 <div class="modal-overlay" id="addViolationModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title">Add violation</span><button class="modal-close" onclick="closeAddViolationModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><form id="addViolationForm" onsubmit="handleAddViolationSubmit(event)"><div class="modal-body"><div class="form-error" id="addViolationFormError"></div><div class="form-row"><div class="form-group"><label>Date</label><input type="date" id="violAddDate" class="form-control" required></div><div class="form-group"><label>Pc</label><input type="text" id="violAddPc" class="form-control"></div></div><div class="form-group"><label>Name</label><input type="text" id="violAddName" class="form-control" required></div><div class="form-row"><div class="form-group"><label>Shift</label><select id="violAddShift" class="form-control" onchange="handleSelectOther(this,'violAddShiftOther')" required></select><input type="text" id="violAddShiftOther" class="form-control" placeholder="Type new shift" style="display:none;margin-top:8px"></div><div class="form-group"><label>Project</label><select id="violAddProject" class="form-control" onchange="handleSelectOther(this,'violAddProjectOther')" required></select><input type="text" id="violAddProjectOther" class="form-control" placeholder="Type new project" style="display:none;margin-top:8px"></div></div><div class="form-row"><div class="form-group"><label>Room</label><select id="violAddRoom" class="form-control" onchange="handleSelectOther(this,'violAddRoomOther')" required></select><input type="text" id="violAddRoomOther" class="form-control" placeholder="Type new room" style="display:none;margin-top:8px"></div><div class="form-group"><label>OPS Name</label><select id="violAddOpsName" class="form-control" onchange="handleSelectOther(this,'violAddOpsNameOther')" required></select><input type="text" id="violAddOpsNameOther" class="form-control" placeholder="Type new OPS name" style="display:none;margin-top:8px"></div></div><div class="form-group"><label>Action</label><input type="text" id="violAddAction" class="form-control"></div><div class="form-group"><label>Case</label><input type="text" id="violAddCase" class="form-control"></div><div class="form-group"><label>Note</label><input type="text" id="violAddNote" class="form-control"></div></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeAddViolationModal()">Cancel</button><button type="submit" class="btn-primary" id="addViolationSubmitBtn">Add violation</button></div></form></div></div>
 
+<!-- EDIT VIOLATION MODAL -->
+<div class="modal-overlay" id="editViolationModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title">Edit violation</span><button class="modal-close" onclick="closeEditViolationModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><form id="editViolationForm" onsubmit="handleEditViolationSubmit(event)"><div class="modal-body"><div class="form-error" id="editViolationFormError"></div><div class="form-row"><div class="form-group"><label>Date</label><input type="date" id="violEditDate" class="form-control" required></div><div class="form-group"><label>Pc</label><input type="text" id="violEditPc" class="form-control"></div></div><div class="form-group"><label>Name</label><input type="text" id="violEditName" class="form-control" required></div><div class="form-row"><div class="form-group"><label>Shift</label><select id="violEditShift" class="form-control" onchange="handleSelectOther(this,'violEditShiftOther')" required></select><input type="text" id="violEditShiftOther" class="form-control" placeholder="Type new shift" style="display:none;margin-top:8px"></div><div class="form-group"><label>Project</label><select id="violEditProject" class="form-control" onchange="handleSelectOther(this,'violEditProjectOther')" required></select><input type="text" id="violEditProjectOther" class="form-control" placeholder="Type new project" style="display:none;margin-top:8px"></div></div><div class="form-row"><div class="form-group"><label>Room</label><select id="violEditRoom" class="form-control" onchange="handleSelectOther(this,'violEditRoomOther')" required></select><input type="text" id="violEditRoomOther" class="form-control" placeholder="Type new room" style="display:none;margin-top:8px"></div><div class="form-group"><label>OPS Name</label><select id="violEditOpsName" class="form-control" onchange="handleSelectOther(this,'violEditOpsNameOther')" required></select><input type="text" id="violEditOpsNameOther" class="form-control" placeholder="Type new OPS name" style="display:none;margin-top:8px"></div></div><div class="form-group"><label>Action</label><input type="text" id="violEditAction" class="form-control"></div><div class="form-group"><label>Case</label><input type="text" id="violEditCase" class="form-control"></div><div class="form-group"><label>Note</label><input type="text" id="violEditNote" class="form-control"></div></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeEditViolationModal()">Cancel</button><button type="submit" class="btn-primary" id="editViolationSubmitBtn">Save changes</button></div></form></div></div>
+
+<!-- DELETE VIOLATION MODAL -->
+<div class="modal-overlay" id="deleteViolationModalOverlay"><div class="modal-card delete-modal-card"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete violation</span><button class="modal-close" onclick="closeDeleteViolationModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>Are you sure?</h3><p>You're about to permanently delete this violation record for <span class="delete-name-highlight" id="deleteViolationName">this entry</span>. This cannot be undone.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteViolationModal()">Cancel</button><button type="button" class="btn-confirm-delete" id="deleteViolationConfirmBtn" onclick="confirmDeleteViolation()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button></div></div></div>
+
 <script>
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzLTwYpWUWjZNEixPVTSf_14B9iiytyOTdMI9f8xBh_vopDvbbL8b60Ekv6PCL-6FAN5A/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbz66LIsNPbYmac297KzugMimt8MgVzPALTYWtwm3Er2K7BuorCz1fE0-aCf3mWa7gv73Q/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1344,8 +1350,8 @@ function renderViolationTable(){
   }
   document.getElementById('violationEmptyState').style.display='none';
   document.getElementById('violationTable').style.display='table';
-  document.getElementById('violationTableBody').innerHTML=data.map(r=>{
-    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Date']||'—')}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Pc']||'—')}</td><td style="font-weight:600">${esc(r['Name']||'—')}</td><td><span class="badge badge-shift">${esc(r['Shift']||'—')}</span></td><td>${esc(r['Project']||'—')}</td><td style="color:var(--text-1)">${esc(r['Room']||'—')}</td><td style="color:var(--text-1)">${esc(r['OPS Name']||'—')}</td><td style="color:var(--text-1)">${esc(r['Action']||'—')}</td><td style="color:var(--text-1)">${esc(r['Case']||'—')}</td><td style="color:var(--text-1)">${esc(r['Note']||'—')}</td></tr>`;
+  document.getElementById('violationTableBody').innerHTML=data.map((r,i)=>{
+    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Date']||'—')}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Pc']||'—')}</td><td style="font-weight:600">${esc(r['Name']||'—')}</td><td><span class="badge badge-shift">${esc(r['Shift']||'—')}</span></td><td>${esc(r['Project']||'—')}</td><td style="color:var(--text-1)">${esc(r['Room']||'—')}</td><td style="color:var(--text-1)">${esc(r['OPS Name']||'—')}</td><td style="color:var(--text-1)">${esc(r['Action']||'—')}</td><td style="color:var(--text-1)">${esc(r['Case']||'—')}</td><td style="color:var(--text-1)">${esc(r['Note']||'—')}</td><td><div class="action-cell"><button class="btn-edit" onclick="openEditViolationModal(${r['_row']})"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button><button class="btn-delete-row" onclick="openDeleteViolationModal(${r['_row']},'${esc(r['Name']||'')}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>Delete</button></div></td></tr>`;
   }).join('');
 }
 
@@ -1404,6 +1410,83 @@ async function handleAddViolationSubmit(e){
     .then(()=>showSuccess('Violation added successfully.','violation'))
     .catch(ex=>{violationData=prev;renderViolationTable();showError('Add failed: '+ex.message,'violation');})
     .finally(()=>{btn.disabled=false;});
+}
+
+let deleteViolationTargetRow=null, deleteViolationTargetName=null;
+
+function openEditViolationModal(rowNum){
+  const rec=violationData.find(r=>r['_row']===rowNum);
+  if(!rec)return;
+  document.getElementById('editViolationFormError').style.display='none';
+  document.getElementById('violEditDate').value=rec['Date']||'';
+  document.getElementById('violEditPc').value=rec['Pc']||'';
+  document.getElementById('violEditName').value=rec['Name']||'';
+  populateSelect('violEditShift','violEditShiftOther',VIOLATION_OPTIONS['Shift'],rec['Shift']||'');
+  populateSelect('violEditProject','violEditProjectOther',VIOLATION_OPTIONS['Project'],rec['Project']||'');
+  populateSelect('violEditRoom','violEditRoomOther',VIOLATION_OPTIONS['Room'],rec['Room']||'');
+  populateSelect('violEditOpsName','violEditOpsNameOther',VIOLATION_OPTIONS['OPS Name'],rec['OPS Name']||'');
+  document.getElementById('violEditAction').value=rec['Action']||'';
+  document.getElementById('violEditCase').value=rec['Case']||'';
+  document.getElementById('violEditNote').value=rec['Note']||'';
+  document.getElementById('editViolationForm').dataset.row=rowNum;
+  document.getElementById('editViolationModalOverlay').style.display='flex';
+}
+function closeEditViolationModal(){document.getElementById('editViolationModalOverlay').style.display='none';}
+document.getElementById('editViolationModalOverlay').addEventListener('click',e=>{if(e.target.id==='editViolationModalOverlay')closeEditViolationModal();});
+
+async function handleEditViolationSubmit(e){
+  e.preventDefault();
+  if(!getSession()){showError('Session expired.','violation');closeEditViolationModal();return;}
+  const errDiv=document.getElementById('editViolationFormError'),btn=document.getElementById('editViolationSubmitBtn');
+  errDiv.style.display='none';
+  const rowNum=parseInt(document.getElementById('editViolationForm').dataset.row,10);
+  const payload={
+    '_row':rowNum,
+    'Date':document.getElementById('violEditDate').value,
+    'Pc':document.getElementById('violEditPc').value.trim(),
+    'Name':document.getElementById('violEditName').value.trim(),
+    'Shift':getFieldValue('violEditShift','violEditShiftOther'),
+    'Project':getFieldValue('violEditProject','violEditProjectOther'),
+    'Room':getFieldValue('violEditRoom','violEditRoomOther'),
+    'OPS Name':getFieldValue('violEditOpsName','violEditOpsNameOther'),
+    'Action':document.getElementById('violEditAction').value.trim(),
+    'Case':document.getElementById('violEditCase').value.trim(),
+    'Note':document.getElementById('violEditNote').value.trim()
+  };
+  if(!payload['Name']||!payload['Shift']||!payload['Project']||!payload['Room']||!payload['OPS Name']){
+    errDiv.textContent='Please fill in all required fields.';errDiv.style.display='block';return;
+  }
+  closeEditViolationModal();
+  btn.disabled=true;
+  const prev=[...violationData];
+  const idx=violationData.findIndex(r=>r['_row']===rowNum);
+  if(idx!==-1)violationData[idx]={...violationData[idx],...payload};
+  renderViolationTable();
+  callScriptGeneric('editViolation',payload,()=>loadViolationData(true))
+    .then(()=>showSuccess('Violation updated successfully.','violation'))
+    .catch(ex=>{violationData=prev;renderViolationTable();showError('Edit failed: '+ex.message,'violation');})
+    .finally(()=>{btn.disabled=false;});
+}
+
+function openDeleteViolationModal(rowNum,name){
+  deleteViolationTargetRow=rowNum;deleteViolationTargetName=name;
+  document.getElementById('deleteViolationName').textContent=name||'this entry';
+  document.getElementById('deleteViolationConfirmBtn').disabled=false;
+  document.getElementById('deleteViolationModalOverlay').style.display='flex';
+}
+function closeDeleteViolationModal(){document.getElementById('deleteViolationModalOverlay').style.display='none';deleteViolationTargetRow=null;deleteViolationTargetName=null;}
+document.getElementById('deleteViolationModalOverlay').addEventListener('click',e=>{if(e.target.id==='deleteViolationModalOverlay')closeDeleteViolationModal();});
+
+async function confirmDeleteViolation(){
+  if(!deleteViolationTargetRow||!getSession()){showError('Session expired.','violation');closeDeleteViolationModal();return;}
+  const rowNum=deleteViolationTargetRow,name=deleteViolationTargetName;
+  closeDeleteViolationModal();
+  const prev=[...violationData];
+  violationData=violationData.filter(r=>r['_row']!==rowNum);
+  renderViolationTable();
+  callScriptGeneric('deleteViolation',{'_row':rowNum},()=>loadViolationData(true))
+    .then(()=>showSuccess(`${name||'Violation'} deleted successfully.`,'violation'))
+    .catch(ex=>{violationData=prev;renderViolationTable();showError('Delete failed: '+ex.message,'violation');});
 }
 
 function renderAvpTable(){
