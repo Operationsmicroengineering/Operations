@@ -1350,22 +1350,19 @@ function renderViolationTable(){
 }
 
 // ── Add Violation modal ──
-function violationUniqueValues(field){
-  const map=new Map();
-  violationData.forEach(r=>{
-    const v=(r[field]||'').toString().trim();
-    if(!v)return;
-    const k=v.toLowerCase();
-    if(!map.has(k))map.set(k,v);
-  });
-  return[...map.values()].sort((a,b)=>a.localeCompare(b));
-}
+// ✅ قوائم ثابتة مطابقة لخيارات الـ Data Validation الحقيقية في الشيت — عدّل من هنا لو اتغيرت
+const VIOLATION_OPTIONS = {
+  Shift: ['Morning', 'Night', 'Over Night'],
+  Project: ['Gt', 'Avp', 'Mapping', 'poc'],
+  Room: ['Room 102', 'Room 106', 'Room 108', 'Floor 2', 'Floor4'],
+  'OPS Name': ['Islam kadry', 'Ahmed Alaa', 'Mohamed Moataz', 'Ahmed Hassan', 'Mohamed Magdy', 'HEBA MAHMOUD', 'ezzat', 'Mohamed Kamal']
+};
 
 function populateViolationModalDropdowns(){
-  populateSelect('violAddShift','violAddShiftOther',violationUniqueValues('Shift'),'');
-  populateSelect('violAddProject','violAddProjectOther',violationUniqueValues('Project'),'');
-  populateSelect('violAddRoom','violAddRoomOther',violationUniqueValues('Room'),'');
-  populateSelect('violAddOpsName','violAddOpsNameOther',violationUniqueValues('OPS Name'),'');
+  populateSelect('violAddShift','violAddShiftOther',VIOLATION_OPTIONS['Shift'],'');
+  populateSelect('violAddProject','violAddProjectOther',VIOLATION_OPTIONS['Project'],'');
+  populateSelect('violAddRoom','violAddRoomOther',VIOLATION_OPTIONS['Room'],'');
+  populateSelect('violAddOpsName','violAddOpsNameOther',VIOLATION_OPTIONS['OPS Name'],'');
 }
 
 function openAddViolationModal(){
