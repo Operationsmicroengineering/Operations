@@ -683,6 +683,9 @@ const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbx9XAxgm82W7O
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
 const YBK_CACHE_KEY = 'ops_ybk_cache_v3';
+const AVP_LOCAL_CACHE_KEY = 'ops_avp_cache_v1';
+const MAPPING_LOCAL_CACHE_KEY = 'ops_mapping_cache_v1';
+const VIOLATION_LOCAL_CACHE_KEY = 'ops_violation_cache_v1';
 
 // ✅ Site grouping config — لو أضفت location جديد بس حطه هنا
 const SITE_GROUPS = [
@@ -727,6 +730,24 @@ function saveYbkCache() {
 function loadYbkCache() {
   try { const r=JSON.parse(localStorage.getItem(YBK_CACHE_KEY)||'null'); return r&&Date.now()-r.ts<CACHE_MAX_AGE?r:null; } catch { return null; }
 }
+function saveAvpCache() {
+  try { localStorage.setItem(AVP_LOCAL_CACHE_KEY, JSON.stringify({data:avpData,ts:Date.now()})); } catch {}
+}
+function loadAvpCache() {
+  try { const r=JSON.parse(localStorage.getItem(AVP_LOCAL_CACHE_KEY)||'null'); return r&&Date.now()-r.ts<CACHE_MAX_AGE?r:null; } catch { return null; }
+}
+function saveMappingCache() {
+  try { localStorage.setItem(MAPPING_LOCAL_CACHE_KEY, JSON.stringify({data:mappingData,ts:Date.now()})); } catch {}
+}
+function loadMappingCache() {
+  try { const r=JSON.parse(localStorage.getItem(MAPPING_LOCAL_CACHE_KEY)||'null'); return r&&Date.now()-r.ts<CACHE_MAX_AGE?r:null; } catch { return null; }
+}
+function saveViolationCache() {
+  try { localStorage.setItem(VIOLATION_LOCAL_CACHE_KEY, JSON.stringify({data:violationData,ts:Date.now()})); } catch {}
+}
+function loadViolationCache() {
+  try { const r=JSON.parse(localStorage.getItem(VIOLATION_LOCAL_CACHE_KEY)||'null'); return r&&Date.now()-r.ts<CACHE_MAX_AGE?r:null; } catch { return null; }
+}
 
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
@@ -737,7 +758,7 @@ let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, dele
 // ✅ Mapping ON status classifiers — P / 0 / E / T1-T3
 function mappingIsPresent(v){return String(v||'').trim().toUpperCase()==='P';}
 function mappingIsAbsent(v){return String(v||'').trim()==='0';}
-function mappingIsEmpty(v){return String(v||'').trim().toUpperCase()==='E';}
+function mappingIsEmpty(v){const u=String(v||'').trim().toUpperCase();return u===''||u==='E';}
 function mappingIsTraining(v){const u=String(v||'').trim().toUpperCase();return u==='T1'||u==='T2'||u==='T3'||u==='T';}
 function mappingIsQcTl(role){const r=String(role||'').trim().toUpperCase();return r==='QC'||r==='TL';}
 
@@ -950,6 +971,10 @@ function selectYbkShift(key){
 // ── AVP ON ──
 async function loadAvpData(forceRefresh=false){
   if(!getSession())return;
+  if(!forceRefresh){
+    const cached=loadAvpCache();
+    if(cached){avpData=cached.data||{dateColumns:[],rows:[]};buildAvpDateSelector();renderAvpReport();renderAvpTable();renderAvpBufferReport();renderAvpBufferTable();}
+  }
   try{
     const res=await fetch(APPS_SCRIPT_URL+'?sheet=avp'+(forceRefresh?'&force=1':''));
     if(!res.ok)throw new Error('Failed to fetch AVP data');
@@ -957,9 +982,10 @@ async function loadAvpData(forceRefresh=false){
     if(json.error)throw new Error(json.error);
     avpData=json.avp||{dateColumns:[],rows:[]};
     buildAvpDateSelector();renderAvpReport();renderAvpTable();renderAvpBufferReport();renderAvpBufferTable();
+    saveAvpCache();
   }catch(ex){
     const el=document.getElementById('avpReportText');
-    if(el)el.textContent='Failed to load AVP data: '+ex.message;
+    if(el&&!avpData.rows?.length)el.textContent='Failed to load AVP data: '+ex.message;
   }
 }
 
@@ -1113,6 +1139,10 @@ function renderAvpBufferTable(){
 // ── Mapping ON ──
 async function loadMappingData(forceRefresh=false){
   if(!getSession())return;
+  if(!forceRefresh){
+    const cached=loadMappingCache();
+    if(cached){mappingData=cached.data||{dateColumns:[],rows:[]};buildMappingDateSelector();renderMappingReport();renderMappingTable();renderMappingBufferReport();renderMappingBufferTable();}
+  }
   try{
     const res=await fetch(APPS_SCRIPT_URL+'?sheet=mapping'+(forceRefresh?'&force=1':''));
     if(!res.ok)throw new Error('Failed to fetch Mapping data');
@@ -1120,9 +1150,10 @@ async function loadMappingData(forceRefresh=false){
     if(json.error)throw new Error(json.error);
     mappingData=json.mapping||{dateColumns:[],rows:[]};
     buildMappingDateSelector();renderMappingReport();renderMappingTable();renderMappingBufferReport();renderMappingBufferTable();
+    saveMappingCache();
   }catch(ex){
     const el=document.getElementById('mappingReportText');
-    if(el)el.textContent='Failed to load Mapping data: '+ex.message;
+    if(el&&!mappingData.rows?.length)el.textContent='Failed to load Mapping data: '+ex.message;
   }
 }
 
@@ -1150,7 +1181,6 @@ function renderMappingReport(){
   let qcTl=0,labelers=0,absent=0,empty=0,training=0;
   rows.forEach(r=>{
     const v=r.attendance[date]||'';
-    if(!v)return;
     const isQcTl=mappingIsQcTl(r.role);
     if(mappingIsPresent(v)){
       if(isQcTl)qcTl++; else labelers++;
@@ -1230,7 +1260,7 @@ function renderMappingTable(){
   document.getElementById('mappingTableBody').innerHTML=rows.map(r=>{
     const v=r.attendance[date]||'';
     const initials=esc((r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
-    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.pcNo||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td style="color:var(--text-1)">${esc(r.role||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${mappingAttClass(v)}">${esc(v)}</span>`:'—'}</td><td>${mappingStatusBadge(v)}</td></tr>`;
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.pcNo||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td style="color:var(--text-1)">${esc(r.role||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${mappingAttClass(v)}">${esc(v)}</span>`:'<span class="ybk-att-cell ybk-att-buf">E</span>'}</td><td>${mappingStatusBadge(v)}</td></tr>`;
   }).join('');
 }
 
@@ -1315,6 +1345,10 @@ function renderMappingBufferTable(){
 // ── Violation Report ──
 async function loadViolationData(forceRefresh=false){
   if(!getSession())return;
+  if(!forceRefresh){
+    const cached=loadViolationCache();
+    if(cached){violationData=cached.data||[];renderViolationTable();}
+  }
   document.getElementById('violationLoadingState').style.display=(violationData.length>0)?'none':'block';
   document.getElementById('violationErrorBanner').style.display='none';
   try{
@@ -1325,9 +1359,10 @@ async function loadViolationData(forceRefresh=false){
     violationData=json.violation||[];
     populateViolationFilters();
     renderViolationTable();
+    saveViolationCache();
   }catch(ex){
     document.getElementById('violationLoadingState').style.display='none';
-    const b=document.getElementById('violationErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;
+    if(!violationData.length){const b=document.getElementById('violationErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;}
   }
 }
 
