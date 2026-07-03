@@ -774,9 +774,9 @@ function ybkAttClass(v){if(ybkIsPresent(v))return'ybk-att-p';if(ybkIsAbsent(v))r
 function ybkAttLabel(v){if(ybkIsPresent(v))return v.toUpperCase()==='TP'?'TP':'P';if(ybkIsAbsent(v))return'0';if(ybkIsTraining(v))return v.toUpperCase();if(String(v||'').trim().toUpperCase()==='E')return'E';if(ybkIsBuffer(v))return'—';return v||'—';}
 
 function setSyncState(state,text){const dot=document.getElementById('syncDot'),span=document.getElementById('syncText');dot.className='sync-dot'+(state==='syncing'?' syncing':state==='error'?' error':'');span.textContent=text;}
-function getSession(){if(session)return session;try{const r=sessionStorage.getItem(SESSION_KEY);return r?(session=JSON.parse(r)):null;}catch{return null;}}
-function saveSession(s){session=s;sessionStorage.setItem(SESSION_KEY,JSON.stringify(s));}
-function clearSession(){session=null;sessionStorage.removeItem(SESSION_KEY);}
+function getSession(){if(session)return session;try{const r=localStorage.getItem(SESSION_KEY);return r?(session=JSON.parse(r)):null;}catch{return null;}}
+function saveSession(s){session=s;localStorage.setItem(SESSION_KEY,JSON.stringify(s));}
+function clearSession(){session=null;localStorage.removeItem(SESSION_KEY);}
 function authHeaders(extra){const s=getSession();return{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${s?s.access_token:SUPABASE_ANON_KEY}`,...extra};}
 
 function animateEyebrowText(){
@@ -890,7 +890,7 @@ async function callScriptGeneric(action, payload, refreshFn) {
   } catch (ex) {
     throw new Error('Network error: ' + ex.message);
   }
-  await new Promise(r => setTimeout(r, 1200));
+  await new Promise(r => setTimeout(r, 600));
   if (refreshFn) await refreshFn();
   return { success: true };
 }
