@@ -1005,8 +1005,8 @@ function renderAvpReport(){
   if(!date){el.textContent='—';return;}
   // ✅ استبعاد أي حد مالوش يوبيكي فعلي (Buffer أو فاضي) قبل العد
   const rows=(avpData.rows||[]).filter(r=>{
-    const yk=String(r.yubikey||'').trim().toUpperCase();
-    return yk!=='' && yk!=='BUFFER';
+    const yk=String(r.yubikey||'').trim();
+    return yk.includes('@'); // ✅ يوبيكي حقيقي = فيه إيميل، أي حاجة تانية (Buffer, Floor 2...) بتتصنف Buffer
   });
   let present=0,absent=0,empty=0,training=0;
   rows.forEach(r=>{
@@ -1061,8 +1061,8 @@ function renderAvpBufferReport(){
   if(!date){el.textContent='—';return;}
   // ✅ عكس فلترة التقرير الأساسي — هنا بس اللي مالهمش يوبيكي فعلي (Buffer أو فاضي)
   const rows=(avpData.rows||[]).filter(r=>{
-    const yk=String(r.yubikey||'').trim().toUpperCase();
-    return yk==='' || yk==='BUFFER';
+    const yk=String(r.yubikey||'').trim();
+    return !yk.includes('@'); // ✅ عكس فحص اليوبيكي الحقيقي
   });
   let present=0,absent=0,empty=0,training=0;
   rows.forEach(r=>{
@@ -1108,8 +1108,8 @@ function renderAvpBufferTable(){
   }
   document.getElementById('avpBufferDateColHeader').textContent=date;
   const rows=(avpData.rows||[]).filter(r=>{
-    const yk=String(r.yubikey||'').trim().toUpperCase();
-    return yk==='' || yk==='BUFFER';
+    const yk=String(r.yubikey||'').trim();
+    return !yk.includes('@'); // ✅ عكس فحص اليوبيكي الحقيقي
   });
 
   document.getElementById('avpBufferRowCount').textContent=rows.length+' records';
@@ -1173,8 +1173,8 @@ function renderMappingReport(){
   if(!date){el.textContent='—';return;}
   // ✅ استبعاد أي حد مالوش يوبيكي فعلي (Buffer أو فاضي)
   const rows=(mappingData.rows||[]).filter(r=>{
-    const yk=String(r.yubikey||'').trim().toUpperCase();
-    return yk!=='' && yk!=='BUFFER';
+    const yk=String(r.yubikey||'').trim();
+    return yk.includes('@'); // ✅ يوبيكي حقيقي = فيه إيميل، أي حاجة تانية (Buffer, Floor 2...) بتتصنف Buffer
   });
   const total=rows.length; // ✅ Total = مجموع كلي من الشيت نفسه
 
@@ -1242,8 +1242,8 @@ function renderMappingTable(){
   }
   document.getElementById('mappingDateColHeader').textContent=date;
   const rows=(mappingData.rows||[]).filter(r=>{
-    const yk=String(r.yubikey||'').trim().toUpperCase();
-    return yk!=='' && yk!=='BUFFER';
+    const yk=String(r.yubikey||'').trim();
+    return yk.includes('@'); // ✅ يوبيكي حقيقي = فيه إيميل، أي حاجة تانية (Buffer, Floor 2...) بتتصنف Buffer
   });
 
   document.getElementById('mappingRowCount').textContent=rows.length+' records';
@@ -1270,8 +1270,8 @@ function renderMappingBufferReport(){
   const date=selectedMappingDate;
   if(!date){el.textContent='—';return;}
   const rows=(mappingData.rows||[]).filter(r=>{
-    const yk=String(r.yubikey||'').trim().toUpperCase();
-    return yk==='' || yk==='BUFFER';
+    const yk=String(r.yubikey||'').trim();
+    return !yk.includes('@'); // ✅ عكس فحص اليوبيكي الحقيقي
   });
   let qcTl=0,labelers=0,absent=0,empty=0,training=0;
   rows.forEach(r=>{
@@ -1320,8 +1320,8 @@ function renderMappingBufferTable(){
   }
   document.getElementById('mappingBufferDateColHeader').textContent=date;
   const rows=(mappingData.rows||[]).filter(r=>{
-    const yk=String(r.yubikey||'').trim().toUpperCase();
-    return yk==='' || yk==='BUFFER';
+    const yk=String(r.yubikey||'').trim();
+    return !yk.includes('@'); // ✅ عكس فحص اليوبيكي الحقيقي
   });
 
   document.getElementById('mappingBufferRowCount').textContent=rows.length+' records';
@@ -1563,8 +1563,8 @@ function renderAvpTable(){
   document.getElementById('avpDateColHeader').textContent=date;
   // ✅ نفس فلترة التقرير — استبعاد أي حد مالوش يوبيكي فعلي (Buffer أو فاضي)
   const rows=(avpData.rows||[]).filter(r=>{
-    const yk=String(r.yubikey||'').trim().toUpperCase();
-    return yk!=='' && yk!=='BUFFER';
+    const yk=String(r.yubikey||'').trim();
+    return yk.includes('@'); // ✅ يوبيكي حقيقي = فيه إيميل، أي حاجة تانية (Buffer, Floor 2...) بتتصنف Buffer
   });
 
   document.getElementById('avpRowCount').textContent=rows.length+' records';
