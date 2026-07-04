@@ -690,7 +690,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbx9XAxgm82W7OWgtTRIjs443d3oCKmuxEh7R0ma8N9ebqznL-fjIVQ4TLhOgqwLVQt0zg/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwfEAWSvPlczu2Ao-tPle_mjFkzSVHHXDmpUhsL5etquogohze7CjXXt5ZorWYv58FZ/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1477,7 +1477,7 @@ function renderManageOptionsFields(){
     const chips=items.map((val,idx)=>`
       <span style="display:inline-flex;align-items:center;gap:6px;background:var(--bg-2);border:1px solid var(--line);border-radius:20px;padding:4px 6px 4px 12px;font-size:12.5px;color:var(--text-0);margin:0 6px 6px 0">
         ${esc(val)}
-        <button type="button" class="manage-opt-remove" data-field="${esc(field)}" data-idx="${idx}" style="background:var(--bad-dim);color:var(--bad);border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center">×</button>
+        <button type="button" onclick="removeManageOption('${field}',${idx})" style="background:var(--bad-dim);color:var(--bad);border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center">×</button>
       </span>`).join('');
     const fieldId=field.replace(/\s+/g,'');
     return `
@@ -1485,31 +1485,11 @@ function renderManageOptionsFields(){
         <label>${esc(field)}</label>
         <div style="display:flex;flex-wrap:wrap;margin-bottom:8px">${chips||'<span style="color:var(--text-2);font-size:12.5px">No options yet</span>'}</div>
         <div style="display:flex;gap:8px">
-          <input type="text" id="manageOptionsInput_${fieldId}" class="form-control manage-opt-input" data-field="${esc(field)}" placeholder="Add new ${esc(field)}...">
-          <button type="button" class="btn-ghost manage-opt-add" data-field="${esc(field)}" data-fieldid="${fieldId}" style="white-space:nowrap">+ Add</button>
+          <input type="text" id="manageOptionsInput_${fieldId}" class="form-control" placeholder="Add new ${esc(field)}..." onkeydown="if(event.key==='Enter'){event.preventDefault();addManageOption('${field}','${fieldId}')}">
+          <button type="button" class="btn-ghost" style="white-space:nowrap" onclick="addManageOption('${field}','${fieldId}')">+ Add</button>
         </div>
       </div>`;
   }).join('');
-
-  document.querySelectorAll('.manage-opt-remove').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      removeManageOption(btn.dataset.field, parseInt(btn.dataset.idx,10));
-    });
-  });
-  document.querySelectorAll('.manage-opt-add').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      addManageOption(btn.dataset.field, btn.dataset.fieldid);
-    });
-  });
-  document.querySelectorAll('.manage-opt-input').forEach(inp=>{
-    inp.addEventListener('keydown',e=>{
-      if(e.key==='Enter'){
-        e.preventDefault();
-        const fieldId=inp.id.replace('manageOptionsInput_','');
-        addManageOption(inp.dataset.field, fieldId);
-      }
-    });
-  });
 }
 
 function addManageOption(field,fieldId){
@@ -1519,6 +1499,7 @@ function addManageOption(field,fieldId){
   if(!manageOptionsDraft[field].some(v=>v.toLowerCase()===val.toLowerCase())){
     manageOptionsDraft[field].push(val);
   }
+  input.value='';
   renderManageOptionsFields();
 }
 
