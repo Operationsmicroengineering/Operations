@@ -690,7 +690,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwfEAWSvPlczu2Ao-tPle_mjFkzSVHHXDmpUhsL5etquogohze7CjXXt5ZorWYv58FZ/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzIS2TlVT3cHoVuk14VGDIrAvrojHDcpwKHtYmUQp9XtudCX2N5WfJHYYIAq8zTAF_f-Q/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -2007,25 +2007,18 @@ function renderStFatimaReport(rows, date) {
   const inStFatima = r => getSiteForLocation((r.location||'').toLowerCase()) === 'st_fatima';
   const sfRowsAll = rows.filter(inStFatima).filter(r => !ybkIsWLA(r.deviceNo) && !ybkIsQTC(r.deviceNo));
 
-  const hasYubikey = r => {
-    const v = r.attendance[date] || '';
-    if (ybkIsBuffer(v)) return false;
-    return !!String(r.yubikey || '').trim();
-  };
-  const noYubikeyValue = r => !String(r.yubikey || '').trim();
-
-  const withYubikey = sfRowsAll.filter(hasYubikey);
-
-  const withLabelersCount = withYubikey.filter(r => ybkIsPresent(r.attendance[date] || '')).length;
-  const absentLabelersCount = withYubikey.filter(r => ybkIsAbsent(r.attendance[date] || '')).length;
-  const trainingCount = withYubikey.filter(r => ybkIsTraining(r.attendance[date] || '')).length;
-
-  const emptyCount = sfRowsAll.filter(r => {
-    const v = r.attendance[date] || '';
-    return ybkIsBuffer(v) || noYubikeyValue(r);
-  }).length;
-
+  // ✅ Total = كل اللي معاهم يوبيكي حقيقي، بغض النظر عن حالة اليوم ده (زي AVP/Mapping)
+  const withYubikey = sfRowsAll.filter(r => !!String(r.yubikey || '').trim());
   const total = withYubikey.length;
+
+  let withLabelersCount=0, absentLabelersCount=0, trainingCount=0, emptyCount=0;
+  withYubikey.forEach(r=>{
+    const v = r.attendance[date] || '';
+    if (ybkIsPresent(v)) withLabelersCount++;
+    else if (ybkIsAbsent(v)) absentLabelersCount++;
+    else if (ybkIsTraining(v)) trainingCount++;
+    else emptyCount++; // ✅ أي حالة تانية (Buffer, فاضي...) بتتحسب Empty عشان المجموع يطابق Total دايمًا
+  });
 
   const report =
 `GT YubiKeys (St. Fatima)
