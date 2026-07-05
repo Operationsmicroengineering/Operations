@@ -690,7 +690,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzlZt96Az8GcbvMpdIeYU2zE6J-Or0mOd0m_Qam4mWGbDoYyRCqwTLGM3YW93NgEwHpfQ/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzEYZYN3vlxGuQCRX5IrG9w4x72dK2xMokrFjNTUO02vR4C9k1-BWq1-AXaOCTzmXiv0A/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -2008,7 +2008,7 @@ function renderStFatimaReport(rows, date) {
   const sfRowsAll = rows.filter(inStFatima).filter(r => !ybkIsWLA(r.deviceNo) && !ybkIsQTC(r.deviceNo));
 
   // ✅ Total = كل اللي معاهم يوبيكي حقيقي، بغض النظر عن حالة اليوم ده (زي AVP/Mapping)
-  const withYubikey = sfRowsAll.filter(r => !!String(r.yubikey || '').trim());
+  const withYubikey = sfRowsAll.filter(r => String(r.yubikey || '').trim().includes('@'));
   const total = withYubikey.length;
 
   let withLabelersCount=0, absentLabelersCount=0, trainingCount=0, emptyCount=0;
