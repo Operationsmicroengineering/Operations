@@ -493,6 +493,16 @@
         </div>
       </div>
 
+      <!-- ✅ Nasr City records -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header"><span class="ybk-history-title">Nasr City records</span><span class="table-count" id="nasrCityRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
+        <div class="ybk-scroll">
+          <table class="ybk-history-table" id="nasrCityTable" style="display:none;min-width:600px"><thead><tr><th>Name</th><th>Device No.</th><th>Location</th><th>Yubikey</th><th class="ybk-date-col" id="nasrCityDateColHeader">Date</th><th class="no-sort">Status</th></tr></thead><tbody id="nasrCityTableBody"></tbody></table>
+          <div class="empty" id="nasrCityEmptyState" style="display:none"><div>No records found</div></div>
+        </div>
+        <div class="table-footer"><span id="nasrCityFooterInfo">—</span><span id="nasrCityFooterTime">—</span></div>
+      </div>
+
       <!-- Records table -->
       <div class="ybk-history-card">
         <div class="ybk-history-header"><span class="ybk-history-title">Yubikey records</span><span class="table-count" id="ybkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
@@ -2129,6 +2139,47 @@ function copyNasrCityGTReport() {
   });
 }
 
+function renderNasrCityTable(rows, date) {
+  const tableEl=document.getElementById('nasrCityTable');
+  const emptyEl=document.getElementById('nasrCityEmptyState');
+  if(!date){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    document.getElementById('nasrCityRowCount').textContent='—';
+    return;
+  }
+  document.getElementById('nasrCityDateColHeader').textContent=date;
+
+  // ✅ كل حد في مدينة نصر معاه يوبيكي حقيقي (بما فيهم WLA)
+  const ncRows=rows.filter(r=>isNasrCityLocation(r.location)).filter(r=>{
+    if(ybkIsWLA(r.deviceNo))return true;
+    return String(r.yubikey||'').trim().includes('@');
+  });
+
+  document.getElementById('nasrCityRowCount').textContent=ncRows.length+' records';
+  document.getElementById('nasrCityFooterInfo').textContent=`Showing ${ncRows.length} employees`;
+  document.getElementById('nasrCityFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!ncRows.length){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    return;
+  }
+  emptyEl.style.display='none';
+  tableEl.style.display='table';
+  document.getElementById('nasrCityTableBody').innerHTML=ncRows.map(r=>{
+    const v=r.attendance[date]||'';
+    const initials=esc((r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    let statusBadge;
+    if(ybkIsPresent(v))statusBadge='<span class="badge badge-active">Present</span>';
+    else if(ybkIsTraining(v))statusBadge='<span class="badge badge-training">Training</span>';
+    else if(ybkIsAbsent(v))statusBadge='<span class="badge badge-resigned">Absent</span>';
+    else statusBadge='<span style="color:var(--text-2);font-size:12px">—</span>';
+    const teamBadge=ybkIsWLA(r.deviceNo)?' <span class="badge" style="background:var(--purple-dim);color:var(--purple);margin-left:6px">WLA</span>':'';
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span>${teamBadge}</div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.deviceNo||'—')}</td><td style="color:var(--text-1)">${esc(r.location||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${ybkAttClass(v)}">${esc(ybkAttLabel(v))}</span>`:'—'}</td><td>${statusBadge}</td></tr>`;
+  }).join('');
+}
+
 function renderYubikeyTable(){
   const search='';
   const statusFilter='';
@@ -2154,6 +2205,7 @@ function renderYubikeyTable(){
 
   renderStFatimaReport(rows, date);
   renderNasrCityGTReport(rows, date);
+  renderNasrCityTable(rows, date);
 
   let filtered=rows.filter(r=>{
     const loc=(r.location||'').toLowerCase().trim();
