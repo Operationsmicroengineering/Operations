@@ -479,6 +479,20 @@
         </div>
       </div>
 
+      <!-- ✅ Nasr City Daily Report (copyable message) -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header">
+          <span class="ybk-history-title">Nasr City Daily Report</span>
+          <button class="btn-ghost" onclick="copyNasrCityGTReport()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div style="padding:1.2rem 1.5rem">
+          <pre id="nasrCityGTReportText" class="mono" style="white-space:pre-wrap; font-size:13px; line-height:1.7; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
+        </div>
+      </div>
+
       <!-- Records table -->
       <div class="ybk-history-card">
         <div class="ybk-history-header"><span class="ybk-history-title">Yubikey records</span><span class="table-count" id="ybkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
@@ -2050,6 +2064,71 @@ function copyStFatimaReport() {
   });
 }
 
+// ✅ نفس منطق تقرير St. Fatima بالظبط، بس لموقع Nasr City
+function isNasrCityLocation(loc){
+  const n=(loc||'').toLowerCase().trim();
+  return ['room 102','room 106','room 108','nc'].includes(n);
+}
+
+function renderNasrCityGTReport(rows, date) {
+  const el = document.getElementById('nasrCityGTReportText');
+  if (!el) return;
+  if (!date) { el.textContent = '—'; return; }
+
+  const inNasrCity = r => isNasrCityLocation(r.location);
+  const hasYubikey = r => String(r.yubikey || '').trim().includes('@'); // ✅ يوبيكي حقيقي = فيه @
+
+  const nasrRowsAll = rows.filter(inNasrCity);
+
+  // ✅ WLA — بيتحسبوا بحضورهم النهاردة بس (مش عندهم يوبيكي مسجل باسمهم فرديًا)
+  const wlaRows = nasrRowsAll.filter(r => ybkIsWLA(r.deviceNo) && ybkIsPresent(r.attendance[date] || ''));
+  const wlaCount = wlaRows.length;
+
+  const nasrRows = nasrRowsAll.filter(r => !ybkIsWLA(r.deviceNo)).filter(hasYubikey);
+
+  // ✅ "Hiring team" = اللي حالتهم Training النهاردة
+  const hiringTeamRows = nasrRows.filter(r => ybkIsTraining(r.attendance[date] || ''));
+  const hiringTeamCount = hiringTeamRows.length;
+
+  const stlTrainingQuality = 1; // ثابت يدويًا زي ما اتفقنا
+
+  const labelerPool = nasrRows.filter(r => !hiringTeamRows.includes(r) && ybkIsPresent(r.attendance[date] || ''));
+  const labelerCount = labelerPool.length;
+  const labelerAbsentPool = nasrRows.filter(r => !hiringTeamRows.includes(r) && ybkIsAbsent(r.attendance[date] || ''));
+  const labelerAbsentCount = labelerAbsentPool.length;
+
+  const totalYubikey = labelerCount + labelerAbsentCount + hiringTeamCount + wlaCount + stlTrainingQuality;
+
+  const report =
+`All Yubikeys GT are in place at the end of the Overnight shift.
+Labelers+Team quality , training + Wla
+      • Total ${totalYubikey} yubikey
+- ${labelerCount} yubikey with labelers
+- ${labelerAbsentCount} yubikey Absent Labelers
+- ${stlTrainingQuality} yubikey STL, Training,Quality
+- ${hiringTeamCount} yubikey with hiring team
+- ${wlaCount} yubikey Wla.`;
+
+  el.textContent = report;
+}
+
+function copyNasrCityGTReport() {
+  const el = document.getElementById('nasrCityGTReportText');
+  if (!el) return;
+  const text = el.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    showSuccess('Report copied to clipboard.');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch {}
+    document.body.removeChild(ta);
+    showSuccess('Report copied to clipboard.');
+  });
+}
+
 function renderYubikeyTable(){
   const search='';
   const statusFilter='';
@@ -2074,6 +2153,7 @@ function renderYubikeyTable(){
   });
 
   renderStFatimaReport(rows, date);
+  renderNasrCityGTReport(rows, date);
 
   let filtered=rows.filter(r=>{
     const loc=(r.location||'').toLowerCase().trim();
