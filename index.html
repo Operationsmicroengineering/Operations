@@ -2087,7 +2087,8 @@ function renderNasrCityGTReport(rows, date) {
 
   const inNasrCity = r => isNasrCityLocation(r.location);
 
-  const nasrRowsAll = rows.filter(inNasrCity);
+  // ✅ استبعاد أي حد Device No. بتاعه QTC / Training Team / Quality Team تمامًا
+  const nasrRowsAll = rows.filter(inNasrCity).filter(r => !ybkIsQTC(r.deviceNo));
 
   // ✅ WLA — بيتحسبوا بحضورهم النهاردة بس (مش عندهم يوبيكي مسجل باسمهم فرديًا)
   const wlaRows = nasrRowsAll.filter(r => ybkIsWLA(r.deviceNo) && ybkIsPresent(r.attendance[date] || ''));
@@ -2107,7 +2108,8 @@ function renderNasrCityGTReport(rows, date) {
   const labelerAbsentPool = nasrRows.filter(r => !hiringTeamRows.includes(r) && ybkIsAbsent(r.attendance[date] || ''));
   const labelerAbsentCount = labelerAbsentPool.length;
 
-  const totalYubikey = labelerCount + labelerAbsentCount + hiringTeamCount + wlaCount + stlTrainingQuality;
+  // ✅ Total = العدد الحقيقي المباشر من الشيت (كل صف في مدينة نصر بعد استبعاد QTC)، مش معادلة محسوبة
+  const totalYubikey = nasrRowsAll.length;
 
   const report =
 `All Yubikeys GT are in place at the end of the Overnight shift.
@@ -2150,8 +2152,8 @@ function renderNasrCityTable(rows, date) {
   }
   document.getElementById('nasrCityDateColHeader').textContent=date;
 
-  // ✅ كل حد في مدينة نصر — معاه يوبيكي حقيقي أو من غيره (مفيش فصل Buffer هنا)
-  const ncRows=rows.filter(r=>isNasrCityLocation(r.location));
+  // ✅ كل حد في مدينة نصر — معاه يوبيكي حقيقي أو من غيره (مفيش فصل Buffer)، مستبعد منه QTC/Training Team/Quality Team
+  const ncRows=rows.filter(r=>isNasrCityLocation(r.location)).filter(r=>!ybkIsQTC(r.deviceNo));
 
   document.getElementById('nasrCityRowCount').textContent=ncRows.length+' records';
   document.getElementById('nasrCityFooterInfo').textContent=`Showing ${ncRows.length} employees`;
