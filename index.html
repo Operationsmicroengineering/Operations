@@ -714,7 +714,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzEYZYN3vlxGuQCRX5IrG9w4x72dK2xMokrFjNTUO02vR4C9k1-BWq1-AXaOCTzmXiv0A/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwBDT61TGPzAeKn0nMw5EPg3MhkHkOXKX4lseFeVpu4-IUHFHUVU-56vtRdh_FXK9xJvQ/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -795,7 +795,7 @@ let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, dele
 function mappingIsPresent(v){return String(v||'').trim().toUpperCase()==='P';}
 function mappingIsAbsent(v){return String(v||'').trim()==='0';}
 function mappingIsEmpty(v){const u=String(v||'').trim().toUpperCase();return u===''||u==='E';}
-function mappingIsTraining(v){const u=String(v||'').trim().toUpperCase();return u==='T1'||u==='T2'||u==='T3'||u==='T';}
+function mappingIsTraining(v){const u=String(v||'').trim().toUpperCase();return /^T\d*$/.test(u);}
 function mappingIsQcTl(role){const r=String(role||'').trim().toUpperCase();return r==='QC'||r==='TL';}
 
 // ✅ أرقام Distribution مثبتة يدويًا — عدّل الأرقام دي من هنا لو اتغيرت
@@ -805,7 +805,7 @@ const AVP_DISTRIBUTION = { TL: 1, QC: 5, USL: 5, SD: 30, PL: 8, SIM: 15 };
 function avpIsPresent(v){const u=String(v||'').trim().toUpperCase();return u==='P'||u==='ATTEND';}
 function avpIsAbsent(v){const u=String(v||'').trim().toUpperCase();return u==='0'||u==='ABSENT';}
 function avpIsEmpty(v){const u=String(v||'').trim().toUpperCase();return u===''||u==='EMPTY'||u==='E';}
-function avpIsTraining(v){const u=String(v||'').trim().toUpperCase();return u==='T'||u==='TRAINING';}
+function avpIsTraining(v){const u=String(v||'').trim().toUpperCase();return /^T\d*$/.test(u)||u==='TRAINING';}
 
 function esc(v){if(v==null)return'';return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');}
 function normalizeShift(v){if(!v)return'';const t=String(v).trim();return t?t[0].toUpperCase()+t.slice(1).toLowerCase():'';}
@@ -814,7 +814,7 @@ function isActive(s){return s&&(s.toLowerCase().includes('working')||s.toLowerCa
 function isResigned(s){return s&&(s.toLowerCase().includes('resign')||s.toLowerCase().includes('inactive'));}
 function ybkIsPresent(v){const u=String(v||'').trim().toUpperCase();return u==='P'||u==='TP';}
 function ybkIsAbsent(v){return String(v||'').trim()==='0';}
-function ybkIsTraining(v){const u=String(v||'').trim().toUpperCase();return u==='T'||u==='T1'||u==='T2'||u==='T3';}
+function ybkIsTraining(v){const u=String(v||'').trim().toUpperCase();return /^T\d*$/.test(u);}
 // ✅ Buffer = attendance value is exactly "-" (dash) → meaning "no yubikey assigned"
 // ✅ Buffer also includes "E" (Empty device — no actual yubikey assigned)
 function ybkIsBuffer(v){const t=String(v||'').trim().toUpperCase();return t==='-'||t==='–'||t==='—'||t==='E';}
