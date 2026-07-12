@@ -503,6 +503,30 @@
         <div class="table-footer"><span id="nasrCityFooterInfo">—</span><span id="nasrCityFooterTime">—</span></div>
       </div>
 
+      <!-- ✅ Nasr City Buffer Attendance -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header">
+          <span class="ybk-history-title">Nasr City Buffer Attendance</span>
+          <button class="btn-ghost" onclick="copyNasrCityBufferReport()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div style="padding:1.2rem 1.5rem">
+          <pre id="nasrCityBufferReportText" class="mono" style="white-space:pre-wrap; font-size:13px; line-height:1.7; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
+        </div>
+      </div>
+
+      <!-- ✅ Nasr City Buffer records -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header"><span class="ybk-history-title">Nasr City Buffer records</span><span class="table-count" id="nasrCityBufferRowCount" style="color:var(--text-1);background:var(--bg-2);border-color:var(--line)">—</span></div>
+        <div class="ybk-scroll">
+          <table class="ybk-history-table" id="nasrCityBufferTable" style="display:none;min-width:600px"><thead><tr><th>Name</th><th>Device No.</th><th>Location</th><th>Yubikey</th><th class="ybk-date-col" id="nasrCityBufferDateColHeader">Date</th><th class="no-sort">Status</th></tr></thead><tbody id="nasrCityBufferTableBody"></tbody></table>
+          <div class="empty" id="nasrCityBufferEmptyState" style="display:none"><div>No buffer records found</div></div>
+        </div>
+        <div class="table-footer"><span id="nasrCityBufferFooterInfo">—</span><span id="nasrCityBufferFooterTime">—</span></div>
+      </div>
+
       <!-- Records table -->
       <div class="ybk-history-card">
         <div class="ybk-history-header"><span class="ybk-history-title">Yubikey records</span><span class="table-count" id="ybkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
@@ -2180,6 +2204,87 @@ function renderNasrCityTable(rows, date) {
   }).join('');
 }
 
+// ✅ Nasr City Buffer — اللي مالهمش يوبيكي حقيقي (وWLA برضو مالهاش يوبيكي فردي، فبتتحسب هنا)
+function nasrCityBufferRows(rows){
+  return rows.filter(r=>isNasrCityLocation(r.location)).filter(r=>{
+    if(ybkIsQTC(r.deviceNo))return false;
+    if(ybkIsWLA(r.deviceNo))return true;
+    return !String(r.yubikey||'').trim().includes('@');
+  });
+}
+
+function renderNasrCityBufferReport(rows, date){
+  const el=document.getElementById('nasrCityBufferReportText');
+  if(!el)return;
+  if(!date){el.textContent='—';return;}
+  const bufRows=nasrCityBufferRows(rows);
+  let present=0,absent=0,empty=0,training=0;
+  bufRows.forEach(r=>{
+    const v=r.attendance[date]||'';
+    if(ybkIsPresent(v))present++;
+    else if(ybkIsAbsent(v))absent++;
+    else if(ybkIsTraining(v))training++;
+    else empty++;
+  });
+  el.textContent=
+`Attendance:
+• Present: ${present}
+• Absent: ${absent}
+• Empty: ${empty}
+• Training : ${training}`;
+}
+
+function copyNasrCityBufferReport(){
+  const el=document.getElementById('nasrCityBufferReportText');
+  if(!el)return;
+  const text=el.textContent||'';
+  navigator.clipboard.writeText(text).then(()=>{
+    showSuccess('Report copied to clipboard.');
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');}catch{}
+    document.body.removeChild(ta);
+    showSuccess('Report copied to clipboard.');
+  });
+}
+
+function renderNasrCityBufferTable(rows, date){
+  const tableEl=document.getElementById('nasrCityBufferTable');
+  const emptyEl=document.getElementById('nasrCityBufferEmptyState');
+  if(!date){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    document.getElementById('nasrCityBufferRowCount').textContent='—';
+    return;
+  }
+  document.getElementById('nasrCityBufferDateColHeader').textContent=date;
+  const bufRows=nasrCityBufferRows(rows);
+
+  document.getElementById('nasrCityBufferRowCount').textContent=bufRows.length+' records';
+  document.getElementById('nasrCityBufferFooterInfo').textContent=`Showing ${bufRows.length} employees`;
+  document.getElementById('nasrCityBufferFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!bufRows.length){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    return;
+  }
+  emptyEl.style.display='none';
+  tableEl.style.display='table';
+  document.getElementById('nasrCityBufferTableBody').innerHTML=bufRows.map(r=>{
+    const v=r.attendance[date]||'';
+    const initials=esc((r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    let statusBadge;
+    if(ybkIsPresent(v))statusBadge='<span class="badge badge-active">Present</span>';
+    else if(ybkIsTraining(v))statusBadge='<span class="badge badge-training">Training</span>';
+    else if(ybkIsAbsent(v))statusBadge='<span class="badge badge-resigned">Absent</span>';
+    else statusBadge='<span style="color:var(--text-2);font-size:12px">—</span>';
+    const teamBadge=ybkIsWLA(r.deviceNo)?' <span class="badge" style="background:var(--purple-dim);color:var(--purple);margin-left:6px">WLA</span>':'';
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--text-1)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span>${teamBadge}</div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.deviceNo||'—')}</td><td style="color:var(--text-1)">${esc(r.location||'—')}</td><td class="mono" style="color:var(--text-2);font-size:12px">${esc(r.yubikey||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${ybkAttClass(v)}">${esc(ybkAttLabel(v))}</span>`:'—'}</td><td>${statusBadge}</td></tr>`;
+  }).join('');
+}
+
 function renderYubikeyTable(){
   const search='';
   const statusFilter='';
@@ -2206,6 +2311,8 @@ function renderYubikeyTable(){
   renderStFatimaReport(rows, date);
   renderNasrCityGTReport(rows, date);
   renderNasrCityTable(rows, date);
+  renderNasrCityBufferReport(rows, date);
+  renderNasrCityBufferTable(rows, date);
 
   let filtered=rows.filter(r=>{
     const loc=(r.location||'').toLowerCase().trim();
