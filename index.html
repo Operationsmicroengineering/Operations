@@ -2109,7 +2109,9 @@ function renderNasrCityGTReport(rows, date) {
   const labelerAbsentCount = labelerAbsentPool.length;
 
   // ✅ Total = العدد الحقيقي المباشر من الشيت (كل صف في مدينة نصر بعد استبعاد QTC)، مش معادلة محسوبة
-  const totalYubikey = nasrRowsAll.length;
+  // ✅ Total = عدد الفلاشات الحقيقية بس (فيها @) + فلاشتين WLA الثابتين
+  const withRealYubikey = nasrRows.filter(r => String(r.yubikey || '').trim().includes('@'));
+  const totalYubikey = withRealYubikey.length + wlaCount;
 
   const report =
 `All Yubikeys GT are in place at the end of the Overnight shift.
