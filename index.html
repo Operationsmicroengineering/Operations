@@ -66,7 +66,7 @@
   .nav-left { display:flex; align-items:center; gap:14px; }
   .nav-info { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-1); }
   .nav-user { font-size:12.5px; color:var(--text-1); padding-right:14px; border-right:1px solid var(--line); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  main { padding:2rem; max-width:1440px; margin:0 auto; }
+  main { padding:2rem; width:100%; margin:0 auto; }
   .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-bottom:2rem; }
   .stat { background:var(--bg-1); border:1px solid var(--line); border-radius:12px; padding:1.35rem 1.5rem 1.5rem; position:relative; overflow:hidden; box-shadow:var(--shadow-card); transition:transform 0.18s,border-color 0.18s; }
   .stat::after { content:''; position:absolute; top:-18px; left:-18px; width:84px; height:84px; border-radius:50%; background:var(--tint,var(--signal-dim)); opacity:0.5; filter:blur(2px); }
@@ -2475,7 +2475,6 @@ const SHEETS_DATA=[
     {name:'Mapping Overnight Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1NEX_9R-kZYlQT8FLks3_1XnDn9JDr8VCyrvNl7hyd44/edit?gid=59640710'},
     {name:'Labelerslist Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1J_BvZ6AHD4HcpTVf_iACyTJhcu0hx7ehczucAhN2QhM/edit?gid=1562394029'},
     {name:'Attendance delays OP',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1DUFehN3sGupWwkIyZO44IL1izYUSbXggtCUiUbxcxUs/edit?gid=0'},
-
   ]},
   {category:'Forms',items:[
     {name:'Form.meti portal',type:'form',url:'https://docs.google.com/forms/d/e/1FAIpQLSd2Krysi6kd_KWap5iXtNzCY4S_0Pg_HPVHRi4egEAfIoQ8nA/viewform?fbzx=1749840446210905879'},
@@ -2495,8 +2494,6 @@ const SHEETS_DATA=[
     {name:'Violation Report',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1pQ6hxfVJmkaS0VtxyWhAG40Dj2HOY053SMgYm3OTdUg/edit?gid=0'},
     {name:'الأوراق المسلمة',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1V_FnuaBV4s9vLHYizGwPl-AFc5MMA1eviSw7iouxV6Q/edit?gid=0'},
     {name:'Master New Hire - Dataset',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1t3IATJAHtlrMur9QTuqcrbzEypi_oLOwnWA9c8WmrRw/edit?gid=0'},
-    {name:'Overtime for AVP Labelers',type:'sheet',url:'https://docs.google.com/spreadsheets/d/169pw3h0RpseH94mJd-RTcmFCfVYO2Op9J-e2jocWmaQ/edit?gid=219483290#gid=219483290'},
-
   ]},
 ];
 
