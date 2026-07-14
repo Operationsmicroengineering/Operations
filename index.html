@@ -79,7 +79,11 @@
   .nav-brand-text .subtitle { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:1.4px; color:var(--signal); font-weight:600; }
   .nav-left { display:flex; align-items:center; gap:14px; }
   .nav-info { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-1); }
-  .nav-user { font-size:12.5px; color:var(--text-1); padding-right:14px; border-right:1px solid var(--line); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .nav-user { font-size:12.5px; color:var(--text-1); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .nav-profile { display:flex; align-items:center; gap:9px; padding-right:14px; border-right:1px solid var(--line); cursor:pointer; border-radius:8px; padding:4px 8px 4px 4px; margin:-4px 0; transition:background 0.15s; }
+  .nav-profile:hover { background:var(--bg-2); }
+  .nav-avatar { width:26px; height:26px; border-radius:50%; background:var(--signal-dim); border:1px solid var(--signal-line); color:var(--signal); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; overflow:hidden; }
+  .nav-avatar img { width:100%; height:100%; object-fit:cover; }
   main { padding:2rem; width:100%; margin:0 auto; }
   .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-bottom:2rem; }
   .stat { background:var(--bg-1); border:1px solid var(--line); border-radius:12px; padding:1.35rem 1.5rem 1.5rem; position:relative; overflow:hidden; box-shadow:var(--shadow-card); transition:transform 0.18s,border-color 0.18s; }
@@ -353,7 +357,10 @@
       </button>
     </div>
     <div class="nav-left">
-      <span class="nav-user mono" id="navUserEmail"></span>
+      <div class="nav-profile" id="navProfileBtn" onclick="openProfileModal()" title="Edit profile">
+        <div class="nav-avatar" id="navAvatar">?</div>
+        <span class="nav-user mono" id="navUserEmail"></span>
+      </div>
       <span class="source-badge">GOOGLE SHEETS</span>
       <div class="nav-info mono" id="lastSync"><span class="sync-dot" id="syncDot"></span><span id="syncText">Loading...</span></div>
       <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle light/dark theme">
@@ -717,6 +724,21 @@
 <!-- DELETE VIOLATION MODAL -->
 <div class="modal-overlay" id="deleteViolationModalOverlay"><div class="modal-card delete-modal-card"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete violation</span><button class="modal-close" onclick="closeDeleteViolationModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>Are you sure?</h3><p>You're about to permanently delete this violation record for <span class="delete-name-highlight" id="deleteViolationName">this entry</span>. This cannot be undone.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteViolationModal()">Cancel</button><button type="button" class="btn-confirm-delete" id="deleteViolationConfirmBtn" onclick="confirmDeleteViolation()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button></div></div></div>
 
+<!-- PROFILE MODAL -->
+<div class="modal-overlay" id="profileModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title">Edit profile</span><button class="modal-close" onclick="closeProfileModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<div class="modal-body">
+  <div class="form-error" id="profileFormError"></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:1.5rem">
+    <div id="profileAvatarPreview" style="width:84px;height:84px;border-radius:50%;background:var(--signal-dim);border:1px solid var(--signal-line);color:var(--signal);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;overflow:hidden">?</div>
+    <input type="file" id="profileAvatarInput" accept="image/*" style="display:none" onchange="handleAvatarFileSelect(event)">
+    <button type="button" class="btn-ghost" onclick="document.getElementById('profileAvatarInput').click()">Change photo</button>
+  </div>
+  <div class="form-group"><label>Display name</label><input type="text" id="profileDisplayName" class="form-control" placeholder="e.g. Ahmed Alaa"></div>
+  <div class="form-group"><label>Email <span style="color:var(--text-2);font-size:11px">(read-only)</span></label><input type="text" id="profileEmailReadonly" class="form-control" readonly style="opacity:0.5;cursor:not-allowed"></div>
+</div>
+<div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeProfileModal()">Cancel</button><button type="button" class="btn-primary" id="profileSaveBtn" onclick="saveProfile()">Save changes</button></div>
+</div></div>
+
 <!-- MANAGE VIOLATION OPTIONS MODAL -->
 <div class="modal-overlay" id="manageOptionsModalOverlay"><div class="modal-card" style="max-width:560px"><div class="modal-header"><span class="modal-title">Manage dropdown options</span><button class="modal-close" onclick="closeManageOptionsModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body">
   <div class="form-error" id="manageOptionsFormError"></div>
@@ -732,7 +754,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwBDT61TGPzAeKn0nMw5EPg3MhkHkOXKX4lseFeVpu4-IUHFHUVU-56vtRdh_FXK9xJvQ/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxhPtmZaNj7aOpT7WO2bjAOb4szf1AINlGZM7KpWRIwv7LOyhhpFrB8vQ_yzki5oHF-mA/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -924,6 +946,7 @@ function showDashboard(){
   const userEmail=getSession()?.user?.email||'';
   document.getElementById('navUserEmail').textContent=userEmail;
   showWelcomeToast(userEmail);
+  loadUserProfile(userEmail);
   const cached=loadCache();
   if(cached){
     allData=cached.employees||[];trainingData=cached.training||[];
@@ -950,6 +973,104 @@ function showWelcomeToast(email){
 
 function startPolling(){stopPolling();pollTimer=setInterval(()=>{getSession()?loadData():stopPolling();},120000);}
 function stopPolling(){if(pollTimer){clearInterval(pollTimer);pollTimer=null;}}
+
+// ── User Profile (Display Name + Avatar) ──
+let currentUserProfile={email:'',displayName:'',avatar:''};
+let pendingAvatarDataUrl=null;
+
+function renderNavIdentity(){
+  const email=currentUserProfile.email||'';
+  const name=currentUserProfile.displayName||'';
+  const label=name||email;
+  document.getElementById('navUserEmail').textContent=label;
+  document.getElementById('navUserEmail').title=email;
+  const avatarEl=document.getElementById('navAvatar');
+  if(currentUserProfile.avatar){
+    avatarEl.innerHTML=`<img src="${currentUserProfile.avatar}" alt="">`;
+  }else{
+    const initials=(name||email||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase()||'?';
+    avatarEl.textContent=initials;
+  }
+}
+
+async function loadUserProfile(email){
+  currentUserProfile={email,displayName:'',avatar:''};
+  renderNavIdentity();
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=userProfile&email='+encodeURIComponent(email));
+    if(!res.ok)return;
+    const json=await res.json();
+    if(json.profile){
+      currentUserProfile={email,displayName:json.profile.displayName||'',avatar:json.profile.avatar||''};
+      renderNavIdentity();
+    }
+  }catch(ex){ /* يفضل شغال بالإيميل لو السيرفر مش متاح */ }
+}
+
+function openProfileModal(){
+  document.getElementById('profileFormError').style.display='none';
+  document.getElementById('profileDisplayName').value=currentUserProfile.displayName||'';
+  document.getElementById('profileEmailReadonly').value=currentUserProfile.email||'';
+  pendingAvatarDataUrl=currentUserProfile.avatar||null;
+  const preview=document.getElementById('profileAvatarPreview');
+  if(pendingAvatarDataUrl){
+    preview.innerHTML=`<img src="${pendingAvatarDataUrl}" style="width:100%;height:100%;object-fit:cover">`;
+  }else{
+    const name=currentUserProfile.displayName||currentUserProfile.email||'?';
+    preview.textContent=(name.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('')||'?').toUpperCase();
+  }
+  document.getElementById('profileModalOverlay').style.display='flex';
+}
+function closeProfileModal(){document.getElementById('profileModalOverlay').style.display='none';}
+document.getElementById('profileModalOverlay').addEventListener('click',e=>{if(e.target.id==='profileModalOverlay')closeProfileModal();});
+
+function handleAvatarFileSelect(event){
+  const file=event.target.files&&event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      // ✅ نصغّر الصورة لـ 96x96 عشان تتخزن كنص صغير في الشيت
+      const size=96;
+      const canvas=document.createElement('canvas');
+      canvas.width=size;canvas.height=size;
+      const ctx=canvas.getContext('2d');
+      const scale=Math.max(size/img.width,size/img.height);
+      const w=img.width*scale,h=img.height*scale;
+      ctx.drawImage(img,(size-w)/2,(size-h)/2,w,h);
+      pendingAvatarDataUrl=canvas.toDataURL('image/jpeg',0.72);
+      document.getElementById('profileAvatarPreview').innerHTML=`<img src="${pendingAvatarDataUrl}" style="width:100%;height:100%;object-fit:cover">`;
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveProfile(){
+  const errDiv=document.getElementById('profileFormError'),btn=document.getElementById('profileSaveBtn');
+  errDiv.style.display='none';
+  const displayName=document.getElementById('profileDisplayName').value.trim();
+  if(!displayName){errDiv.textContent='Please enter a display name.';errDiv.style.display='block';return;}
+  btn.disabled=true;
+  const payload={email:currentUserProfile.email,displayName,avatar:pendingAvatarDataUrl||''};
+  try{
+    await fetch(APPS_SCRIPT_URL,{
+      method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'saveUserProfile',data:payload})
+    });
+    await new Promise(r=>setTimeout(r,600));
+    currentUserProfile={...currentUserProfile,displayName,avatar:pendingAvatarDataUrl||''};
+    renderNavIdentity();
+    closeProfileModal();
+    showSuccess('Profile updated successfully.');
+  }catch(ex){
+    errDiv.textContent='Save failed: '+ex.message;errDiv.style.display='block';
+  }finally{
+    btn.disabled=false;
+  }
+}
 
 async function loadData(forceVisible=false){
   if(!getSession()||isSyncing)return;
