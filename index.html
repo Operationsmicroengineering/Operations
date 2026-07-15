@@ -2518,7 +2518,8 @@ function renderNightStFatimaReport(rows, date) {
   const inStFatima = r => getSiteForLocation((r.location||'').toLowerCase()) === 'st_fatima';
   const sfRowsAll = rows.filter(inStFatima).filter(r => !ybkIsWLA(r.deviceNo) && !ybkIsQTC(r.deviceNo));
 
-  const withYubikey = sfRowsAll.filter(r => String(r.yubikey || '').trim().includes('@'));
+  // ✅ في Night: العدد ياخد الكل بغض النظر عن اليوبيكي — مفيش فلترة "لازم يبقى معاه فلاشة"
+  const withYubikey = sfRowsAll;
   const total = withYubikey.length;
 
   let withLabelersCount=0, absentLabelersCount=0, trainingCount=0, emptyCount=0;
@@ -2580,8 +2581,8 @@ function renderNightNasrCityReport(rows, date) {
   const labelerAbsentPool = nasrRows.filter(r => !hiringTeamRows.includes(r) && ybkIsAbsent(r.attendance[date] || ''));
   const labelerAbsentCount = labelerAbsentPool.length;
 
-  const withRealYubikey = nasrRows.filter(r => String(r.yubikey || '').trim().includes('@'));
-  const totalYubikey = withRealYubikey.length + wlaCount;
+  // ✅ في Night: العدد ياخد الكل بغض النظر عن اليوبيكي
+  const totalYubikey = nasrRows.length + wlaCount;
 
   el.textContent =
 `All Yubikeys GT are in place at the end of the night shift.
@@ -2668,7 +2669,6 @@ function renderNightYbkTable(){
     const isQtc=ybkIsQTC(r.deviceNo);
     const inSite=getSiteForLocation(loc)!==null;
     if(!inSite && !isWla && !isQtc)return false;
-    if(!isWla && !String(r.yubikey||'').trim())return false;
     return true;
   });
 
