@@ -1344,10 +1344,11 @@ function renderAvpReport(){
   let present=0,absent=0,empty=0,training=0;
   rows.forEach(r=>{
     const v=r.attendance[date]||'';
+    const hasFlash=String(r.yubikey||'').trim().includes('@');
     if(avpIsPresent(v))present++;
     else if(avpIsAbsent(v))absent++;
-    else if(avpIsEmpty(v))empty++;
     else if(avpIsTraining(v))training++;
+    else if(hasFlash&&avpIsEmpty(v))empty++; // ✅ Empty بس لو فعلاً معاه يوبيكي حقيقي
   });
 
   const d=AVP_DISTRIBUTION;
