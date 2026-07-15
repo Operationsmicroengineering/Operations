@@ -1339,11 +1339,8 @@ function renderAvpReport(){
   if(!el)return;
   const date=selectedAvpDate;
   if(!date){el.textContent='—';return;}
-  // ✅ استبعاد أي حد مالوش يوبيكي فعلي (Buffer أو فاضي) قبل العد
-  const rows=(avpData.rows||[]).filter(r=>{
-    const yk=String(r.yubikey||'').trim();
-    return yk.includes('@'); // ✅ يوبيكي حقيقي = فيه إيميل، أي حاجة تانية (Buffer, Floor 2...) بتتصنف Buffer
-  });
+  // ✅ الحضور بيتحسب لكل الناس، معاها يوبيكي حقيقي أو من غيرها — الفلاشة مالهاش علاقة بالأتند
+  const rows=avpData.rows||[];
   let present=0,absent=0,empty=0,training=0;
   rows.forEach(r=>{
     const v=r.attendance[date]||'';
