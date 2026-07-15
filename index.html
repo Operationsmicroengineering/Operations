@@ -916,10 +916,10 @@ function mappingIsQcTl(role){const r=String(role||'').trim().toUpperCase();retur
 const AVP_DISTRIBUTION = { TL: 1, QC: 5, USL: 5, SD: 30, PL: 8, SIM: 15 };
 
 // ✅ AVP ON attendance value classifiers
-function avpIsPresent(v){const u=String(v||'').trim().toUpperCase();return u==='P'||u==='ATTEND';}
+function avpIsPresent(v){const u=String(v||'').trim().toUpperCase();return u==='P'||u==='ATTEND'||u==='T';}
 function avpIsAbsent(v){const u=String(v||'').trim().toUpperCase();return u==='0'||u==='ABSENT';}
 function avpIsEmpty(v){const u=String(v||'').trim().toUpperCase();return u===''||u==='EMPTY'||u==='E';}
-function avpIsTraining(v){const u=String(v||'').trim().toUpperCase();return /^T\d*$/.test(u)||u==='TRAINING';}
+function avpIsTraining(v){const u=String(v||'').trim().toUpperCase();return /^T[1-9]\d*$/.test(u)||u==='TRAINING';}
 
 function esc(v){if(v==null)return'';return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');}
 function normalizeShift(v){if(!v)return'';const t=String(v).trim();return t?t[0].toUpperCase()+t.slice(1).toLowerCase():'';}
