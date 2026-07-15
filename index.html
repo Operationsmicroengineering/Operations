@@ -660,9 +660,67 @@
         <div class="ybk-history-card"><div style="padding:3rem;text-align:center;color:var(--text-1);font-size:14px">No Morning shift data yet — coming soon.</div></div>
       </div>
 
-      <!-- ═══════════ NIGHT SHIFT (placeholder) ═══════════ -->
+      <!-- ═══════════ NIGHT SHIFT ═══════════ -->
       <div id="ybkShift_night" class="ybk-shift-section" style="display:none">
-        <div class="ybk-history-card"><div style="padding:3rem;text-align:center;color:var(--text-1);font-size:14px">No Night shift data yet — coming soon.</div></div>
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1.5rem">
+        <button class="btn-ghost" onclick="loadNightGtData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
+      </div>
+
+      <!-- Date selector -->
+      <div class="toolbar" style="margin-bottom:1.5rem">
+        <span class="ybk-date-label">Select date:</span>
+        <div class="ybk-date-selector" id="nightDateSelector"><span style="font-size:13px;color:var(--text-2)">Loading dates...</span></div>
+      </div>
+
+      <!-- ✅ St. Fatima Daily Report (Night) -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header">
+          <span class="ybk-history-title">St. Fatima Daily Report</span>
+          <button class="btn-ghost" onclick="copyNightStFatimaReport()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div style="padding:1.2rem 1.5rem">
+          <pre id="nightStFatimaReportText" class="mono" style="white-space:pre-wrap; font-size:13px; line-height:1.7; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
+        </div>
+      </div>
+
+      <!-- ✅ Nasr City Daily Report (Night) -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header">
+          <span class="ybk-history-title">Nasr City Daily Report</span>
+          <button class="btn-ghost" onclick="copyNightNasrCityReport()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div style="padding:1.2rem 1.5rem">
+          <pre id="nightNasrCityReportText" class="mono" style="white-space:pre-wrap; font-size:13px; line-height:1.7; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
+        </div>
+      </div>
+
+      <!-- ✅ Nasr City records (Night) -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header"><span class="ybk-history-title">Nasr City records</span><span class="table-count" id="nightNasrCityRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
+        <div class="ybk-scroll">
+          <table class="ybk-history-table" id="nightNasrCityTable" style="display:none;min-width:600px"><thead><tr><th>Name</th><th>Device No.</th><th>Location</th><th>Yubikey</th><th class="ybk-date-col" id="nightNasrCityDateColHeader">Date</th><th class="no-sort">Status</th></tr></thead><tbody id="nightNasrCityTableBody"></tbody></table>
+          <div class="empty" id="nightNasrCityEmptyState" style="display:none"><div>No records found</div></div>
+        </div>
+        <div class="table-footer"><span id="nightNasrCityFooterInfo">—</span><span id="nightNasrCityFooterTime">—</span></div>
+      </div>
+
+      <!-- Records table (Night) -->
+      <div class="ybk-history-card">
+        <div class="ybk-history-header"><span class="ybk-history-title">Yubikey records</span><span class="table-count" id="nightYbkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
+        <div class="ybk-scroll">
+          <div class="loading" id="nightYbkLoadingState"><div class="spinner"></div>Loading Yubikey data...</div>
+          <table class="ybk-history-table" id="nightYbkTable" style="display:none;min-width:600px"><thead><tr><th>Name</th><th>Device No.</th><th>Location</th><th>Yubikey</th><th class="ybk-date-col" id="nightYbkDateColHeader">Date</th><th class="no-sort">Status</th></tr></thead><tbody id="nightYbkTableBody"></tbody></table>
+          <div class="empty" id="nightYbkEmptyState" style="display:none"><div>No records found</div></div>
+        </div>
+        <div class="table-footer"><span id="nightYbkFooterInfo">—</span><span id="nightYbkFooterTime">—</span></div>
+      </div>
       </div>
     </div>
 
@@ -764,7 +822,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxhPtmZaNj7aOpT7WO2bjAOb4szf1AINlGZM7KpWRIwv7LOyhhpFrB8vQ_yzki5oHF-mA/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzxiRyEJ5do2TZr_RxDw8JE1WxloLmaNDn3_riyYd26PdVuMtYppUB7PoNbzqJISBgS2Q/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -834,12 +892,18 @@ function saveViolationCache() {
 function loadViolationCache() {
   try { const r=JSON.parse(localStorage.getItem(VIOLATION_LOCAL_CACHE_KEY)||'null'); return r&&Date.now()-r.ts<CACHE_MAX_AGE?r:null; } catch { return null; }
 }
+function saveNightGtCache() {
+  try { localStorage.setItem('ops_night_gt_cache_v1', JSON.stringify({data:nightGtData,ts:Date.now()})); } catch {}
+}
+function loadNightGtCache() {
+  try { const r=JSON.parse(localStorage.getItem('ops_night_gt_cache_v1')||'null'); return r&&Date.now()-r.ts<CACHE_MAX_AGE?r:null; } catch { return null; }
+}
 
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
-let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[];
+let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]};
 let sortCol='', sortAsc=true, pollTimer=null, session=null, isSyncing=false;
-let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null;
+let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null;
 
 // ✅ Mapping ON status classifiers — P / 0 / E / T1-T3
 function mappingIsPresent(v){return String(v||'').trim().toUpperCase()==='P';}
@@ -1237,6 +1301,7 @@ function selectYbkShift(key){
     const card=document.getElementById('ybkShiftCard_'+k);
     if(card)card.classList.toggle('active',k===key);
   });
+  if(key==='night'&&(!nightGtData.rows||nightGtData.rows.length===0))loadNightGtData();
 }
 
 // ── AVP ON ──
@@ -2416,6 +2481,225 @@ function renderNasrCityTable(rows, date) {
   }).join('');
 }
 
+// ── Night GT (mirrors ON GT exactly) ──
+async function loadNightGtData(forceRefresh=false){
+  if(!getSession())return;
+  if(!forceRefresh){
+    const cached=loadNightGtCache();
+    if(cached){nightGtData=cached.data||{dateColumns:[],rows:[]};buildNightDateSelector();renderNightYbkTable();}
+  }
+  document.getElementById('nightYbkLoadingState').style.display=(nightGtData.rows&&nightGtData.rows.length>0)?'none':'block';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=nightGt'+(forceRefresh?'&force=1':''));
+    if(!res.ok)throw new Error('Failed to fetch Night GT data');
+    const json=await res.json();
+    if(json.error)throw new Error(json.error);
+    nightGtData=json.nightGt||{dateColumns:[],rows:[]};
+    buildNightDateSelector();renderNightYbkTable();saveNightGtCache();
+  }catch(ex){
+    document.getElementById('nightYbkLoadingState').style.display='none';
+  }
+}
+
+function buildNightDateSelector(){
+  const dates=nightGtData.dateColumns||[];const container=document.getElementById('nightDateSelector');
+  if(!container)return;
+  if(!dates.length){container.innerHTML='<span style="font-size:13px;color:var(--text-2)">No dates available</span>';return;}
+  if(!selectedNightDate||!dates.includes(selectedNightDate))selectedNightDate=dates[dates.length-1];
+  container.innerHTML=dates.map(d=>`<button class="ybk-date-btn${d===selectedNightDate?' active':''}" onclick="selectNightDate('${esc(d)}')">${esc(d)}</button>`).join('');
+}
+function selectNightDate(d){selectedNightDate=d;buildNightDateSelector();renderNightYbkTable();}
+
+function renderNightStFatimaReport(rows, date) {
+  const el = document.getElementById('nightStFatimaReportText');
+  if (!el) return;
+  if (!date) { el.textContent = '—'; return; }
+
+  const inStFatima = r => getSiteForLocation((r.location||'').toLowerCase()) === 'st_fatima';
+  const sfRowsAll = rows.filter(inStFatima).filter(r => !ybkIsWLA(r.deviceNo) && !ybkIsQTC(r.deviceNo));
+
+  const withYubikey = sfRowsAll.filter(r => String(r.yubikey || '').trim().includes('@'));
+  const total = withYubikey.length;
+
+  let withLabelersCount=0, absentLabelersCount=0, trainingCount=0, emptyCount=0;
+  withYubikey.forEach(r=>{
+    const v = r.attendance[date] || '';
+    if (ybkIsPresent(v)) withLabelersCount++;
+    else if (ybkIsAbsent(v)) absentLabelersCount++;
+    else if (ybkIsTraining(v)) trainingCount++;
+    else emptyCount++;
+  });
+
+  el.textContent =
+`GT YubiKeys (St. Fatima)
+All GT YubiKeys are in place at the end of the night shift.
+Total: ${total} YubiKeys
+Status:
+• With Labelers: ${withLabelersCount}
+• Absent Labelers: ${absentLabelersCount}
+• Empty: ${emptyCount}
+• Training : ${trainingCount}`;
+}
+
+function copyNightStFatimaReport() {
+  const el = document.getElementById('nightStFatimaReportText');
+  if (!el) return;
+  const text = el.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    showSuccess('Report copied to clipboard.');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch {}
+    document.body.removeChild(ta);
+    showSuccess('Report copied to clipboard.');
+  });
+}
+
+function renderNightNasrCityReport(rows, date) {
+  const el = document.getElementById('nightNasrCityReportText');
+  if (!el) return;
+  if (!date) { el.textContent = '—'; return; }
+
+  const nasrRowsAll = rows.filter(r => isNasrCityLocation(r.location)).filter(r => !ybkIsQTC(r.deviceNo));
+
+  const wlaRows = nasrRowsAll.filter(r => ybkIsWLA(r.deviceNo) && ybkIsPresent(r.attendance[date] || ''));
+  const wlaCount = wlaRows.length;
+
+  const nasrRows = nasrRowsAll.filter(r => !ybkIsWLA(r.deviceNo));
+
+  const hiringTeamRows = nasrRows.filter(r => ybkIsTraining(r.attendance[date] || ''));
+  const hiringTeamCount = hiringTeamRows.length;
+
+  const stlTrainingQuality = 1;
+
+  const labelerPool = nasrRows.filter(r => !hiringTeamRows.includes(r) && ybkIsPresent(r.attendance[date] || ''));
+  const labelerCount = labelerPool.length;
+  const labelerAbsentPool = nasrRows.filter(r => !hiringTeamRows.includes(r) && ybkIsAbsent(r.attendance[date] || ''));
+  const labelerAbsentCount = labelerAbsentPool.length;
+
+  const withRealYubikey = nasrRows.filter(r => String(r.yubikey || '').trim().includes('@'));
+  const totalYubikey = withRealYubikey.length + wlaCount;
+
+  el.textContent =
+`All Yubikeys GT are in place at the end of the night shift.
+Labelers+Team quality , training + Wla
+      • Total ${totalYubikey} yubikey
+- ${labelerCount} yubikey with labelers
+- ${labelerAbsentCount} yubikey Absent Labelers
+- ${stlTrainingQuality} yubikey STL, Training,Quality
+- ${hiringTeamCount} yubikey with hiring team
+- ${wlaCount} yubikey Wla.`;
+}
+
+function copyNightNasrCityReport() {
+  const el = document.getElementById('nightNasrCityReportText');
+  if (!el) return;
+  const text = el.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    showSuccess('Report copied to clipboard.');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch {}
+    document.body.removeChild(ta);
+    showSuccess('Report copied to clipboard.');
+  });
+}
+
+function renderNightNasrCityTable(rows, date) {
+  const tableEl=document.getElementById('nightNasrCityTable');
+  const emptyEl=document.getElementById('nightNasrCityEmptyState');
+  if(!date){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    document.getElementById('nightNasrCityRowCount').textContent='—';
+    return;
+  }
+  document.getElementById('nightNasrCityDateColHeader').textContent=date;
+
+  const ncRows=rows.filter(r=>isNasrCityLocation(r.location)).filter(r=>!ybkIsQTC(r.deviceNo));
+
+  document.getElementById('nightNasrCityRowCount').textContent=ncRows.length+' records';
+  document.getElementById('nightNasrCityFooterInfo').textContent=`Showing ${ncRows.length} employees`;
+  document.getElementById('nightNasrCityFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!ncRows.length){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    return;
+  }
+  emptyEl.style.display='none';
+  tableEl.style.display='table';
+  document.getElementById('nightNasrCityTableBody').innerHTML=ncRows.map(r=>{
+    const v=r.attendance[date]||'';
+    const initials=esc((r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    let statusBadge;
+    if(ybkIsPresent(v))statusBadge='<span class="badge badge-active">Present</span>';
+    else if(ybkIsTraining(v))statusBadge='<span class="badge badge-training">Training</span>';
+    else if(ybkIsAbsent(v))statusBadge='<span class="badge badge-resigned">Absent</span>';
+    else statusBadge='<span style="color:var(--text-2);font-size:12px">—</span>';
+    const teamBadge=ybkIsWLA(r.deviceNo)?' <span class="badge" style="background:var(--purple-dim);color:var(--purple);margin-left:6px">WLA</span>':'';
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span>${teamBadge}</div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.deviceNo||'—')}</td><td style="color:var(--text-1)">${esc(r.location||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${ybkAttClass(v)}">${esc(ybkAttLabel(v))}</span>`:'—'}</td><td>${statusBadge}</td></tr>`;
+  }).join('');
+}
+
+function renderNightYbkTable(){
+  const date=selectedNightDate;
+  if(!date){
+    document.getElementById('nightYbkLoadingState').style.display='none';
+    document.getElementById('nightYbkEmptyState').style.display='block';
+    return;
+  }
+  document.getElementById('nightYbkDateColHeader').textContent=date;
+  let rows=nightGtData.rows||[];
+
+  renderNightStFatimaReport(rows, date);
+  renderNightNasrCityReport(rows, date);
+  renderNightNasrCityTable(rows, date);
+
+  let filtered=rows.filter(r=>{
+    const loc=(r.location||'').toLowerCase().trim();
+    const isWla=ybkIsWLA(r.deviceNo);
+    const isQtc=ybkIsQTC(r.deviceNo);
+    const inSite=getSiteForLocation(loc)!==null;
+    if(!inSite && !isWla && !isQtc)return false;
+    if(!isWla && !String(r.yubikey||'').trim())return false;
+    return true;
+  });
+
+  document.getElementById('nightYbkLoadingState').style.display='none';
+  document.getElementById('nightYbkRowCount').textContent=filtered.length+' records';
+  document.getElementById('nightYbkFooterInfo').textContent=`Showing ${filtered.length} employees`;
+  document.getElementById('nightYbkFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!filtered.length){
+    document.getElementById('nightYbkTable').style.display='none';
+    document.getElementById('nightYbkEmptyState').style.display='block';
+    return;
+  }
+  document.getElementById('nightYbkEmptyState').style.display='none';
+  document.getElementById('nightYbkTable').style.display='table';
+  document.getElementById('nightYbkTableBody').innerHTML=filtered.map(r=>{
+    const v=r.attendance[date]||'';
+    const initials=esc((r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    const isWla=ybkIsWLA(r.deviceNo);
+    const isQtc=ybkIsQTC(r.deviceNo);
+    let statusBadge;
+    if(ybkIsPresent(v))statusBadge='<span class="badge badge-active">Present</span>';
+    else if(ybkIsTraining(v))statusBadge='<span class="badge badge-training">Training</span>';
+    else if(ybkIsAbsent(v))statusBadge='<span class="badge badge-resigned">Absent</span>';
+    else statusBadge='<span style="color:var(--text-2);font-size:12px">—</span>';
+    const qtcLabel = isQtc ? esc(String(r.deviceNo||'').trim()) : '';
+    const teamBadge = isWla ? ' <span class="badge" style="background:var(--purple-dim);color:var(--purple);margin-left:6px">WLA</span>' : (isQtc ? ` <span class="badge" style="background:var(--warn-dim);color:var(--warn);margin-left:6px">${qtcLabel}</span>` : '');
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span>${teamBadge}</div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.deviceNo||'—')}</td><td style="color:var(--text-1)">${esc(r.location||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${ybkAttClass(v)}">${esc(ybkAttLabel(v))}</span>`:'—'}</td><td>${statusBadge}</td></tr>`;
+  }).join('');
+}
+
 function renderYubikeyTable(){
   const search='';
   const statusFilter='';
@@ -2701,7 +2985,6 @@ const SHEETS_DATA=[
   {category:'Attendance',items:[
     {name:'GT Morning Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/11Ekahw8ZD6xJfFw0MVu8dKIETMP2mYXXDpV6YPaIHfk/edit?gid=1657040379'},
     {name:'GT Night Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1qWtkAMkB8aJMyGqNAivuhl8P2bmTfLpY6yLqu4nQPAQ/edit?gid=1218236832'},
-    {name:'Night Shift Attendance Master Sheet',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1qWtkAMkB8aJMyGqNAivuhl8P2bmTfLpY6yLqu4nQPAQ/edit?gid=1051465462#gid=1051465462'},
     {name:'Over Night Attendance (Master Sheet)',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1SXlXRnAJk0f2tbNh20yZ_2EDa9bo7HQXaQ-CSlVpxKY/edit?pli=1&gid=999998182'},
     {name:'S.F Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1PPASHHRwPtyaN7_hiDTjVNihqGv9ZxXmN0_LfaNh32Q/edit?gid=735554126'},
     {name:'AVP Morning Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1xydLswJHJPS6Vry7P7XcjUMdTRJK1vQ-VatN4B4chLI/edit'},
