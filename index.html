@@ -957,6 +957,7 @@ function showDashboard(){
   document.getElementById('navUserEmail').textContent=userEmail;
   showWelcomeToast(userEmail);
   loadUserProfile(userEmail);
+  refreshSupabaseSession();
   const cached=loadCache();
   if(cached){
     allData=cached.employees||[];trainingData=cached.training||[];
@@ -1082,6 +1083,23 @@ async function saveProfile(){
   }
 }
 
+async function refreshSupabaseSession(){
+  const session=getSession();
+  if(!session||!session.refresh_token)return null;
+  try{
+    const res=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,{
+      method:'POST',
+      headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({refresh_token:session.refresh_token})
+    });
+    const data=await res.json();
+    if(!res.ok||!data.access_token)return null;
+    const newSession={access_token:data.access_token,refresh_token:data.refresh_token||session.refresh_token,user:session.user};
+    saveSession(newSession);
+    return newSession;
+  }catch(ex){return null;}
+}
+
 async function changePassword(){
   const errDiv=document.getElementById('passwordFormError'),btn=document.getElementById('changePasswordBtn');
   errDiv.style.display='none';
@@ -1089,17 +1107,33 @@ async function changePassword(){
   const confirmPassword=document.getElementById('profileConfirmPassword').value;
   if(!newPassword||newPassword.length<6){errDiv.textContent='Password must be at least 6 characters.';errDiv.style.display='block';return;}
   if(newPassword!==confirmPassword){errDiv.textContent='Passwords do not match.';errDiv.style.display='block';return;}
-  const session=getSession();
+  let session=getSession();
   if(!session){errDiv.textContent='Session expired. Please sign in again.';errDiv.style.display='block';return;}
   btn.disabled=true;
   try{
-    const res=await fetch(`${SUPABASE_URL}/auth/v1/user`,{
+    let res=await fetch(`${SUPABASE_URL}/auth/v1/user`,{
       method:'PUT',
       headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${session.access_token}`,'Content-Type':'application/json'},
       body:JSON.stringify({password:newPassword})
     });
-    const data=await res.json();
-    if(!res.ok)throw new Error(data.msg||data.error_description||'Failed to update password.');
+    let data=await res.json();
+    if(!res.ok){
+      // ✅ التوكن غالبًا منتهي الصلاحية — نجدده مرة واحدة ونعيد المحاولة
+      const msg=(data.msg||data.error_description||data.message||'').toLowerCase();
+      if(res.status===401||msg.includes('expired')||msg.includes('invalid jwt')||msg.includes('invalid claims')){
+        const refreshed=await refreshSupabaseSession();
+        if(refreshed){
+          session=refreshed;
+          res=await fetch(`${SUPABASE_URL}/auth/v1/user`,{
+            method:'PUT',
+            headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${session.access_token}`,'Content-Type':'application/json'},
+            body:JSON.stringify({password:newPassword})
+          });
+          data=await res.json();
+        }
+      }
+      if(!res.ok)throw new Error(data.msg||data.error_description||'Failed to update password.');
+    }
     document.getElementById('profileNewPassword').value='';
     document.getElementById('profileConfirmPassword').value='';
     showSuccess('Password updated successfully.');
@@ -2667,6 +2701,7 @@ const SHEETS_DATA=[
   {category:'Attendance',items:[
     {name:'GT Morning Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/11Ekahw8ZD6xJfFw0MVu8dKIETMP2mYXXDpV6YPaIHfk/edit?gid=1657040379'},
     {name:'GT Night Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1qWtkAMkB8aJMyGqNAivuhl8P2bmTfLpY6yLqu4nQPAQ/edit?gid=1218236832'},
+    {name:'Night Shift Attendance Master Sheet',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1qWtkAMkB8aJMyGqNAivuhl8P2bmTfLpY6yLqu4nQPAQ/edit?gid=1051465462#gid=1051465462'},
     {name:'Over Night Attendance (Master Sheet)',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1SXlXRnAJk0f2tbNh20yZ_2EDa9bo7HQXaQ-CSlVpxKY/edit?pli=1&gid=999998182'},
     {name:'S.F Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1PPASHHRwPtyaN7_hiDTjVNihqGv9ZxXmN0_LfaNh32Q/edit?gid=735554126'},
     {name:'AVP Morning Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1xydLswJHJPS6Vry7P7XcjUMdTRJK1vQ-VatN4B4chLI/edit'},
