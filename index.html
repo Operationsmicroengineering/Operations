@@ -1352,7 +1352,7 @@ function renderAvpReport(){
   });
 
   const d=AVP_DISTRIBUTION;
-  const total=d.TL+d.QC+d.USL+d.SD+d.PL+d.SIM;
+  const total=rows.filter(r=>String(r.yubikey||'').trim().includes('@')).length;
 
   el.textContent=
 `AVP YubiKeys
