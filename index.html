@@ -930,7 +930,7 @@ function normalizeShift(v){if(!v)return'';const t=String(v).trim();return t?t[0]
 function normalizeProject(v){if(!v)return'';const t=String(v).trim();return t?t[0].toUpperCase()+t.slice(1):'';}
 function isActive(s){return s&&(s.toLowerCase().includes('working')||s.toLowerCase()==='active');}
 function isResigned(s){return s&&(s.toLowerCase().includes('resign')||s.toLowerCase().includes('inactive'));}
-function ybkIsPresent(v){const u=String(v||'').trim().toUpperCase();return u==='P'||u==='TP';}
+function ybkIsPresent(v){const u=String(v||'').trim().toUpperCase();return u==='P'||u==='TP'||u==='PT';}
 function ybkIsAbsent(v){return String(v||'').trim()==='0';}
 function ybkIsTraining(v){const u=String(v||'').trim().toUpperCase();return /^T\d*$/.test(u);}
 // ✅ Buffer = attendance value is exactly "-" (dash) → meaning "no yubikey assigned"
@@ -2587,7 +2587,7 @@ function renderNightNasrCityReport(rows, date) {
 
   // ✅ أرقام ثابتة يدويًا
   const stlCount = 1;
-  const teamQualityTrainingCount = 17;
+  const teamQualityTrainingCount = 14;
   const wlaCount = 2;
 
   const labelerPool = nasrRows.filter(r => !extendedNightRows.includes(r) && !hiringTeamRows.includes(r) && ybkIsPresent(r.attendance[date] || ''));
