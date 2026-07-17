@@ -1308,7 +1308,7 @@ function selectYbkShift(key){
   });
   if(key==='night'){
     if(!nightGtData.rows||nightGtData.rows.length===0)loadNightGtData();
-    if(!yubikeyData.rows||yubikeyData.rows.length===0)loadYubikeyData();
+    loadYubikeyData(true); // ✅ فورس ريفريش دايمًا هنا عشان نضمن وصول عمود الـ 12H الجديد، مش نسخة كاش قديمة
   }
 }
 
