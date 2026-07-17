@@ -2587,7 +2587,9 @@ function renderNightNasrCityReport(rows, date) {
   const labelerAbsentPool = nasrRows.filter(r => !extendedNightRows.includes(r) && !hiringTeamRows.includes(r) && ybkIsAbsent(r.attendance[date] || ''));
   const labelerAbsentCount = labelerAbsentPool.length;
 
-  const totalYubikey = labelerCount + labelerAbsentCount + extendedNightCount + hiringTeamCount + stlCount + teamQualityTrainingCount + wlaCount;
+  // ✅ Total = عدد الفلاشات الحقيقية بس (فيها @) في الشيت + STL/Team Quality/WLA (دول مش موجودين في الشيت أصلاً)
+  const realYubikeyCount = nasrRows.filter(r => String(r.yubikey || '').trim().includes('@')).length;
+  const totalYubikey = realYubikeyCount + stlCount + teamQualityTrainingCount + wlaCount;
 
   el.textContent =
 `All Yubikeys GT are in place at the end of the night shift.
