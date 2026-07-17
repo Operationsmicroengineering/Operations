@@ -1275,6 +1275,7 @@ async function loadYubikeyData(forceRefresh=false){
     if(json.error)throw new Error(json.error);
     yubikeyData=json.yubikey||{dateColumns:[],rows:[]};
     buildDateSelector();renderYubikeyTable();saveYbkCache();
+    if(selectedNightDate)renderNightYbkTable(); // ✅ يحدّث حساب Extended Night لو Night كانت متفتحة قبل ما بيانات Overnight توصل
   }catch(ex){
     document.getElementById('ybkLoadingState').style.display='none';
     const b=document.getElementById('ybkErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;
@@ -1305,7 +1306,10 @@ function selectYbkShift(key){
     const card=document.getElementById('ybkShiftCard_'+k);
     if(card)card.classList.toggle('active',k===key);
   });
-  if(key==='night'&&(!nightGtData.rows||nightGtData.rows.length===0))loadNightGtData();
+  if(key==='night'){
+    if(!nightGtData.rows||nightGtData.rows.length===0)loadNightGtData();
+    if(!yubikeyData.rows||yubikeyData.rows.length===0)loadYubikeyData();
+  }
 }
 
 // ── AVP ON ──
@@ -2567,34 +2571,44 @@ function renderNightNasrCityReport(rows, date) {
   if (!date) { el.textContent = '—'; return; }
 
   const nasrRowsAll = rows.filter(r => isNasrCityLocation(r.location)).filter(r => !ybkIsQTC(r.deviceNo));
-
-  const wlaRows = nasrRowsAll.filter(r => ybkIsWLA(r.deviceNo) && ybkIsPresent(r.attendance[date] || ''));
-  const wlaCount = wlaRows.length;
-
   const nasrRows = nasrRowsAll.filter(r => !ybkIsWLA(r.deviceNo));
 
-  const hiringTeamRows = nasrRows.filter(r => ybkIsTraining(r.attendance[date] || ''));
+  // ✅ Extended Night (Jumbo 12H) — نفس الشخص (نفس اليوبيكي) موجود في شيت ON GT (Overnight) كمان
+  const overnightYubikeys = new Set((yubikeyData.rows||[]).map(r => String(r.yubikey||'').trim().toLowerCase()).filter(Boolean));
+  const extendedNightRows = nasrRows.filter(r => {
+    const yk = String(r.yubikey||'').trim().toLowerCase();
+    return yk && overnightYubikeys.has(yk);
+  });
+  const extendedNightCount = extendedNightRows.length;
+
+  // ✅ Hiring = حالتهم Training النهاردة (T / T1 / T2 / T3) — مستبعد منهم Extended Night
+  const hiringTeamRows = nasrRows.filter(r => !extendedNightRows.includes(r) && ybkIsTraining(r.attendance[date] || ''));
   const hiringTeamCount = hiringTeamRows.length;
 
-  const stlTrainingQuality = 1;
+  // ✅ أرقام ثابتة يدويًا
+  const stlCount = 1;
+  const teamQualityTrainingCount = 17;
+  const wlaCount = 2;
 
-  const labelerPool = nasrRows.filter(r => !hiringTeamRows.includes(r) && ybkIsPresent(r.attendance[date] || ''));
+  const labelerPool = nasrRows.filter(r => !extendedNightRows.includes(r) && !hiringTeamRows.includes(r) && ybkIsPresent(r.attendance[date] || ''));
   const labelerCount = labelerPool.length;
-  const labelerAbsentPool = nasrRows.filter(r => !hiringTeamRows.includes(r) && ybkIsAbsent(r.attendance[date] || ''));
+  const labelerAbsentPool = nasrRows.filter(r => !extendedNightRows.includes(r) && !hiringTeamRows.includes(r) && ybkIsAbsent(r.attendance[date] || ''));
   const labelerAbsentCount = labelerAbsentPool.length;
 
-  // ✅ في Night: العدد ياخد الكل بغض النظر عن اليوبيكي
-  const totalYubikey = nasrRows.length + wlaCount;
+  const totalYubikey = labelerCount + labelerAbsentCount + extendedNightCount + hiringTeamCount + stlCount + teamQualityTrainingCount + wlaCount;
 
   el.textContent =
 `All Yubikeys GT are in place at the end of the night shift.
+
 Labelers+Team quality , training + Wla
-      • Total ${totalYubikey} yubikey
-- ${labelerCount} yubikey with labelers
-- ${labelerAbsentCount} yubikey Absent Labelers
-- ${stlTrainingQuality} yubikey STL, Training,Quality
-- ${hiringTeamCount} yubikey with hiring team
-- ${wlaCount} yubikey Wla.`;
+     • Total ${totalYubikey} yubikey
+• ${labelerCount} yubikey with labelers
+• ${labelerAbsentCount} yubikey Absent Labelers
+• ${extendedNightCount} yubikey with Extended night
+• ${hiringTeamCount} yubikey with hiring
+• ${stlCount} yubikey STL
+• ${teamQualityTrainingCount} yubikey team quality , training
+• ${wlaCount} yubikey WLA`;
 }
 
 function copyNightNasrCityReport() {
