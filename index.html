@@ -9,14 +9,15 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg-0: #07090d; --bg-1: #0c0f15; --bg-2: #12161e; --bg-3: #181d27;
-    --line: #20262f; --line-soft: #181d25; --text-0: #eef1f6; --text-1: #9aa4b2; --text-2: #5b6472;
+    --bg-0: #0b1018; --bg-1: #0f141d; --bg-2: #151b26; --bg-3: #1b2230;
+    --line: rgba(255,255,255,0.08); --line-soft: rgba(255,255,255,0.05); --text-0: #eef1f6; --text-1: #9aa4b2; --text-2: #5b6472;
     --signal: #4fd1e8; --signal-dim: rgba(79,209,232,0.12); --signal-line: rgba(79,209,232,0.3);
     --ok: #3dd68c; --ok-dim: rgba(61,214,140,0.12);
     --bad: #f0556b; --bad-dim: rgba(240,85,107,0.12);
     --warn: #f59e0b; --warn-dim: rgba(245,158,11,0.12); --warn-line: rgba(245,158,11,0.3);
     --purple: #a78bfa; --purple-dim: rgba(167,139,250,0.12); --purple-line: rgba(167,139,250,0.3);
-    --shadow-card: 0 1px 0 rgba(255,255,255,0.02) inset,0 10px 30px rgba(0,0,0,0.35);
+    --glass: rgba(255,255,255,0.03);
+    --shadow-card: 0 1px 0 rgba(255,255,255,0.03) inset,0 20px 50px rgba(0,0,0,0.5);
     --shadow-pop: 0 20px 60px rgba(0,0,0,0.5);
   }
   html.light-theme {
@@ -73,13 +74,14 @@
   .welcome-toast-text { display:flex; flex-direction:column; }
   .welcome-toast-title { font-size:14px; font-weight:700; color:var(--text-0); }
   .welcome-toast-sub { font-size:12px; color:var(--text-1); margin-top:2px; }
-  nav { background:rgba(12,15,21,0.85); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 2rem; height:64px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; position:relative; }
+  nav { background:rgba(12,15,21,0.85); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 2rem; height:70px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; position:relative; }
   nav::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px; background:linear-gradient(90deg,transparent,var(--signal-line) 20%,var(--signal-line) 80%,transparent); }
   .nav-brand { display:flex; align-items:center; gap:11px; }
-  .nav-mark { width:30px; height:30px; border-radius:7px; background:linear-gradient(160deg,var(--signal) 0%,#2a8fa8 100%); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; color:#04181d; flex-shrink:0; box-shadow:0 3px 10px rgba(79,209,232,0.3); }
-  .nav-brand-text { display:flex; flex-direction:column; line-height:1.25; }
-  .nav-brand-text .title { font-size:14.5px; font-weight:700; color:var(--text-0); }
+  .nav-mark { width:38px; height:38px; border-radius:9px; background:linear-gradient(160deg,var(--signal) 0%,#2a8fa8 100%); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; color:#04181d; flex-shrink:0; box-shadow:0 4px 14px rgba(79,209,232,0.35); }
+  .nav-brand-text { display:flex; flex-direction:column; line-height:1.3; }
+  .nav-brand-text .title { font-size:15.5px; font-weight:700; color:var(--text-0); }
   .nav-brand-text .subtitle { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:1.4px; color:var(--signal); font-weight:600; }
+  .nav-brand-text .subtitle2 { font-size:10.5px; color:var(--text-2); margin-top:1px; }
   .nav-left { display:flex; align-items:center; gap:14px; }
   .nav-info { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-1); }
   .nav-user { font-size:12.5px; color:var(--text-1); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -105,6 +107,61 @@
   .stat[data-tone="warn"]{--tint:var(--warn-dim);--tint-line:var(--warn-line);--tint-fg:var(--warn);}
   .stat[data-tone="purple"]{--tint:var(--purple-dim);--tint-line:var(--purple-line);--tint-fg:var(--purple);}
   .toolbar { background:var(--bg-1); border:1px solid var(--line); border-radius:10px; padding:1rem; display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem; box-shadow:var(--shadow-card); }
+
+  /* Charts row */
+  .charts-row { display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-bottom:1.5rem; }
+  .chart-card { background:var(--bg-1); border:1px solid var(--line); border-radius:12px; padding:1.3rem 1.5rem; box-shadow:var(--shadow-card); }
+  .chart-card-title { font-size:13px; font-weight:700; color:var(--text-0); margin-bottom:1.1rem; }
+  .bar-chart-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .bar-chart-label { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:var(--text-1); width:56px; flex-shrink:0; }
+  .bar-chart-track { flex:1; height:10px; background:var(--bg-2); border-radius:6px; overflow:hidden; }
+  .bar-chart-fill { height:100%; border-radius:6px; background:linear-gradient(90deg,var(--signal),var(--purple)); transition:width 0.6s cubic-bezier(.16,1,.3,1); width:0%; }
+  .bar-chart-value { font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:var(--text-0); width:44px; text-align:right; flex-shrink:0; }
+  .donut-wrap { display:flex; align-items:center; gap:1.2rem; }
+  .donut-legend { display:flex; flex-direction:column; gap:8px; font-size:12px; }
+  .donut-legend-item { display:flex; align-items:center; gap:7px; color:var(--text-1); }
+  .donut-legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .donut-legend-val { color:var(--text-0); font-weight:700; margin-left:auto; padding-left:10px; }
+
+  /* Quick action cards */
+  .quick-actions-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:1.5rem; }
+  .quick-action-card { background:var(--bg-1); border:1px solid var(--line); border-radius:10px; padding:0.9rem 1rem; display:flex; align-items:center; gap:10px; cursor:pointer; transition:all 0.15s; box-shadow:var(--shadow-card); color:var(--text-0); font-family:'Inter',sans-serif; font-size:13px; font-weight:600; }
+  .quick-action-card:hover { border-color:var(--signal-line); transform:translateY(-2px); background:var(--bg-2); }
+  .quick-action-card-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--signal-dim); color:var(--signal); border:1px solid var(--signal-line); }
+  .quick-action-card.primary .quick-action-card-icon { background:var(--signal); color:#04181d; }
+
+  /* Filter chips */
+  .filter-chips-group { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .filter-chips-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.8px; color:var(--text-2); text-transform:uppercase; font-weight:600; margin-right:2px; }
+  .filter-chip { background:var(--bg-2); border:1px solid var(--line); color:var(--text-1); font-size:12px; font-weight:600; padding:6px 13px; border-radius:20px; cursor:pointer; transition:all 0.15s; }
+  .filter-chip:hover { color:var(--text-0); border-color:var(--signal-line); }
+  .filter-chip.active { background:var(--signal); color:#04181d; border-color:var(--signal); }
+  .filter-chips-sep { width:1px; height:18px; background:var(--line); margin:0 2px; }
+
+  /* Search bar upgrade */
+  .search-wrap-lg { position:relative; flex:1; min-width:260px; }
+  .search-wrap-lg svg.search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-2); pointer-events:none; }
+  .search-wrap-lg input { padding:12px 68px 12px 42px; font-size:14px; border-radius:8px; }
+  .search-kbd { position:absolute; right:10px; top:50%; transform:translateY(-50%); font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-2); background:var(--bg-2); border:1px solid var(--line); border-radius:5px; padding:3px 7px; pointer-events:none; }
+
+  /* Staggered entrance */
+  @keyframes cardPopIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+  .stats .stat { animation:cardPopIn 0.4s ease backwards; }
+  .stats .stat:nth-child(1){animation-delay:0.02s;} .stats .stat:nth-child(2){animation-delay:0.08s;} .stats .stat:nth-child(3){animation-delay:0.14s;} .stats .stat:nth-child(4){animation-delay:0.2s;} .stats .stat:nth-child(5){animation-delay:0.26s;}
+  .quick-actions-row .quick-action-card { animation:cardPopIn 0.4s ease backwards; }
+  .quick-actions-row .quick-action-card:nth-child(1){animation-delay:0.3s;} .quick-actions-row .quick-action-card:nth-child(2){animation-delay:0.35s;} .quick-actions-row .quick-action-card:nth-child(3){animation-delay:0.4s;}
+
+  /* Avatar gradient + status pulse */
+  .avatar-gradient { background:linear-gradient(135deg,var(--signal),var(--purple)); color:#04181d; font-weight:800; }
+  .status-pulse-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:currentColor; margin-right:5px; animation:pulse-ok 1.4s ease-in-out infinite; }
+
+  /* Table row full hover */
+  #tableBody tr, #trnTableBody tr { transition:background 0.12s; }
+  #tableBody tr:hover, #trnTableBody tr:hover { background:var(--bg-2); }
+  #tableBody tr:hover td, #trnTableBody tr:hover td { background:transparent; }
+  .icon-btn { background:var(--bg-2); border:1px solid var(--line); color:var(--text-1); width:28px; height:28px; border-radius:6px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:all 0.15s; }
+  .icon-btn:hover { color:var(--text-0); border-color:var(--signal-line); background:var(--signal-dim); }
+  .icon-btn.danger:hover { color:var(--bad); border-color:var(--bad); background:var(--bad-dim); }
   .search-wrap { position:relative; flex:1; min-width:220px; }
   .search-wrap svg { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--text-2); pointer-events:none; }
   input[type="text"],input[type="email"],input[type="search"],select { background:var(--bg-0); border:1px solid var(--line); border-radius:6px; color:var(--text-0); font-family:'Inter',sans-serif; font-size:13.5px; padding:9px 14px 9px 38px; outline:none; transition:border-color 0.15s,box-shadow 0.15s; width:100%; }
@@ -202,6 +259,7 @@
   .sheet-card:hover .sheet-open { color:var(--signal); transform:translate(2px,-2px); }
   .sheets-empty { text-align:center; padding:4rem; color:var(--text-1); font-size:14px; }
   .source-badge { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--ok); background:var(--ok-dim); border:1px solid rgba(61,214,140,0.25); padding:2px 8px; border-radius:4px; letter-spacing:0.5px; }
+  .nav-info.mono { background:var(--bg-2); border:1px solid var(--line); border-radius:20px; padding:5px 12px; }
   .ybk-date-selector { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   .ybk-date-btn { background:var(--bg-2); border:1px solid var(--line); border-radius:6px; color:var(--text-1); font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; padding:6px 14px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
   .ybk-date-btn:hover { border-color:var(--purple-line); color:var(--purple); background:var(--purple-dim); }
@@ -336,7 +394,7 @@
   <nav>
     <div class="nav-brand">
       <div class="nav-mark">OT</div>
-      <div class="nav-brand-text"><span class="title">Operations Team</span><span class="subtitle">WORKFORCE DASHBOARD</span></div>
+      <div class="nav-brand-text"><span class="title">Operations Team</span><span class="subtitle">WORKFORCE DASHBOARD</span><span class="subtitle2">Operations Management System</span></div>
     </div>
     <div class="nav-tabs">
       <button class="nav-tab active" id="tabEmployeesBtn" onclick="showView('employees')">
@@ -387,13 +445,39 @@
         <div class="stat" data-tone="signal"><div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m12.83 2.18 8.58 3.9a1 1 0 0 1 0 1.83l-8.58 3.91a2 2 0 0 1-1.66 0L2.6 7.91a1 1 0 0 1 0-1.83l8.58-3.9a2 2 0 0 1 1.65 0Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg></div></div><div class="stat-label">Projects</div><div class="stat-value accent-signal" id="statProjects">—</div></div>
         <div class="stat" data-tone="neutral"><div class="stat-top"><div class="stat-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></div></div><div class="stat-label">Locations</div><div class="stat-value" id="statLocations">—</div></div>
       </div>
+
+      <!-- Charts row -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-card-title">Employees by Project</div>
+          <div id="projectBarChart"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Working Status</div>
+          <div class="donut-wrap">
+            <svg id="statusDonut" width="96" height="96" viewBox="0 0 96 96"></svg>
+            <div class="donut-legend" id="statusDonutLegend"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="quick-actions-row">
+        <div class="quick-action-card primary" onclick="openAddModal()"><div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>Add Employee</div>
+        <div class="quick-action-card" onclick="loadData(true)"><div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg></div>Refresh</div>
+        <div class="quick-action-card" onclick="exportEmployeesCSV()"><div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>Export CSV</div>
+      </div>
+
       <div class="toolbar">
-        <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="searchInput" placeholder="Search by name or national ID..." oninput="applyFilters()"></div>
-        <select id="shiftFilter" onchange="applyFilters()"><option value="">All shifts</option></select>
-        <select id="projectFilter" onchange="applyFilters()"><option value="">All projects</option></select>
-        <select id="statusFilter" onchange="applyFilters()"><option value="">All statuses</option><option value="working">Working</option><option value="resigned">Resigned</option></select>
-        <button class="btn-ghost" onclick="loadData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
-        <button class="btn-primary" onclick="openAddModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add employee</button>
+        <div class="search-wrap-lg"><svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="searchInput" placeholder="Search employees by name or national ID..." oninput="applyFilters()"><span class="search-kbd">CTRL K</span></div>
+      </div>
+      <div class="toolbar" style="align-items:flex-start;flex-direction:column;gap:10px">
+        <div class="filter-chips-group" id="shiftChipsRow"><span class="filter-chips-label">Shift</span></div>
+        <div class="filter-chips-group" id="projectChipsRow"><span class="filter-chips-label">Project</span></div>
+        <div class="filter-chips-group" id="statusChipsRow"><span class="filter-chips-label">Status</span></div>
+        <select id="shiftFilter" onchange="applyFilters()" style="display:none"><option value="">All shifts</option></select>
+        <select id="projectFilter" onchange="applyFilters()" style="display:none"><option value="">All projects</option></select>
+        <select id="statusFilter" onchange="applyFilters()" style="display:none"><option value="">All statuses</option><option value="working">Working</option><option value="resigned">Resigned</option></select>
       </div>
       <div class="table-card">
         <div class="table-header"><span class="table-title">Employee records</span><span class="table-count" id="rowCount">—</span></div>
@@ -2827,6 +2911,33 @@ function populateFilters(){
   const pm=new Map();allData.forEach(r=>{const p=(r['Project']||'').trim();if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),normalizeProject(p));});const projects=[...pm.values()].sort();
   const ss=document.getElementById('shiftFilter'),ps=ss.value;ss.innerHTML='<option value="">All shifts</option>';shifts.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});if(shifts.includes(ps))ss.value=ps;
   const sp=document.getElementById('projectFilter'),pp=sp.value;sp.innerHTML='<option value="">All projects</option>';projects.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;sp.appendChild(o);});if(projects.includes(pp))sp.value=pp;
+  buildFilterChips('shiftChipsRow','shiftFilter',shifts);
+  buildFilterChips('projectChipsRow','projectFilter',projects);
+  buildFilterChips('statusChipsRow','statusFilter',['working','resigned'],{working:'Working',resigned:'Resigned'});
+}
+
+function buildFilterChips(containerId,selectId,values,labelMap){
+  const container=document.getElementById(containerId);
+  if(!container)return;
+  const select=document.getElementById(selectId);
+  const current=select.value;
+  const allLabel=selectId==='shiftFilter'?'All shifts':selectId==='projectFilter'?'All projects':'All statuses';
+  let html=`<span class="filter-chips-label">${containerId==='shiftChipsRow'?'Shift':containerId==='projectChipsRow'?'Project':'Status'}</span>`;
+  html+=`<button type="button" class="filter-chip${!current?' active':''}" onclick="selectFilterChip('${selectId}','')">${esc(allLabel)}</button>`;
+  values.forEach(v=>{
+    const label=labelMap&&labelMap[v]?labelMap[v]:v;
+    html+=`<button type="button" class="filter-chip${current===v?' active':''}" onclick="selectFilterChip('${selectId}','${esc(v)}')">${esc(label)}</button>`;
+  });
+  container.innerHTML=html;
+}
+
+function selectFilterChip(selectId,value){
+  document.getElementById(selectId).value=value;
+  applyFilters();
+  const containerId=selectId==='shiftFilter'?'shiftChipsRow':selectId==='projectFilter'?'projectChipsRow':'statusChipsRow';
+  document.querySelectorAll('#'+containerId+' .filter-chip').forEach(btn=>{
+    btn.classList.toggle('active', btn.getAttribute('onclick')===`selectFilterChip('${selectId}','${value}')`);
+  });
 }
 
 function applyFilters(){
@@ -2857,15 +2968,77 @@ function updateStats(filtered){
   document.getElementById('rowCount').textContent=filtered.length+' employees';
   document.getElementById('footerInfo').textContent=`Showing ${filtered.length} of ${allData.length} employees`;
   document.getElementById('footerTime').textContent=new Date().toLocaleDateString('en-US');
+  renderProjectBarChart();
+  renderStatusDonut();
 }
+
+function renderProjectBarChart(){
+  const el=document.getElementById('projectBarChart');
+  if(!el)return;
+  const pm=new Map();
+  allData.forEach(r=>{const p=normalizeProject(r['Project'])||'Unknown';pm.set(p,(pm.get(p)||0)+1);});
+  const entries=[...pm.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if(!entries.length){el.innerHTML='<div style="color:var(--text-2);font-size:12.5px">No data yet</div>';return;}
+  const max=Math.max(...entries.map(e=>e[1]));
+  el.innerHTML=entries.map(([label,count])=>`
+    <div class="bar-chart-row">
+      <div class="bar-chart-label">${esc(label)}</div>
+      <div class="bar-chart-track"><div class="bar-chart-fill" style="width:${Math.round(count/max*100)}%"></div></div>
+      <div class="bar-chart-value">${count}</div>
+    </div>`).join('');
+}
+
+function renderStatusDonut(){
+  const svg=document.getElementById('statusDonut'),legend=document.getElementById('statusDonutLegend');
+  if(!svg||!legend)return;
+  const working=allData.filter(r=>isActive(r['Status'])).length;
+  const resigned=allData.filter(r=>isResigned(r['Status'])).length;
+  const total=working+resigned;
+  const r=40,cx=48,cy=48,circumference=2*Math.PI*r;
+  const workingLen=total?(working/total)*circumference:0;
+  const resignedLen=total?(resigned/total)*circumference:0;
+  svg.innerHTML=`
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg-2)" stroke-width="12"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--ok)" stroke-width="12"
+      stroke-dasharray="${workingLen} ${circumference-workingLen}" stroke-dashoffset="0" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="round"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bad)" stroke-width="12"
+      stroke-dasharray="${resignedLen} ${circumference-resignedLen}" stroke-dashoffset="${-workingLen}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="round"/>
+    <text x="${cx}" y="${cy-2}" text-anchor="middle" fill="var(--text-0)" font-size="18" font-weight="800" font-family="JetBrains Mono, monospace">${total}</text>
+    <text x="${cx}" y="${cy+14}" text-anchor="middle" fill="var(--text-2)" font-size="8" font-family="JetBrains Mono, monospace">TOTAL</text>`;
+  legend.innerHTML=`
+    <div class="donut-legend-item"><span class="donut-legend-dot" style="background:var(--ok)"></span>Working<span class="donut-legend-val">${working}</span></div>
+    <div class="donut-legend-item"><span class="donut-legend-dot" style="background:var(--bad)"></span>Resigned<span class="donut-legend-val">${resigned}</span></div>`;
+}
+
+function exportEmployeesCSV(){
+  if(!allData.length){showError('No employee data to export yet.');return;}
+  const headers=Object.keys(allData[0]);
+  const escCsv=v=>{const s=(v==null?'':String(v));return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+  const lines=[headers.join(','),...allData.map(r=>headers.map(h=>escCsv(r[h])).join(','))];
+  const blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`employees_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showSuccess('Employee records exported to CSV.');
+}
+
+document.addEventListener('keydown', e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){
+    const input=document.getElementById('searchInput');
+    if(input){e.preventDefault();input.focus();input.select();}
+  }
+});
 
 function renderTable(data){
   document.getElementById('loadingState').style.display='none';
   if(!data.length){document.getElementById('empTable').style.display='none';document.getElementById('emptyState').style.display='block';return;}
   document.getElementById('emptyState').style.display='none';document.getElementById('empTable').style.display='table';
   document.getElementById('tableBody').innerHTML=data.map(r=>{
-    const nid=esc(r['National ID']||'');const statusBadge=isActive(r['Status'])?'badge-active':isResigned(r['Status'])?'badge-resigned':'badge-resigned';
-    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['National ID']||'—')}</td><td><div class="name-cell"><div class="avatar">${esc((r['Name']||'?').split(' ').map(w=>w[0]).slice(0,2).join(''))}</div><span>${esc(r['Name']||'—')}</span></div></td><td><span class="badge badge-shift">${esc(normalizeShift(r['Shift'])||'—')}</span></td><td>${esc(normalizeProject(r['Project'])||'—')}</td><td style="color:var(--text-1)">${esc(r['Role']||'—')}</td><td><span class="badge ${statusBadge}">${esc(r['Status']||'—')}</span></td><td style="color:var(--text-1)">${esc(r['Location']||'—')}</td><td><div class="action-cell"><button class="btn-edit" onclick="openEditModal('${nid}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button><button class="btn-delete-row" onclick="openDeleteModal('${nid}','${esc(r['Name']||'')}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>Delete</button></div></td></tr>`;
+    const nid=esc(r['National ID']||'');const active=isActive(r['Status']);const statusBadge=active?'badge-active':isResigned(r['Status'])?'badge-resigned':'badge-resigned';
+    const pulse=active?'<span class="status-pulse-dot"></span>':'';
+    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['National ID']||'—')}</td><td><div class="name-cell"><div class="avatar avatar-gradient">${esc((r['Name']||'?').split(' ').map(w=>w[0]).slice(0,2).join(''))}</div><span>${esc(r['Name']||'—')}</span></div></td><td><span class="badge badge-shift">${esc(normalizeShift(r['Shift'])||'—')}</span></td><td>${esc(normalizeProject(r['Project'])||'—')}</td><td style="color:var(--text-1)">${esc(r['Role']||'—')}</td><td><span class="badge ${statusBadge}">${pulse}${esc(r['Status']||'—')}</span></td><td style="color:var(--text-1)">${esc(r['Location']||'—')}</td><td><div class="action-cell"><button class="icon-btn" title="Edit" onclick="openEditModal('${nid}')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-btn danger" title="Delete" onclick="openDeleteModal('${nid}','${esc(r['Name']||'')}')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div></td></tr>`;
   }).join('');
 }
 
