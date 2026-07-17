@@ -826,7 +826,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzxiRyEJ5do2TZr_RxDw8JE1WxloLmaNDn3_riyYd26PdVuMtYppUB7PoNbzqJISBgS2Q/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxAAizMNnKAABTpIqphAUEbMNiPbgZtEc4O_0HO051nUgvdhNRGF301S5QzAqEBAWddGQ/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1275,7 +1275,6 @@ async function loadYubikeyData(forceRefresh=false){
     if(json.error)throw new Error(json.error);
     yubikeyData=json.yubikey||{dateColumns:[],rows:[]};
     buildDateSelector();renderYubikeyTable();saveYbkCache();
-    if(selectedNightDate)renderNightYbkTable(); // ✅ يحدّث حساب Extended Night لو Night كانت متفتحة قبل ما بيانات Overnight توصل
   }catch(ex){
     document.getElementById('ybkLoadingState').style.display='none';
     const b=document.getElementById('ybkErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;
@@ -1306,10 +1305,7 @@ function selectYbkShift(key){
     const card=document.getElementById('ybkShiftCard_'+k);
     if(card)card.classList.toggle('active',k===key);
   });
-  if(key==='night'){
-    if(!nightGtData.rows||nightGtData.rows.length===0)loadNightGtData();
-    if(!yubikeyData.rows||yubikeyData.rows.length===0)loadYubikeyData();
-  }
+  if(key==='night'&&(!nightGtData.rows||nightGtData.rows.length===0))loadNightGtData();
 }
 
 // ── AVP ON ──
@@ -2573,12 +2569,8 @@ function renderNightNasrCityReport(rows, date) {
   const nasrRowsAll = rows.filter(r => isNasrCityLocation(r.location)).filter(r => !ybkIsQTC(r.deviceNo));
   const nasrRows = nasrRowsAll.filter(r => !ybkIsWLA(r.deviceNo));
 
-  // ✅ Extended Night (Jumbo 12H) — نفس الشخص (نفس اليوبيكي) موجود في شيت ON GT (Overnight) كمان
-  const overnightYubikeys = new Set((yubikeyData.rows||[]).map(r => String(r.yubikey||'').trim().toLowerCase()).filter(Boolean));
-  const extendedNightRows = nasrRows.filter(r => {
-    const yk = String(r.yubikey||'').trim().toLowerCase();
-    return yk && overnightYubikeys.has(yk);
-  });
+  // ✅ Extended Night (Jumbo 12H) — علامة "12H" مكتوبة مباشرة في عمود Z (أول عمود) لنفس الصف
+  const extendedNightRows = nasrRows.filter(r => String(r.group||'').trim().toUpperCase() === '12H');
   const extendedNightCount = extendedNightRows.length;
 
   // ✅ Hiring = حالتهم Training النهاردة (T / T1 / T2 / T3) — مستبعد منهم Extended Night
