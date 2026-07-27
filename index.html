@@ -224,6 +224,16 @@
   .sync-dot.error { background:var(--bad); animation:none; }
   @keyframes pulse-ok { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .modal-overlay { position:fixed; inset:0; background:rgba(4,6,9,0.7); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:200; padding:20px; }
+  .drawer-overlay { position:fixed; inset:0; background:rgba(4,6,9,0.6); z-index:300; display:none; }
+  .drawer-overlay.open { display:block; }
+  .drawer-panel { position:fixed; top:0; right:0; height:100%; width:440px; max-width:92vw; background:var(--bg-1); border-left:1px solid var(--line); box-shadow:var(--shadow-pop); z-index:301; transform:translateX(100%); transition:transform 0.25s ease; display:flex; flex-direction:column; }
+  .drawer-panel.open { transform:translateX(0); }
+  .drawer-header { padding:1.2rem 1.5rem; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+  .drawer-body { flex:1; overflow-y:auto; padding:1.3rem 1.5rem; }
+  .nav-icon-btn { background:var(--bg-2); border:1px solid var(--line); color:var(--text-1); width:32px; height:32px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; flex-shrink:0; }
+  .nav-icon-btn:hover { color:var(--text-0); border-color:var(--signal-line); }
+  .emp-name-link { cursor:pointer; }
+  .emp-name-link:hover { color:var(--signal); text-decoration:underline; }
   .modal-card { background:var(--bg-1); border:1px solid var(--line); border-radius:12px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; box-shadow:var(--shadow-pop); }
   .modal-header { padding:1.3rem 1.6rem; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; }
   .modal-title { font-size:15px; font-weight:700; color:var(--text-0); }
@@ -432,6 +442,9 @@
       </div>
       <span class="source-badge">GOOGLE SHEETS</span>
       <div class="nav-info mono" id="lastSync"><span class="sync-dot" id="syncDot"></span><span id="syncText">Loading...</span></div>
+      <button class="nav-icon-btn" onclick="openActivityDrawer()" title="Recent Activity">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+      </button>
       <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle light/dark theme">
         <svg id="themeIconMoon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         <svg id="themeIconSun" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -877,6 +890,16 @@
 <!-- DELETE VIOLATION MODAL -->
 <div class="modal-overlay" id="deleteViolationModalOverlay"><div class="modal-card delete-modal-card"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete violation</span><button class="modal-close" onclick="closeDeleteViolationModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>Are you sure?</h3><p>You're about to permanently delete this violation record for <span class="delete-name-highlight" id="deleteViolationName">this entry</span>. This cannot be undone.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteViolationModal()">Cancel</button><button type="button" class="btn-confirm-delete" id="deleteViolationConfirmBtn" onclick="confirmDeleteViolation()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button></div></div></div>
 
+<!-- SLIDING DRAWER (Activity Log / Employee Profile) -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer-panel" id="drawerPanel">
+  <div class="drawer-header">
+    <span class="modal-title" id="drawerTitle">Details</span>
+    <button class="modal-close" onclick="closeDrawer()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
 <!-- PROFILE MODAL -->
 <div class="modal-overlay" id="profileModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title">Edit profile</span><button class="modal-close" onclick="closeProfileModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
 <div class="modal-body">
@@ -917,7 +940,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyrR47tdOYBiQN6bu6BcUIYLyawTC0yf45rOZQSTc7MU7xUxQ973ypW1lCBOacTGTC9mQ/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwKk7ZeDSwA-zybl3dJ2betPs6pCxGdsmhFqWoorR9FYA27Iorn2a1sJ1GD_HSLbjckXw/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1334,12 +1357,13 @@ async function callScriptGeneric(action, payload, refreshFn) {
   // ✅ لازم no-cors هنا — Google Apps Script بيرفض إرجاع رد قابل للقراءة
   // على طلبات POST من دومين تاني (مشكلة CORS/redirect معروفة فيه)،
   // فبنبعت الطلب "أعمى" وبعدين نسحب نسخة جديدة من الشيت تلقائي بعد ثانية بسيطة.
+  const payloadWithActor = { ...payload, _actor: getSession()?.user?.email || 'unknown' };
   try {
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action, data: payload })
+      body: JSON.stringify({ action, data: payloadWithActor })
     });
   } catch (ex) {
     throw new Error('Network error: ' + ex.message);
@@ -3034,6 +3058,119 @@ function exportEmployeesCSV(){
   showSuccess('Employee records exported to CSV.');
 }
 
+// ── Sliding Drawer (shared: Activity Log + Employee Profile) ──
+function openDrawer(title,bodyHtml){
+  document.getElementById('drawerTitle').textContent=title;
+  document.getElementById('drawerBody').innerHTML=bodyHtml;
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('drawerPanel').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('drawerPanel').classList.remove('open');
+}
+
+async function openActivityDrawer(){
+  openDrawer('Recent Activity','<div style="text-align:center;padding:2rem;color:var(--text-2);font-size:13px">Loading...</div>');
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=activity&limit=30');
+    const json=await res.json();
+    const items=json.activity||[];
+    if(!items.length){
+      document.getElementById('drawerBody').innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-2);font-size:13px">No activity recorded yet.</div>';
+      return;
+    }
+    document.getElementById('drawerBody').innerHTML=items.map(it=>{
+      const a=(it.action||'').toLowerCase();
+      const color=a.includes('delete')?'var(--bad)':a.includes('edit')?'var(--warn)':a.includes('move')?'var(--purple)':'var(--ok)';
+      return `<div style="padding:0.85rem 0;border-bottom:1px solid var(--line-soft)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:10px">
+          <span style="font-weight:700;font-size:12.5px;color:${color}">${esc(it.action)}</span>
+          <span class="mono" style="font-size:10px;color:var(--text-2);white-space:nowrap">${esc(it.timestamp)}</span>
+        </div>
+        <div style="font-size:12.5px;color:var(--text-1)">${esc(it.details)}</div>
+        <div class="mono" style="font-size:10px;color:var(--text-2);margin-top:3px">${esc(it.user)}</div>
+      </div>`;
+    }).join('');
+  }catch(ex){
+    document.getElementById('drawerBody').innerHTML='<div style="text-align:center;padding:2rem;color:var(--bad);font-size:13px">Failed to load activity.</div>';
+  }
+}
+
+function summarizeAttendanceRows(matches){
+  if(!matches||!matches.length)return null;
+  let present=0,absent=0,training=0;
+  matches.forEach(r=>{
+    Object.values(r.attendance||{}).forEach(v=>{
+      if(ybkIsPresent(v))present++;
+      else if(ybkIsAbsent(v))absent++;
+      else if(ybkIsTraining(v))training++;
+    });
+  });
+  return {present,absent,training};
+}
+
+function attendanceSummaryCard(label,sum){
+  if(!sum)return `<div class="breakdown-card"><div class="breakdown-card-label">${esc(label)}</div><div style="color:var(--text-2);font-size:11.5px;margin-top:6px">Not found</div></div>`;
+  return `<div class="breakdown-card"><div class="breakdown-card-label">${esc(label)}</div><div style="display:flex;gap:8px;margin-top:6px;font-size:12px;flex-wrap:wrap"><span style="color:var(--ok)">✓${sum.present}</span><span style="color:var(--bad)">✕${sum.absent}</span><span style="color:var(--warn)">T${sum.training}</span></div></div>`;
+}
+
+function openEmployeeProfileDrawer(nationalId){
+  const emp=allData.find(r=>String(r['National ID'])===String(nationalId));
+  if(!emp)return;
+  const name=(emp['Name']||'').trim();
+  const nameLower=name.toLowerCase();
+  const initials=esc((name||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()||'?');
+  const statusBadge=isActive(emp['Status'])?'<span class="badge badge-active">Working</span>':'<span class="badge badge-resigned">'+esc(emp['Status']||'Resigned')+'</span>';
+
+  const gtSum=summarizeAttendanceRows((yubikeyData.rows||[]).filter(r=>(r.name||'').trim().toLowerCase()===nameLower));
+  const avpSum=summarizeAttendanceRows((avpData.rows||[]).filter(r=>(r.name||'').trim().toLowerCase()===nameLower));
+  const mapSum=summarizeAttendanceRows((mappingData.rows||[]).filter(r=>(r.name||'').trim().toLowerCase()===nameLower));
+
+  const violMatches=(violationData||[]).filter(r=>(r['Name']||'').trim().toLowerCase()===nameLower);
+  const trainingMatch=(trainingData||[]).find(r=>(r['Name']||'').trim().toLowerCase()===nameLower);
+
+  let html=`
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:1.5rem">
+      <div class="avatar avatar-gradient" style="width:52px;height:52px;font-size:18px;border-radius:14px">${initials}</div>
+      <div>
+        <div style="font-size:16px;font-weight:700;color:var(--text-0)">${esc(name||'—')}</div>
+        <div class="mono" style="font-size:11px;color:var(--text-2);margin-top:2px">${esc(emp['National ID']||'—')}</div>
+        <div style="margin-top:6px">${statusBadge}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem">
+      <div class="breakdown-card"><div class="breakdown-card-label">Project</div><div style="font-size:15px;font-weight:700;color:var(--text-0);margin-top:4px">${esc(normalizeProject(emp['Project'])||'—')}</div></div>
+      <div class="breakdown-card"><div class="breakdown-card-label">Shift</div><div style="font-size:15px;font-weight:700;color:var(--text-0);margin-top:4px">${esc(normalizeShift(emp['Shift'])||'—')}</div></div>
+      <div class="breakdown-card"><div class="breakdown-card-label">Role</div><div style="font-size:15px;font-weight:700;color:var(--text-0);margin-top:4px">${esc(emp['Role']||'—')}</div></div>
+      <div class="breakdown-card"><div class="breakdown-card-label">Location</div><div style="font-size:15px;font-weight:700;color:var(--text-0);margin-top:4px">${esc(emp['Location']||'—')}</div></div>
+    </div>
+    <div class="section-heading">Attendance (matched by name)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1.5rem">
+      ${attendanceSummaryCard('GT',gtSum)}
+      ${attendanceSummaryCard('AVP',avpSum)}
+      ${attendanceSummaryCard('Mapping',mapSum)}
+    </div>
+    <div class="section-heading">Violations <span class="badge badge-shift">${violMatches.length}</span></div>`;
+
+  if(!violMatches.length){
+    html+=`<div style="color:var(--text-2);font-size:12.5px;margin-bottom:1.5rem">No violations recorded.</div>`;
+  }else{
+    html+=`<div style="margin-bottom:1.5rem">`+violMatches.map(v=>`
+      <div style="background:var(--bg-2);border:1px solid var(--line);border-radius:8px;padding:0.7rem 0.9rem;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;gap:8px"><span style="font-weight:700;font-size:12.5px">${esc(v['Case']||v['Action']||'Violation')}</span><span class="mono" style="font-size:10.5px;color:var(--text-2)">${esc(v['Date']||'')}</span></div>
+        <div style="font-size:12px;color:var(--text-1);margin-top:3px">${esc(v['Note']||'—')}</div>
+      </div>`).join('')+`</div>`;
+  }
+
+  html+=`<div class="section-heading">Training</div>`;
+  html+=trainingMatch
+    ? `<div style="color:var(--warn);font-size:12.5px">Currently in Training — ${esc(normalizeProject(trainingMatch['Project'])||'—')}</div>`
+    : `<div style="color:var(--text-2);font-size:12.5px">Not currently in training.</div>`;
+
+  openDrawer('Employee Profile',html);
+}
+
 document.addEventListener('keydown', e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){
     const input=document.getElementById('searchInput');
@@ -3048,7 +3185,7 @@ function renderTable(data){
   document.getElementById('tableBody').innerHTML=data.map(r=>{
     const nid=esc(r['National ID']||'');const active=isActive(r['Status']);const statusBadge=active?'badge-active':isResigned(r['Status'])?'badge-resigned':'badge-resigned';
     const pulse=active?'<span class="status-pulse-dot"></span>':'';
-    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['National ID']||'—')}</td><td><div class="name-cell"><div class="avatar avatar-gradient">${esc((r['Name']||'?').split(' ').map(w=>w[0]).slice(0,2).join(''))}</div><span>${esc(r['Name']||'—')}</span></div></td><td><span class="badge badge-shift">${esc(normalizeShift(r['Shift'])||'—')}</span></td><td>${esc(normalizeProject(r['Project'])||'—')}</td><td style="color:var(--text-1)">${esc(r['Role']||'—')}</td><td><span class="badge ${statusBadge}">${pulse}${esc(r['Status']||'—')}</span></td><td style="color:var(--text-1)">${esc(r['Location']||'—')}</td><td><div class="action-cell"><button class="icon-btn" title="Edit" onclick="openEditModal('${nid}')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-btn danger" title="Delete" onclick="openDeleteModal('${nid}','${esc(r['Name']||'')}')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div></td></tr>`;
+    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['National ID']||'—')}</td><td><div class="name-cell"><div class="avatar avatar-gradient">${esc((r['Name']||'?').split(' ').map(w=>w[0]).slice(0,2).join(''))}</div><span class="emp-name-link" onclick="openEmployeeProfileDrawer('${nid}')">${esc(r['Name']||'—')}</span></div></td><td><span class="badge badge-shift">${esc(normalizeShift(r['Shift'])||'—')}</span></td><td>${esc(normalizeProject(r['Project'])||'—')}</td><td style="color:var(--text-1)">${esc(r['Role']||'—')}</td><td><span class="badge ${statusBadge}">${pulse}${esc(r['Status']||'—')}</span></td><td style="color:var(--text-1)">${esc(r['Location']||'—')}</td><td><div class="action-cell"><button class="icon-btn" title="Edit" onclick="openEditModal('${nid}')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-btn danger" title="Delete" onclick="openDeleteModal('${nid}','${esc(r['Name']||'')}')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div></td></tr>`;
   }).join('');
 }
 
