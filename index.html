@@ -871,6 +871,15 @@
         <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="salarySearchInput" placeholder="Search by name (English or Arabic)..." oninput="renderSalaryTable()"></div>
         <select id="salaryShiftFilter" onchange="renderSalaryTable()"><option value="">All shifts</option></select>
         <select id="salaryProjectFilter" onchange="renderSalaryTable()"><option value="">All projects</option></select>
+        <select id="salaryAttendanceFilter" onchange="renderSalaryTable()">
+          <option value="">All attendance</option>
+          <option value="present">Present</option>
+          <option value="absent">Absent</option>
+          <option value="training">Training</option>
+          <option value="norecord">No record</option>
+          <option value="notfound">Not found</option>
+        </select>
+        <button class="btn-ghost" onclick="copySalaryList()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy List</button>
       </div>
       <div class="table-card">
         <div class="table-header"><span class="table-title">Full Pay — Salary List</span><span class="table-count" id="salaryRowCount">—</span></div>
@@ -1954,6 +1963,19 @@ function namesMatchFuzzy(nameA,nameB){
   return matches>=needed && (matches/minLen)>=0.75;
 }
 
+// ✅ مستوى تالت: مقارنة الاسم كله كسلسلة حروف من غير مسافات — بيحل مشكلة كلمة اتقسمت لكلمتين أو العكس (زي "El Den" مقابل "Eldein")
+function normalizeNameFull(s){
+  return (s||'').replace(/\(.*?\)/g,'').toLowerCase().replace(/[^a-z]/g,'');
+}
+function namesMatchWhole(nameA,nameB){
+  const a=normalizeNameFull(nameA),b=normalizeNameFull(nameB);
+  if(!a||!b)return false;
+  const maxLen=Math.max(a.length,b.length);
+  if(maxLen<10)return a===b; // أسماء قصيرة جدًا لازم تتطابق بالظبط، تجنبًا لتطابقات غلط
+  const dist=levenshteinDist(a,b);
+  return (1-dist/maxLen)>=0.85;
+}
+
 function findSalaryAttendance(row,date){
   if(!date)return null;
   const name=(row['Name']||'').trim().toLowerCase();
@@ -1981,6 +2003,14 @@ function findSalaryAttendance(row,date){
   // ✅ محاولة تانية: مطابقة "بالشبه" (أول 3 كلمات على الأقل متطابقة بالترتيب) — للأسماء التلاتية/الرباعية المختلفة
   for(const src of sources){
     const match=src.data.find(r=>namesMatchFuzzy(r.name,row['Name']));
+    if(match){
+      const v=match.attendance ? match.attendance[date] : '';
+      return {source:src.key, value:v||'', fuzzy:true};
+    }
+  }
+  // ✅ محاولة تالتة: مطابقة السلسلة كلها من غير مسافات — بتحل مشكلة كلمة اتقسمت لكلمتين (زي El Den / Eldein)
+  for(const src of sources){
+    const match=src.data.find(r=>namesMatchWhole(r.name,row['Name']));
     if(match){
       const v=match.attendance ? match.attendance[date] : '';
       return {source:src.key, value:v||'', fuzzy:true};
@@ -2024,16 +2054,33 @@ function populateSalaryFilters(){
   if(projects.includes(prevP))sp.value=prevP;
 }
 
+function classifySalaryAttendance(found){
+  if(!found)return 'notfound';
+  if(!found.value)return 'norecord';
+  if(ybkIsPresent(found.value))return 'present';
+  if(ybkIsAbsent(found.value))return 'absent';
+  if(ybkIsTraining(found.value))return 'training';
+  return 'norecord';
+}
+
+let lastRenderedSalaryList=[];
+
 function renderSalaryTable(){
   const search=(document.getElementById('salarySearchInput').value||'').toLowerCase();
   const shift=document.getElementById('salaryShiftFilter').value;
   const project=document.getElementById('salaryProjectFilter').value;
+  const attFilter=document.getElementById('salaryAttendanceFilter').value;
   const data=salaryData.filter(r=>{
     const ms=!search||(r['Name']||'').toLowerCase().includes(search)||(r['Resource Name']||'').toLowerCase().includes(search)||(r['National ID Consolidated']||'').includes(search);
     const msh=!shift||(r['Current Shift']||'').trim().toLowerCase()===shift.toLowerCase();
     const mp=!project||(r['Project']||'').trim().toLowerCase()===project.toLowerCase();
     return ms&&msh&&mp;
-  });
+  }).map(r=>{
+    const found=findSalaryAttendance(r,selectedSalaryDate);
+    return {row:r, found, status:classifySalaryAttendance(found)};
+  }).filter(x=>!attFilter||x.status===attFilter);
+
+  lastRenderedSalaryList=data;
 
   document.getElementById('salaryLoadingState').style.display='none';
   document.getElementById('salaryRowCount').textContent=data.length+' records';
@@ -2047,10 +2094,25 @@ function renderSalaryTable(){
   }
   document.getElementById('salaryEmptyState').style.display='none';
   document.getElementById('salaryTable').style.display='table';
-  document.getElementById('salaryTableBody').innerHTML=data.map(r=>{
-    const found=findSalaryAttendance(r,selectedSalaryDate);
+  document.getElementById('salaryTableBody').innerHTML=data.map(({row:r,found})=>{
     return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Number']||'—')}</td><td style="font-weight:600">${esc(r['Name']||'—')}</td><td dir="rtl" style="text-align:right">${esc(r['Resource Name']||'—')}</td><td><span class="badge badge-shift">${esc(r['Current Shift']||'—')}</span></td><td>${esc(r['Project']||'—')}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['National ID Consolidated']||'—')}</td><td style="color:var(--text-1)">${esc(r['Room']||'—')}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['PC']||'—')}</td><td>${salaryAttendanceBadge(found)}</td></tr>`;
   }).join('');
+}
+
+function copySalaryList(){
+  if(!lastRenderedSalaryList.length){showError('No records to copy.');return;}
+  const statusLabel={present:'Present',absent:'Absent',training:'Training',norecord:'No record',notfound:'Not found'};
+  const lines=lastRenderedSalaryList.map(({row:r,status})=>`${r['Name']||'—'} — ${statusLabel[status]}`);
+  const text=`Salary Attendance List (${selectedSalaryDate||'—'})\n\n`+lines.join('\n');
+  navigator.clipboard.writeText(text).then(()=>{
+    showSuccess('List copied to clipboard.');
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');}catch{}
+    document.body.removeChild(ta);
+    showSuccess('List copied to clipboard.');
+  });
 }
 
 // ── Change Salary Sheet modal ──
