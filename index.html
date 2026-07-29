@@ -1917,6 +1917,19 @@ function buildSalaryDateSelector(){
 function selectSalaryDate(d){selectedSalaryDate=d;buildSalaryDateSelector();renderSalaryTable();}
 
 // ✅ بيدوّر على حضور الشخص في اليوم المختار — بيبدأ بمصدر بيانات مطابق للمشروع بتاعه، وبعدين يجرب الباقي
+function cleanNameWords(s){
+  return (s||'').replace(/\(.*?\)/g,'').trim().toLowerCase().split(/\s+/).filter(Boolean);
+}
+function namesMatchFuzzy(nameA,nameB){
+  const wordsA=cleanNameWords(nameA),wordsB=cleanNameWords(nameB);
+  if(!wordsA.length||!wordsB.length)return false;
+  const minLen=Math.min(wordsA.length,wordsB.length);
+  let matches=0;
+  for(let i=0;i<minLen;i++){if(wordsA[i]===wordsB[i])matches++;}
+  const needed=Math.min(minLen,3);
+  return matches>=needed && (matches/minLen)>=0.75;
+}
+
 function findSalaryAttendance(row,date){
   if(!date)return null;
   const name=(row['Name']||'').trim().toLowerCase();
@@ -1933,11 +1946,20 @@ function findSalaryAttendance(row,date){
     const bMatch=project.includes(b.key)?0:1;
     return aMatch-bMatch;
   });
+  // ✅ محاولة أولى: مطابقة حرفية كاملة (أدق وأسرع)
   for(const src of sources){
     const match=src.data.find(r=>(r.name||'').trim().toLowerCase()===name);
     if(match){
       const v=match.attendance ? match.attendance[date] : '';
-      return {source:src.key, value:v||''};
+      return {source:src.key, value:v||'', fuzzy:false};
+    }
+  }
+  // ✅ محاولة تانية: مطابقة "بالشبه" (أول 3 كلمات على الأقل متطابقة بالترتيب) — للأسماء التلاتية/الرباعية المختلفة
+  for(const src of sources){
+    const match=src.data.find(r=>namesMatchFuzzy(r.name,row['Name']));
+    if(match){
+      const v=match.attendance ? match.attendance[date] : '';
+      return {source:src.key, value:v||'', fuzzy:true};
     }
   }
   return null;
@@ -1946,7 +1968,7 @@ function findSalaryAttendance(row,date){
 function salaryAttendanceBadge(found){
   if(!found)return '<span style="color:var(--text-2);font-size:12px">Not found</span>';
   const v=found.value;
-  const srcLabel=found.source.toUpperCase();
+  const srcLabel=found.source.toUpperCase()+(found.fuzzy?' ~':'');
   if(!v)return `<span class="badge" style="background:var(--bg-2);color:var(--text-1);border:1px solid var(--line)">No record (${esc(srcLabel)})</span>`;
   if(ybkIsPresent(v))return `<span class="badge badge-active">Present (${esc(srcLabel)})</span>`;
   if(ybkIsAbsent(v))return `<span class="badge badge-resigned">Absent (${esc(srcLabel)})</span>`;
