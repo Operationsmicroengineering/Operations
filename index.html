@@ -871,6 +871,7 @@
         <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="salarySearchInput" placeholder="Search by name (English or Arabic)..." oninput="renderSalaryTable()"></div>
         <select id="salaryShiftFilter" onchange="renderSalaryTable()"><option value="">All shifts</option></select>
         <select id="salaryProjectFilter" onchange="renderSalaryTable()"><option value="">All projects</option></select>
+        <select id="salaryRoomFilter" onchange="renderSalaryTable()"><option value="">All rooms</option></select>
         <select id="salaryAttendanceFilter" onchange="renderSalaryTable()">
           <option value="">All attendance</option>
           <option value="present">Present</option>
@@ -2052,6 +2053,13 @@ function populateSalaryFilters(){
   sp.innerHTML='<option value="">All projects</option>';
   projects.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;sp.appendChild(o);});
   if(projects.includes(prevP))sp.value=prevP;
+
+  const rm=new Map();salaryData.forEach(r=>{const rn=(r['Room']||'').trim();if(rn&&!rm.has(rn.toLowerCase()))rm.set(rn.toLowerCase(),rn);});
+  const rooms=[...rm.values()].sort();
+  const sr=document.getElementById('salaryRoomFilter'),prevR=sr.value;
+  sr.innerHTML='<option value="">All rooms</option>';
+  rooms.forEach(rn=>{const o=document.createElement('option');o.value=rn;o.textContent=rn;sr.appendChild(o);});
+  if(rooms.includes(prevR))sr.value=prevR;
 }
 
 function classifySalaryAttendance(found){
@@ -2069,12 +2077,14 @@ function renderSalaryTable(){
   const search=(document.getElementById('salarySearchInput').value||'').toLowerCase();
   const shift=document.getElementById('salaryShiftFilter').value;
   const project=document.getElementById('salaryProjectFilter').value;
+  const room=document.getElementById('salaryRoomFilter').value;
   const attFilter=document.getElementById('salaryAttendanceFilter').value;
   const data=salaryData.filter(r=>{
     const ms=!search||(r['Name']||'').toLowerCase().includes(search)||(r['Resource Name']||'').toLowerCase().includes(search)||(r['National ID Consolidated']||'').includes(search);
     const msh=!shift||(r['Current Shift']||'').trim().toLowerCase()===shift.toLowerCase();
     const mp=!project||(r['Project']||'').trim().toLowerCase()===project.toLowerCase();
-    return ms&&msh&&mp;
+    const mr=!room||(r['Room']||'').trim().toLowerCase()===room.toLowerCase();
+    return ms&&msh&&mp&&mr;
   }).map(r=>{
     const found=findSalaryAttendance(r,selectedSalaryDate);
     return {row:r, found, status:classifySalaryAttendance(found)};
