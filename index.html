@@ -430,6 +430,10 @@
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <span class="tab-label-full">Violation Report</span>
       </button>
+      <button class="nav-tab" id="tabSalaryBtn" onclick="showView('salary')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span class="tab-label-full">Salary</span>
+      </button>
       <button class="nav-tab" id="tabSheetsBtn" onclick="showView('sheets')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         <span class="tab-label-full">Sheets</span>
@@ -852,6 +856,26 @@
       </div>
     </div>
 
+    <!-- SALARY VIEW -->
+    <div id="salaryView" style="display:none">
+      <div class="error-banner" id="salaryErrorBanner"></div>
+      <div class="toolbar">
+        <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="salarySearchInput" placeholder="Search by name (English or Arabic)..." oninput="renderSalaryTable()"></div>
+        <select id="salaryShiftFilter" onchange="renderSalaryTable()"><option value="">All shifts</option></select>
+        <select id="salaryProjectFilter" onchange="renderSalaryTable()"><option value="">All projects</option></select>
+        <button class="btn-ghost" onclick="loadSalaryData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><span class="table-title">Full Pay — Salary List</span><span class="table-count" id="salaryRowCount">—</span></div>
+        <div class="table-wrap">
+          <div class="loading" id="salaryLoadingState"><div class="spinner"></div>Loading salary list...</div>
+          <table id="salaryTable" style="display:none"><thead><tr><th>Number</th><th>Name</th><th>Resource Name (Arabic)</th><th>Shift</th><th>Project</th><th>National ID</th><th>Room</th><th>PC</th></tr></thead><tbody id="salaryTableBody"></tbody></table>
+          <div class="empty" id="salaryEmptyState" style="display:none"><div>No matching records</div></div>
+        </div>
+        <div class="table-footer"><span id="salaryFooterInfo">—</span><span id="salaryFooterTime">—</span></div>
+      </div>
+    </div>
+
     <!-- SHEETS VIEW -->
     <div id="sheetsView" style="display:none">
       <div class="sheets-toolbar"><div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="sheetsSearchInput" placeholder="Search sheets and forms..." oninput="renderSheets()"></div></div>
@@ -940,7 +964,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwKk7ZeDSwA-zybl3dJ2betPs6pCxGdsmhFqWoorR9FYA27Iorn2a1sJ1GD_HSLbjckXw/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbz6Ubs3XQQrozOQFTEK6wxj-XZqcKxF9fYXBDGB4-rTwiox8lDoZCo21q2kcKxrj4EnJw/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1019,7 +1043,7 @@ function loadNightGtCache() {
 
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
-let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]};
+let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[];
 let sortCol='', sortAsc=true, pollTimer=null, session=null, isSyncing=false;
 let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null;
 
@@ -1825,6 +1849,92 @@ async function loadViolationData(forceRefresh=false){
     if(!violationData.length){const b=document.getElementById('violationErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;}
   }
 }
+
+// ── Salary (external file) ──
+function saveSalaryCache(){
+  try{localStorage.setItem('ops_salary_cache_v1',JSON.stringify({data:salaryData,ts:Date.now()}));}catch{}
+}
+function loadSalaryCache(){
+  try{const r=JSON.parse(localStorage.getItem('ops_salary_cache_v1')||'null');return r&&Date.now()-r.ts<CACHE_MAX_AGE?r:null;}catch{return null;}
+}
+
+let salaryShiftDefaultApplied=false;
+
+async function loadSalaryData(forceRefresh=false){
+  if(!getSession())return;
+  if(!forceRefresh){
+    const cached=loadSalaryCache();
+    if(cached){salaryData=cached.data||[];populateSalaryFilters();renderSalaryTable();}
+  }
+  document.getElementById('salaryLoadingState').style.display=(salaryData.length>0)?'none':'block';
+  document.getElementById('salaryErrorBanner').style.display='none';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=salary'+(forceRefresh?'&force=1':''));
+    if(!res.ok)throw new Error('Failed to fetch salary data');
+    const json=await res.json();
+    if(json.error)throw new Error(json.error);
+    salaryData=json.salary||[];
+    populateSalaryFilters();
+    renderSalaryTable();
+    saveSalaryCache();
+  }catch(ex){
+    document.getElementById('salaryLoadingState').style.display='none';
+    if(!salaryData.length){const b=document.getElementById('salaryErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;}
+  }
+}
+
+function populateSalaryFilters(){
+  const sm=new Map();salaryData.forEach(r=>{const s=(r['Current Shift']||'').trim();if(s&&!sm.has(s.toLowerCase()))sm.set(s.toLowerCase(),s);});
+  const shifts=[...sm.values()].sort();
+  const pm=new Map();salaryData.forEach(r=>{const p=(r['Project']||'').trim();if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),p);});
+  const projects=[...pm.values()].sort();
+
+  const ss=document.getElementById('salaryShiftFilter'),prevS=ss.value;
+  ss.innerHTML='<option value="">All shifts</option>';
+  shifts.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});
+  if(shifts.includes(prevS))ss.value=prevS;
+
+  // ✅ أول مرة بس، لو لقينا شيفت شكله "Night"، نختاره تلقائي (الأوفر نايت اللي بيهمك)
+  if(!salaryShiftDefaultApplied){
+    const nightMatch=shifts.find(s=>s.toLowerCase().includes('night'));
+    if(nightMatch)ss.value=nightMatch;
+    salaryShiftDefaultApplied=true;
+  }
+
+  const sp=document.getElementById('salaryProjectFilter'),prevP=sp.value;
+  sp.innerHTML='<option value="">All projects</option>';
+  projects.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;sp.appendChild(o);});
+  if(projects.includes(prevP))sp.value=prevP;
+}
+
+function renderSalaryTable(){
+  const search=(document.getElementById('salarySearchInput').value||'').toLowerCase();
+  const shift=document.getElementById('salaryShiftFilter').value;
+  const project=document.getElementById('salaryProjectFilter').value;
+  const data=salaryData.filter(r=>{
+    const ms=!search||(r['Name']||'').toLowerCase().includes(search)||(r['Resource Name']||'').toLowerCase().includes(search)||(r['National ID Consolidated']||'').includes(search);
+    const msh=!shift||(r['Current Shift']||'').trim().toLowerCase()===shift.toLowerCase();
+    const mp=!project||(r['Project']||'').trim().toLowerCase()===project.toLowerCase();
+    return ms&&msh&&mp;
+  });
+
+  document.getElementById('salaryLoadingState').style.display='none';
+  document.getElementById('salaryRowCount').textContent=data.length+' records';
+  document.getElementById('salaryFooterInfo').textContent=`Showing ${data.length} of ${salaryData.length} records`;
+  document.getElementById('salaryFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!data.length){
+    document.getElementById('salaryTable').style.display='none';
+    document.getElementById('salaryEmptyState').style.display='block';
+    return;
+  }
+  document.getElementById('salaryEmptyState').style.display='none';
+  document.getElementById('salaryTable').style.display='table';
+  document.getElementById('salaryTableBody').innerHTML=data.map(r=>{
+    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Number']||'—')}</td><td style="font-weight:600">${esc(r['Name']||'—')}</td><td dir="rtl" style="text-align:right">${esc(r['Resource Name']||'—')}</td><td><span class="badge badge-shift">${esc(r['Current Shift']||'—')}</span></td><td>${esc(r['Project']||'—')}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['National ID Consolidated']||'—')}</td><td style="color:var(--text-1)">${esc(r['Room']||'—')}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['PC']||'—')}</td></tr>`;
+  }).join('');
+}
+
 
 function populateViolationFilters(){
   // no-op: search/filter toolbar was removed; kept as a hook in case it's needed again later
@@ -2919,7 +3029,7 @@ function optimisticMoveTrn(id){optimisticDeleteTrn(id);}
 function rollback(prevEmp,prevTrn){if(prevEmp!==undefined){allData=prevEmp;populateFilters();applyFilters();}if(prevTrn!==undefined){trainingData=prevTrn;populateTrainingFilters();renderTrainingStats();renderTrainingTable();}saveCache();}
 
 function showView(view){
-  ['employees','training','yubikey','violation','sheets'].forEach(v=>{
+  ['employees','training','yubikey','violation','salary','sheets'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
     const btn=document.getElementById('tab'+v[0].toUpperCase()+v.slice(1)+'Btn');
     if(btn)btn.classList.toggle('active',v===view);
@@ -2930,6 +3040,7 @@ function showView(view){
   if(view==='yubikey'&&mappingData.rows.length===0)loadMappingData();
   if(view==='violation'&&violationData.length===0)loadViolationData();
   if(view==='violation')loadViolationOptions();
+  if(view==='salary'&&salaryData.length===0)loadSalaryData();
 }
 
 function bannerIds(scope){
