@@ -1920,12 +1920,36 @@ function selectSalaryDate(d){selectedSalaryDate=d;buildSalaryDateSelector();rend
 function cleanNameWords(s){
   return (s||'').replace(/\(.*?\)/g,'').trim().toLowerCase().split(/\s+/).filter(Boolean);
 }
+function levenshteinDist(a,b){
+  const m=a.length,n=b.length;
+  if(m===0)return n; if(n===0)return m;
+  const dp=Array.from({length:m+1},()=>new Array(n+1).fill(0));
+  for(let i=0;i<=m;i++)dp[i][0]=i;
+  for(let j=0;j<=n;j++)dp[0][j]=j;
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      dp[i][j]=Math.min(
+        dp[i-1][j]+1,
+        dp[i][j-1]+1,
+        dp[i-1][j-1]+(a[i-1]===b[j-1]?0:1)
+      );
+    }
+  }
+  return dp[m][n];
+}
+function wordsSimilar(w1,w2){
+  if(w1===w2)return true;
+  const maxLen=Math.max(w1.length,w2.length);
+  if(maxLen===0)return true;
+  const dist=levenshteinDist(w1,w2);
+  return (1-dist/maxLen)>=0.58; // ✅ بيسمح بفروق تهجئة أوضح (زي Abass/Abbas)، والحماية من غلطات المطابقة بييجي من شرط الـ 3 كلمات
+}
 function namesMatchFuzzy(nameA,nameB){
   const wordsA=cleanNameWords(nameA),wordsB=cleanNameWords(nameB);
   if(!wordsA.length||!wordsB.length)return false;
   const minLen=Math.min(wordsA.length,wordsB.length);
   let matches=0;
-  for(let i=0;i<minLen;i++){if(wordsA[i]===wordsB[i])matches++;}
+  for(let i=0;i<minLen;i++){if(wordsSimilar(wordsA[i],wordsB[i]))matches++;}
   const needed=Math.min(minLen,3);
   return matches>=needed && (matches/minLen)>=0.75;
 }
