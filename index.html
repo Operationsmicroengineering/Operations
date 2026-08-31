@@ -438,6 +438,10 @@
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <span class="tab-label-full">Lateness</span>
       </button>
+      <button class="nav-tab" id="tabOpsreportBtn" onclick="showView('opsreport')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span class="tab-label-full">Operations Report</span>
+      </button>
       <button class="nav-tab" id="tabSheetsBtn" onclick="showView('sheets')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         <span class="tab-label-full">Sheets</span>
@@ -917,6 +921,20 @@
       </div>
     </div>
 
+    <!-- OPERATIONS REPORT VIEW -->
+    <div id="opsreportView" style="display:none">
+      <div class="error-banner" id="opsReportErrorBanner"></div>
+      <div class="success-banner" id="opsReportSuccessBanner"></div>
+      <div class="toolbar">
+        <select id="opsReportFloorFilter" onchange="renderOpsReportList()"><option value="">All floors</option><option value="1">Floor 1</option><option value="2">Floor 2</option><option value="3">Floor 3</option></select>
+        <button class="btn-ghost" onclick="loadOpsReportData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
+        <button class="btn-primary" onclick="openAddOpsReportModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Report</button>
+      </div>
+      <div class="loading" id="opsReportLoadingState"><div class="spinner"></div>Loading operations reports...</div>
+      <div class="empty" id="opsReportEmptyState" style="display:none"><div>No operations reports yet</div></div>
+      <div id="opsReportList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px"></div>
+    </div>
+
     <!-- SHEETS VIEW -->
     <div id="sheetsView" style="display:none">
       <div class="sheets-toolbar"><div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="sheetsSearchInput" placeholder="Search sheets and forms..." oninput="renderSheets()"></div></div>
@@ -999,6 +1017,30 @@
 <!-- DELETE LATENESS MODAL -->
 <div class="modal-overlay" id="deleteLatenessModalOverlay"><div class="modal-card delete-modal-card"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete lateness record</span><button class="modal-close" onclick="closeDeleteLatenessModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>Are you sure?</h3><p>You're about to permanently delete this lateness record for <span class="delete-name-highlight" id="deleteLatenessName">this entry</span>. This cannot be undone.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteLatenessModal()">Cancel</button><button type="button" class="btn-confirm-delete" id="deleteLatenessConfirmBtn" onclick="confirmDeleteLateness()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button></div></div></div>
 
+<!-- ADD/EDIT OPERATIONS REPORT MODAL -->
+<div class="modal-overlay" id="opsReportModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title" id="opsReportModalTitle">Add Operations Report</span><button class="modal-close" onclick="closeOpsReportModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<div class="modal-body">
+  <div class="form-error" id="opsReportFormError"></div>
+  <div class="form-group"><label>Floor</label><select id="opsFloorInput" class="form-control" required><option value="1">Floor 1</option><option value="2">Floor 2</option><option value="3">Floor 3</option></select></div>
+  <div class="form-row"><div class="form-group"><label>Devices</label><input type="text" id="opsDevicesInput" class="form-control" placeholder="e.g. 20/20 ready"></div><div class="form-group"><label>Headsets</label><input type="text" id="opsHeadsetsInput" class="form-control" placeholder="e.g. 2 missing"></div></div>
+  <div class="form-row"><div class="form-group"><label>Headset Chargers</label><input type="text" id="opsChargersInput" class="form-control"></div><div class="form-group"><label>Chairs</label><input type="text" id="opsChairsInput" class="form-control"></div></div>
+  <div class="form-row"><div class="form-group"><label>Fans</label><input type="text" id="opsFansInput" class="form-control"></div><div class="form-group"><label>ACs</label><input type="text" id="opsAcsInput" class="form-control"></div></div>
+  <div class="form-row"><div class="form-group"><label>Security Office</label><input type="text" id="opsSecurityInput" class="form-control"></div><div class="form-group"><label>Kitchen</label><input type="text" id="opsKitchenInput" class="form-control"></div></div>
+  <div class="form-group"><label>Water Dispenser</label><input type="text" id="opsDispenserInput" class="form-control"></div>
+  <div class="form-group"><label>Note</label><input type="text" id="opsNoteInput" class="form-control" placeholder="Any additional details"></div>
+  <div class="form-group">
+    <label>Photo</label>
+    <div id="opsPhotoPreviewWrap" style="margin-bottom:8px"></div>
+    <input type="file" id="opsPhotoInput" accept="image/*" style="display:none" onchange="handleOpsPhotoSelect(event)">
+    <button type="button" class="btn-ghost" onclick="document.getElementById('opsPhotoInput').click()">Choose photo</button>
+  </div>
+</div>
+<div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeOpsReportModal()">Cancel</button><button type="button" class="btn-primary" id="opsReportSaveBtn" onclick="saveOpsReport()">Save</button></div>
+</div></div>
+
+<!-- DELETE OPERATIONS REPORT MODAL -->
+<div class="modal-overlay" id="deleteOpsReportModalOverlay"><div class="modal-card delete-modal-card"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete report</span><button class="modal-close" onclick="closeDeleteOpsReportModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>Are you sure?</h3><p>This operations report will be permanently deleted. This cannot be undone.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteOpsReportModal()">Cancel</button><button type="button" class="btn-confirm-delete" id="deleteOpsReportConfirmBtn" onclick="confirmDeleteOpsReport()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button></div></div></div>
+
 <!-- CHANGE SALARY SHEET MODAL -->
 <div class="modal-overlay" id="salarySheetModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title">Change Salary Sheet</span><button class="modal-close" onclick="closeSalarySheetModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
 <div class="modal-body">
@@ -1024,7 +1066,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwjWS9IhqMWgZRX-229vtib-eLHx3t9TWaA69AjLirrH-YMVAe5DKr8LseVh4LZ81RB1w/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzbOOjZLqRE-_FjuvOJcIrvFuMr68D1jaaLNT6ITyNYL_T9HDimjNlW-yIHtQi0rhviNw/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1103,7 +1145,7 @@ function loadNightGtCache() {
 
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
-let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[];
+let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[], latenessData=[], opsReportData=[];
 let sortCol='', sortAsc=true, pollTimer=null, session=null, isSyncing=false;
 let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null;
 
@@ -2191,6 +2233,294 @@ async function saveSalarySheetConfig(){
   }finally{
     btn.disabled=false;
   }
+}
+
+// ── Lateness ──
+async function loadLatenessData(forceRefresh=false){
+  if(!getSession())return;
+  document.getElementById('latenessLoadingState').style.display=(latenessData.length>0)?'none':'block';
+  document.getElementById('latenessErrorBanner').style.display='none';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=lateness'+(forceRefresh?'&force=1':''));
+    if(!res.ok)throw new Error('Failed to fetch lateness data');
+    const json=await res.json();
+    if(json.error)throw new Error(json.error);
+    latenessData=json.lateness||[];
+    renderLatenessTable();
+  }catch(ex){
+    document.getElementById('latenessLoadingState').style.display='none';
+    if(!latenessData.length){const b=document.getElementById('latenessErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;}
+  }
+}
+
+function renderLatenessTable(){
+  const search=(document.getElementById('latenessSearchInput').value||'').toLowerCase();
+  const data=latenessData.filter(r=>!search||(r['Name']||'').toLowerCase().includes(search));
+
+  document.getElementById('latenessLoadingState').style.display='none';
+  document.getElementById('latenessRowCount').textContent=data.length+' records';
+  document.getElementById('latenessFooterInfo').textContent=`Showing ${data.length} of ${latenessData.length} records`;
+  document.getElementById('latenessFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!data.length){
+    document.getElementById('latenessTable').style.display='none';
+    document.getElementById('latenessEmptyState').style.display='block';
+    return;
+  }
+  document.getElementById('latenessEmptyState').style.display='none';
+  document.getElementById('latenessTable').style.display='table';
+  document.getElementById('latenessTableBody').innerHTML=data.map(r=>{
+    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Date']||'—')}</td><td style="font-weight:600">${esc(r['Name']||'—')}</td><td>${esc(r['Project']||'—')}</td><td><span class="badge badge-shift">${esc(r['Shift']||'—')}</span></td><td class="mono" style="color:var(--warn)">${esc(r['Minutes Late']||'—')}</td><td style="color:var(--text-1)">${esc(r['Note']||'—')}</td><td><div class="action-cell"><button class="icon-btn" title="Edit" onclick="openEditLatenessModal(${r['_row']})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-btn danger" title="Delete" onclick="openDeleteLatenessModal(${r['_row']},'${esc(r['Name']||'')}')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div></td></tr>`;
+  }).join('');
+}
+
+function openAddLatenessModal(){
+  document.getElementById('addLatenessFormError').style.display='none';
+  document.getElementById('addLatenessForm').reset();
+  document.getElementById('latAddDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('addLatenessModalOverlay').style.display='flex';
+}
+function closeAddLatenessModal(){document.getElementById('addLatenessModalOverlay').style.display='none';}
+document.getElementById('addLatenessModalOverlay').addEventListener('click',e=>{if(e.target.id==='addLatenessModalOverlay')closeAddLatenessModal();});
+
+async function handleAddLatenessSubmit(e){
+  e.preventDefault();
+  if(!getSession()){showError('Session expired.','lateness');closeAddLatenessModal();return;}
+  const errDiv=document.getElementById('addLatenessFormError'),btn=document.getElementById('addLatenessSubmitBtn');
+  errDiv.style.display='none';
+  const payload={
+    'Date':document.getElementById('latAddDate').value,
+    'Name':document.getElementById('latAddName').value.trim(),
+    'Project':document.getElementById('latAddProject').value.trim(),
+    'Shift':document.getElementById('latAddShift').value.trim(),
+    'Minutes Late':document.getElementById('latAddMinutes').value.trim(),
+    'Note':document.getElementById('latAddNote').value.trim()
+  };
+  if(!payload['Name']){errDiv.textContent='Please enter a name.';errDiv.style.display='block';return;}
+  closeAddLatenessModal();
+  btn.disabled=true;
+  callScriptGeneric('addLateness',payload,()=>loadLatenessData(true))
+    .then(()=>showSuccess('Lateness record added.','lateness'))
+    .catch(ex=>showError('Add failed: '+ex.message,'lateness'))
+    .finally(()=>{btn.disabled=false;});
+}
+
+function openEditLatenessModal(rowNum){
+  const rec=latenessData.find(r=>r['_row']===rowNum);
+  if(!rec)return;
+  document.getElementById('editLatenessFormError').style.display='none';
+  document.getElementById('latEditDate').value=rec['Date']||'';
+  document.getElementById('latEditName').value=rec['Name']||'';
+  document.getElementById('latEditProject').value=rec['Project']||'';
+  document.getElementById('latEditShift').value=rec['Shift']||'';
+  document.getElementById('latEditMinutes').value=rec['Minutes Late']||'';
+  document.getElementById('latEditNote').value=rec['Note']||'';
+  document.getElementById('editLatenessForm').dataset.row=rowNum;
+  document.getElementById('editLatenessModalOverlay').style.display='flex';
+}
+function closeEditLatenessModal(){document.getElementById('editLatenessModalOverlay').style.display='none';}
+document.getElementById('editLatenessModalOverlay').addEventListener('click',e=>{if(e.target.id==='editLatenessModalOverlay')closeEditLatenessModal();});
+
+async function handleEditLatenessSubmit(e){
+  e.preventDefault();
+  if(!getSession()){showError('Session expired.');closeEditLatenessModal();return;}
+  const errDiv=document.getElementById('editLatenessFormError'),btn=document.getElementById('editLatenessSubmitBtn');
+  errDiv.style.display='none';
+  const rowNum=parseInt(document.getElementById('editLatenessForm').dataset.row,10);
+  const payload={
+    '_row':rowNum,
+    'Date':document.getElementById('latEditDate').value,
+    'Name':document.getElementById('latEditName').value.trim(),
+    'Project':document.getElementById('latEditProject').value.trim(),
+    'Shift':document.getElementById('latEditShift').value.trim(),
+    'Minutes Late':document.getElementById('latEditMinutes').value.trim(),
+    'Note':document.getElementById('latEditNote').value.trim()
+  };
+  if(!payload['Name']){errDiv.textContent='Please enter a name.';errDiv.style.display='block';return;}
+  closeEditLatenessModal();
+  btn.disabled=true;
+  callScriptGeneric('editLateness',payload,()=>loadLatenessData(true))
+    .then(()=>showSuccess('Lateness record updated.','lateness'))
+    .catch(ex=>showError('Edit failed: '+ex.message,'lateness'))
+    .finally(()=>{btn.disabled=false;});
+}
+
+let deleteLatenessTargetRow=null;
+function openDeleteLatenessModal(rowNum,name){
+  deleteLatenessTargetRow=rowNum;
+  document.getElementById('deleteLatenessName').textContent=name||'this entry';
+  document.getElementById('deleteLatenessModalOverlay').style.display='flex';
+}
+function closeDeleteLatenessModal(){document.getElementById('deleteLatenessModalOverlay').style.display='none';deleteLatenessTargetRow=null;}
+document.getElementById('deleteLatenessModalOverlay').addEventListener('click',e=>{if(e.target.id==='deleteLatenessModalOverlay')closeDeleteLatenessModal();});
+
+async function confirmDeleteLateness(){
+  if(!deleteLatenessTargetRow||!getSession()){closeDeleteLatenessModal();return;}
+  const rowNum=deleteLatenessTargetRow;
+  closeDeleteLatenessModal();
+  callScriptGeneric('deleteLateness',{'_row':rowNum},()=>loadLatenessData(true))
+    .then(()=>showSuccess('Lateness record deleted.','lateness'))
+    .catch(ex=>showError('Delete failed: '+ex.message,'lateness'));
+}
+
+// ── Operations Report ──
+let pendingOpsPhotoDataUrl=null;
+
+async function loadOpsReportData(forceRefresh=false){
+  if(!getSession())return;
+  document.getElementById('opsReportLoadingState').style.display=(opsReportData.length>0)?'none':'block';
+  document.getElementById('opsReportErrorBanner').style.display='none';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=opsReport'+(forceRefresh?'&force=1':''));
+    if(!res.ok)throw new Error('Failed to fetch operations reports');
+    const json=await res.json();
+    if(json.error)throw new Error(json.error);
+    opsReportData=json.opsReport||[];
+    renderOpsReportList();
+  }catch(ex){
+    document.getElementById('opsReportLoadingState').style.display='none';
+    if(!opsReportData.length){const b=document.getElementById('opsReportErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;}
+  }
+}
+
+function renderOpsReportList(){
+  const floor=document.getElementById('opsReportFloorFilter').value;
+  const data=[...opsReportData].filter(r=>!floor||String(r['Floor'])===floor)
+    .sort((a,b)=>(b['Timestamp']||'').localeCompare(a['Timestamp']||''));
+
+  document.getElementById('opsReportLoadingState').style.display='none';
+  const listEl=document.getElementById('opsReportList');
+  if(!data.length){
+    listEl.innerHTML='';
+    document.getElementById('opsReportEmptyState').style.display='block';
+    return;
+  }
+  document.getElementById('opsReportEmptyState').style.display='none';
+
+  const fields=[['Devices','Devices'],['Headsets','Headsets'],['Headset Chargers','Chargers'],['Chairs','Chairs'],['Fans','Fans'],['ACs','ACs'],['Security Office','Security'],['Kitchen','Kitchen'],['Water Dispenser','Dispenser']];
+
+  listEl.innerHTML=data.map(r=>{
+    const photo=r['Photo']?`<img src="${r['Photo']}" style="width:100%;height:160px;object-fit:cover;border-radius:8px 8px 0 0;display:block">`:`<div style="width:100%;height:80px;background:var(--bg-2);display:flex;align-items:center;justify-content:center;color:var(--text-2);font-size:12px;border-radius:8px 8px 0 0">No photo</div>`;
+    const fieldsHtml=fields.map(([key,label])=>r[key]?`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--line-soft)"><span style="color:var(--text-2)">${esc(label)}</span><span style="color:var(--text-0);font-weight:600;text-align:right;max-width:60%">${esc(r[key])}</span></div>`:'').join('');
+    return`<div class="ybk-history-card" style="overflow:hidden">
+      ${photo}
+      <div style="padding:1rem 1.2rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span class="badge badge-shift">Floor ${esc(r['Floor']||'—')}</span>
+          <span class="mono" style="font-size:10px;color:var(--text-2)">${esc(r['Timestamp']||'')}</span>
+        </div>
+        ${fieldsHtml}
+        ${r['Note']?`<div style="margin-top:8px;font-size:12px;color:var(--text-1)">${esc(r['Note'])}</div>`:''}
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="icon-btn" title="Edit" onclick="openEditOpsReportModal(${r['_row']})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="icon-btn danger" title="Delete" onclick="openDeleteOpsReportModal(${r['_row']})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function handleOpsPhotoSelect(event){
+  const file=event.target.files&&event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const maxDim=420;
+      const scale=Math.min(1,maxDim/Math.max(img.width,img.height));
+      const w=img.width*scale,h=img.height*scale;
+      const canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      pendingOpsPhotoDataUrl=canvas.toDataURL('image/jpeg',0.6);
+      document.getElementById('opsPhotoPreviewWrap').innerHTML=`<img src="${pendingOpsPhotoDataUrl}" style="max-width:100%;border-radius:8px;max-height:160px">`;
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function openAddOpsReportModal(){
+  document.getElementById('opsReportModalTitle').textContent='Add Operations Report';
+  document.getElementById('opsReportFormError').style.display='none';
+  ['opsDevicesInput','opsHeadsetsInput','opsChargersInput','opsChairsInput','opsFansInput','opsAcsInput','opsSecurityInput','opsKitchenInput','opsDispenserInput','opsNoteInput'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('opsFloorInput').value='1';
+  document.getElementById('opsPhotoPreviewWrap').innerHTML='';
+  pendingOpsPhotoDataUrl=null;
+  document.getElementById('opsReportModalOverlay').dataset.row='';
+  document.getElementById('opsReportModalOverlay').style.display='flex';
+}
+
+function openEditOpsReportModal(rowNum){
+  const rec=opsReportData.find(r=>r['_row']===rowNum);
+  if(!rec)return;
+  document.getElementById('opsReportModalTitle').textContent='Edit Operations Report';
+  document.getElementById('opsReportFormError').style.display='none';
+  document.getElementById('opsFloorInput').value=rec['Floor']||'1';
+  document.getElementById('opsDevicesInput').value=rec['Devices']||'';
+  document.getElementById('opsHeadsetsInput').value=rec['Headsets']||'';
+  document.getElementById('opsChargersInput').value=rec['Headset Chargers']||'';
+  document.getElementById('opsChairsInput').value=rec['Chairs']||'';
+  document.getElementById('opsFansInput').value=rec['Fans']||'';
+  document.getElementById('opsAcsInput').value=rec['ACs']||'';
+  document.getElementById('opsSecurityInput').value=rec['Security Office']||'';
+  document.getElementById('opsKitchenInput').value=rec['Kitchen']||'';
+  document.getElementById('opsDispenserInput').value=rec['Water Dispenser']||'';
+  document.getElementById('opsNoteInput').value=rec['Note']||'';
+  pendingOpsPhotoDataUrl=rec['Photo']||null;
+  document.getElementById('opsPhotoPreviewWrap').innerHTML=pendingOpsPhotoDataUrl?`<img src="${pendingOpsPhotoDataUrl}" style="max-width:100%;border-radius:8px;max-height:160px">`:'';
+  document.getElementById('opsReportModalOverlay').dataset.row=rowNum;
+  document.getElementById('opsReportModalOverlay').style.display='flex';
+}
+
+function closeOpsReportModal(){document.getElementById('opsReportModalOverlay').style.display='none';}
+document.getElementById('opsReportModalOverlay').addEventListener('click',e=>{if(e.target.id==='opsReportModalOverlay')closeOpsReportModal();});
+
+async function saveOpsReport(){
+  if(!getSession()){showError('Session expired.');closeOpsReportModal();return;}
+  const errDiv=document.getElementById('opsReportFormError'),btn=document.getElementById('opsReportSaveBtn');
+  errDiv.style.display='none';
+  const rowNum=document.getElementById('opsReportModalOverlay').dataset.row;
+  const payload={
+    'Floor':document.getElementById('opsFloorInput').value,
+    'Devices':document.getElementById('opsDevicesInput').value.trim(),
+    'Headsets':document.getElementById('opsHeadsetsInput').value.trim(),
+    'Headset Chargers':document.getElementById('opsChargersInput').value.trim(),
+    'Chairs':document.getElementById('opsChairsInput').value.trim(),
+    'Fans':document.getElementById('opsFansInput').value.trim(),
+    'ACs':document.getElementById('opsAcsInput').value.trim(),
+    'Security Office':document.getElementById('opsSecurityInput').value.trim(),
+    'Kitchen':document.getElementById('opsKitchenInput').value.trim(),
+    'Water Dispenser':document.getElementById('opsDispenserInput').value.trim(),
+    'Note':document.getElementById('opsNoteInput').value.trim(),
+    'Photo':pendingOpsPhotoDataUrl||''
+  };
+  const isEdit=rowNum&&rowNum!=='';
+  if(isEdit)payload['_row']=parseInt(rowNum,10);
+  closeOpsReportModal();
+  btn.disabled=true;
+  callScriptGeneric(isEdit?'editOpsReport':'addOpsReport',payload,()=>loadOpsReportData(true))
+    .then(()=>showSuccess(isEdit?'Report updated.':'Report added.','opsreport'))
+    .catch(ex=>showError('Save failed: '+ex.message,'opsreport'))
+    .finally(()=>{btn.disabled=false;});
+}
+
+let deleteOpsReportTargetRow=null;
+function openDeleteOpsReportModal(rowNum){
+  deleteOpsReportTargetRow=rowNum;
+  document.getElementById('deleteOpsReportModalOverlay').style.display='flex';
+}
+function closeDeleteOpsReportModal(){document.getElementById('deleteOpsReportModalOverlay').style.display='none';deleteOpsReportTargetRow=null;}
+document.getElementById('deleteOpsReportModalOverlay').addEventListener('click',e=>{if(e.target.id==='deleteOpsReportModalOverlay')closeDeleteOpsReportModal();});
+
+async function confirmDeleteOpsReport(){
+  if(!deleteOpsReportTargetRow||!getSession()){closeDeleteOpsReportModal();return;}
+  const rowNum=deleteOpsReportTargetRow;
+  closeDeleteOpsReportModal();
+  callScriptGeneric('deleteOpsReport',{'_row':rowNum},()=>loadOpsReportData(true))
+    .then(()=>showSuccess('Report deleted.','opsreport'))
+    .catch(ex=>showError('Delete failed: '+ex.message,'opsreport'));
 }
 
 
@@ -3287,7 +3617,7 @@ function optimisticMoveTrn(id){optimisticDeleteTrn(id);}
 function rollback(prevEmp,prevTrn){if(prevEmp!==undefined){allData=prevEmp;populateFilters();applyFilters();}if(prevTrn!==undefined){trainingData=prevTrn;populateTrainingFilters();renderTrainingStats();renderTrainingTable();}saveCache();}
 
 function showView(view){
-  ['employees','training','yubikey','violation','salary','sheets'].forEach(v=>{
+  ['employees','training','yubikey','violation','salary','lateness','opsreport','sheets'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
     const btn=document.getElementById('tab'+v[0].toUpperCase()+v.slice(1)+'Btn');
     if(btn)btn.classList.toggle('active',v===view);
@@ -3305,11 +3635,15 @@ function showView(view){
     if(!mappingData.rows||mappingData.rows.length===0)loadMappingData();
     buildSalaryDateSelector();
   }
+  if(view==='lateness'&&latenessData.length===0)loadLatenessData();
+  if(view==='opsreport'&&opsReportData.length===0)loadOpsReportData();
 }
 
 function bannerIds(scope){
   if(scope==='training')return{err:'trainingErrorBanner',ok:'trainingSuccessBanner'};
   if(scope==='violation')return{err:'violationErrorBanner',ok:'violationSuccessBanner'};
+  if(scope==='lateness')return{err:'latenessErrorBanner',ok:'latenessSuccessBanner'};
+  if(scope==='opsreport')return{err:'opsReportErrorBanner',ok:'opsReportSuccessBanner'};
   return{err:'errorBanner',ok:'successBanner'};
 }
 function showError(msg,scope){const ids=bannerIds(scope);const b=document.getElementById(ids.err);b.style.display='block';b.textContent=msg;document.getElementById(ids.ok).style.display='none';}
