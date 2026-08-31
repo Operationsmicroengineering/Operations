@@ -923,19 +923,39 @@
       </div>
     </div>
 
-    <!-- OPERATIONS REPORT VIEW -->
+    <!-- OPERATIONS REPORT VIEW (جرد الأثاث بالصور) -->
     <div id="opsreportView" class="ops-ar" style="display:none;font-size:15px">
       <div class="error-banner" id="opsReportErrorBanner"></div>
       <div class="success-banner" id="opsReportSuccessBanner"></div>
-      <div class="quick-actions-row" id="opsTypeCardsRow" style="margin-bottom:1.5rem"></div>
+
+      <!-- تبويبات الأدوار -->
+      <div class="quick-actions-row" id="furnitureFloorTabs" style="margin-bottom:1.5rem"></div>
+
       <div class="toolbar">
-        <select id="opsReportTypeFilter" onchange="renderOpsReportList()"><option value="">كل أنواع التقارير</option></select>
-        <button class="btn-ghost" onclick="loadOpsReportData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>تحديث</button>
-        <button class="btn-primary" onclick="openAddOpsReportModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>إضافة تقرير</button>
+        <button class="btn-ghost" onclick="loadFurnitureData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>تحديث</button>
+        <button class="btn-ghost" onclick="openAddFurnitureCategoryModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>إضافة نوع جديد</button>
       </div>
-      <div class="loading" id="opsReportLoadingState"><div class="spinner"></div>جاري تحميل التقارير...</div>
-      <div class="empty" id="opsReportEmptyState" style="display:none"><div>لسه مفيش تقارير</div></div>
-      <div id="opsReportList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px"></div>
+
+      <div class="loading" id="opsReportLoadingState"><div class="spinner"></div>جاري تحميل البيانات...</div>
+      <div id="furnitureCategoryGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px"></div>
+    </div>
+
+    <!-- FURNITURE CATEGORY GALLERY DRAWER (شفاف فوق كل حاجة) -->
+    <div class="drawer-overlay" id="furnitureDrawerOverlay" onclick="closeFurnitureDrawer()"></div>
+    <div class="drawer-panel ops-ar" id="furnitureDrawerPanel" style="width:480px">
+      <div class="drawer-header">
+        <span class="modal-title" id="furnitureDrawerTitle">—</span>
+        <button class="modal-close" onclick="closeFurnitureDrawer()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="drawer-body">
+        <div id="furnitureSubTabs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <span style="font-size:14px;color:var(--text-1)">الإجمالي: <b id="furnitureDrawerCount" style="color:var(--signal);font-size:18px">0</b></span>
+          <button class="btn-primary" onclick="openAddFurnitureItemModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>إضافة</button>
+        </div>
+        <div class="loading" id="furnitureItemsLoading" style="display:none"><div class="spinner"></div>جاري التحميل...</div>
+        <div id="furnitureItemsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px"></div>
+      </div>
     </div>
 
     <!-- SHEETS VIEW -->
@@ -1020,25 +1040,33 @@
 <!-- DELETE LATENESS MODAL -->
 <div class="modal-overlay" id="deleteLatenessModalOverlay"><div class="modal-card delete-modal-card"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete lateness record</span><button class="modal-close" onclick="closeDeleteLatenessModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>Are you sure?</h3><p>You're about to permanently delete this lateness record for <span class="delete-name-highlight" id="deleteLatenessName">this entry</span>. This cannot be undone.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteLatenessModal()">Cancel</button><button type="button" class="btn-confirm-delete" id="deleteLatenessConfirmBtn" onclick="confirmDeleteLateness()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button></div></div></div>
 
-<!-- ADD/EDIT OPERATIONS REPORT MODAL -->
-<div class="modal-overlay" id="opsReportModalOverlay"><div class="modal-card ops-ar"><div class="modal-header"><span class="modal-title" id="opsReportModalTitle">إضافة تقرير</span><button class="modal-close" onclick="closeOpsReportModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<!-- ADD FURNITURE ITEM MODAL (قطعة واحدة + صورة واحدة) -->
+<div class="modal-overlay" id="furnitureItemModalOverlay"><div class="modal-card ops-ar"><div class="modal-header"><span class="modal-title">إضافة قطعة</span><button class="modal-close" onclick="closeAddFurnitureItemModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
 <div class="modal-body">
-  <div class="form-error" id="opsReportFormError"></div>
-  <div class="form-group"><label>نوع التقرير</label><select id="opsTypeInput" class="form-control" onchange="renderOpsItemFields()"></select></div>
-  <div id="opsItemFieldsContainer"></div>
-  <div class="form-group"><label>ملاحظة</label><input type="text" id="opsNoteInput" class="form-control" placeholder="أي تفاصيل إضافية"></div>
+  <div class="form-error" id="furnitureItemFormError"></div>
+  <p style="font-size:12.5px;color:var(--text-1);margin-bottom:1rem">هتضيف قطعة واحدة (أو أكتر لو نفس الشكل) لـ <b id="furnitureItemContext" style="color:var(--text-0)">—</b></p>
+  <div class="form-group"><label>الكمية</label><input type="number" id="furnitureQtyInput" class="form-control" value="1" min="1"></div>
   <div class="form-group">
-    <label>صورة</label>
-    <div id="opsPhotoPreviewWrap" style="margin-bottom:8px"></div>
-    <input type="file" id="opsPhotoInput" accept="image/*" style="display:none" onchange="handleOpsPhotoSelect(event)">
-    <button type="button" class="btn-ghost" onclick="document.getElementById('opsPhotoInput').click()">اختار صورة</button>
+    <label>صورة القطعة</label>
+    <div id="furnitureItemPhotoPreview" style="margin-bottom:8px"></div>
+    <input type="file" id="furnitureItemPhotoInput" accept="image/*" style="display:none" onchange="handleFurnitureItemPhotoSelect(event)">
+    <button type="button" class="btn-ghost" onclick="document.getElementById('furnitureItemPhotoInput').click()">اختار صورة</button>
   </div>
 </div>
-<div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeOpsReportModal()">إلغاء</button><button type="button" class="btn-primary" id="opsReportSaveBtn" onclick="saveOpsReport()">حفظ</button></div>
+<div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeAddFurnitureItemModal()">إلغاء</button><button type="button" class="btn-primary" id="furnitureItemSaveBtn" onclick="saveFurnitureItem()">حفظ</button></div>
 </div></div>
 
-<!-- DELETE OPERATIONS REPORT MODAL -->
-<div class="modal-overlay" id="deleteOpsReportModalOverlay"><div class="modal-card delete-modal-card ops-ar"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">حذف التقرير</span><button class="modal-close" onclick="closeDeleteOpsReportModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>متأكد؟</h3><p>هيتم حذف التقرير ده نهائيًا ومش هترجع تقدر تسترجعه.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteOpsReportModal()">إلغاء</button><button type="button" class="btn-confirm-delete" id="deleteOpsReportConfirmBtn" onclick="confirmDeleteOpsReport()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>حذف</button></div></div></div>
+<!-- DELETE FURNITURE ITEM MODAL -->
+<div class="modal-overlay" id="deleteFurnitureItemModalOverlay"><div class="modal-card delete-modal-card ops-ar"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">حذف القطعة</span><button class="modal-close" onclick="closeDeleteFurnitureItemModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>متأكد؟</h3><p>هيتم حذف القطعة دي وصورتها نهائيًا.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteFurnitureItemModal()">إلغاء</button><button type="button" class="btn-confirm-delete" onclick="confirmDeleteFurnitureItem()">حذف</button></div></div></div>
+
+<!-- ADD FURNITURE CATEGORY / SUBCATEGORY MODAL -->
+<div class="modal-overlay" id="addFurnitureCategoryModalOverlay"><div class="modal-card ops-ar"><div class="modal-header"><span class="modal-title" id="addFurnitureCategoryTitle">إضافة نوع جديد</span><button class="modal-close" onclick="closeAddFurnitureCategoryModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<div class="modal-body">
+  <div class="form-error" id="addFurnitureCategoryFormError"></div>
+  <div class="form-group"><label>الاسم</label><input type="text" id="newFurnitureCategoryName" class="form-control" placeholder="مثلاً: خزانات"></div>
+</div>
+<div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeAddFurnitureCategoryModal()">إلغاء</button><button type="button" class="btn-primary" onclick="saveNewFurnitureCategory()">إضافة</button></div>
+</div></div>
 
 <!-- CHANGE SALARY SHEET MODAL -->
 <div class="modal-overlay" id="salarySheetModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title">Change Salary Sheet</span><button class="modal-close" onclick="closeSalarySheetModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
@@ -1065,7 +1093,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxhFrpwKQPdHhfmw5bGQuCqXBDF461JvzqnY2-Oa3ej5WhIx28yVBVm73Zw15_A04Zlcg/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwfEAWSvPlczu2Ao-tPle_mjFkzSVHHXDmpUhsL5etquogohze7CjXXt5ZorWYv58FZ/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1144,7 +1172,7 @@ function loadNightGtCache() {
 
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
-let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[], latenessData=[], opsReportData=[];
+let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[], latenessData=[];
 let sortCol='', sortAsc=true, pollTimer=null, session=null, isSyncing=false;
 let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null;
 
@@ -2362,154 +2390,153 @@ async function confirmDeleteLateness(){
     .catch(ex=>showError('Delete failed: '+ex.message,'lateness'));
 }
 
-// ── Operations Report (نظام أنواع التقارير الخمسة) ──
-const OPS_REPORT_TYPES = {
-  kitchen: {
-    label: 'المطبخ',
-    section: 'المطبخ',
-    items: [
-      { key: 'Refrigerators', label: 'التلاجات', total: null },
-      { key: 'Water Dispenser', label: 'أسبنسر الشرب', total: null }
-    ]
-  },
-  security: {
-    label: 'مكتب الأمن',
-    section: 'مكتب الأمن',
-    items: [
-      { key: 'Fire Extinguishers', label: 'طفايات الحريق', total: null }
-    ]
-  },
-  floor2a: {
-    label: 'الدور التاني (PC-1 لـ PC-40)',
-    section: 'الدور التاني (PC-1 – PC-40)',
-    items: [
-      { key: 'Devices', label: 'الأجهزة', total: 40 },
-      { key: 'Chairs', label: 'الكراسي السوداء', total: 40 },
-      { key: 'Chargers', label: 'شواحن الأجهزة', total: 40 }
-    ]
-  },
-  floor2b: {
-    label: 'الدور التاني (PC-41 لـ PC-82)',
-    section: 'الدور التاني (PC-41 – PC-82)',
-    items: [
-      { key: 'Devices', label: 'الأجهزة', total: 42 },
-      { key: 'Chairs', label: 'الكراسي السوداء', total: 42 },
-      { key: 'Chargers', label: 'شواحن الأجهزة', total: 42 }
-    ]
-  },
-  acfans: {
-    label: 'التكييفات والمراوح',
-    section: 'التكييفات والمراوح',
-    items: [
-      { key: 'ACs', label: 'التكييفات', total: null },
-      { key: 'Fans', label: 'المراوح', total: null }
-    ]
+// ── جرد الأثاث بالصور (Furniture Inventory) ──
+let furnitureCategories={floors:[],categories:[]};
+let furnitureSummary=[];
+let selectedFurnitureFloor=null;
+let currentFurnitureCategoryKey=null, currentFurnitureSubcat=null;
+let pendingFurniturePhoto=null;
+let furnitureItemsCache=[];
+let deleteFurnitureItemTargetRow=null;
+
+async function loadFurnitureData(forceRefresh=false){
+  if(!getSession())return;
+  document.getElementById('opsReportLoadingState').style.display=(furnitureSummary.length>0)?'none':'block';
+  document.getElementById('opsReportErrorBanner').style.display='none';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=furnitureSummary'+(forceRefresh?'&force=1':''));
+    if(!res.ok)throw new Error('فشل تحميل البيانات');
+    const json=await res.json();
+    if(json.error)throw new Error(json.error);
+    furnitureSummary=json.summary||[];
+    furnitureCategories=json.categories||{floors:[],categories:[]};
+    if(!selectedFurnitureFloor||!furnitureCategories.floors.includes(selectedFurnitureFloor)){
+      selectedFurnitureFloor=furnitureCategories.floors[0]||null;
+    }
+    renderFurnitureFloorTabs();
+    renderFurnitureCategoryGrid();
+  }catch(ex){
+    document.getElementById('opsReportLoadingState').style.display='none';
+    const b=document.getElementById('opsReportErrorBanner');b.style.display='block';b.textContent='فشل التحميل: '+ex.message;
   }
-};
+}
 
-let pendingOpsPhotoDataUrl=null;
-
-function populateOpsTypeDropdowns(){
-  const typeSel=document.getElementById('opsTypeInput');
-  typeSel.innerHTML=Object.entries(OPS_REPORT_TYPES).map(([key,t])=>`<option value="${key}">${esc(t.label)}</option>`).join('');
-
-  const filterSel=document.getElementById('opsReportTypeFilter');
-  const prev=filterSel.value;
-  filterSel.innerHTML='<option value="">كل أنواع التقارير</option>'+Object.entries(OPS_REPORT_TYPES).map(([key,t])=>`<option value="${key}">${esc(t.label)}</option>`).join('');
-  if(OPS_REPORT_TYPES[prev])filterSel.value=prev;
-
-  const cardsRow=document.getElementById('opsTypeCardsRow');
-  cardsRow.innerHTML=Object.entries(OPS_REPORT_TYPES).map(([key,t])=>`
-    <div class="quick-action-card" onclick="filterOpsByType('${key}')">
-      <div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
-      <span style="font-family:'Cairo',sans-serif">${esc(t.label)}</span>
+function renderFurnitureFloorTabs(){
+  const el=document.getElementById('furnitureFloorTabs');
+  el.innerHTML=furnitureCategories.floors.map(f=>`
+    <div class="quick-action-card${f===selectedFurnitureFloor?' primary':''}" onclick="selectFurnitureFloor('${esc(f)}')">
+      <div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+      <span style="font-family:'Cairo',sans-serif">${esc(f)}</span>
     </div>`).join('');
 }
 
-function filterOpsByType(key){
-  document.getElementById('opsReportTypeFilter').value=key;
-  renderOpsReportList();
+function selectFurnitureFloor(floor){
+  selectedFurnitureFloor=floor;
+  renderFurnitureFloorTabs();
+  renderFurnitureCategoryGrid();
 }
 
-async function loadOpsReportData(forceRefresh=false){
-  if(!getSession())return;
-  populateOpsTypeDropdowns();
-  document.getElementById('opsReportLoadingState').style.display=(opsReportData.length>0)?'none':'block';
-  document.getElementById('opsReportErrorBanner').style.display='none';
-  try{
-    const res=await fetch(APPS_SCRIPT_URL+'?sheet=opsReport'+(forceRefresh?'&force=1':''));
-    if(!res.ok)throw new Error('فشل تحميل التقارير');
-    const json=await res.json();
-    if(json.error)throw new Error(json.error);
-    opsReportData=json.opsReport||[];
-    renderOpsReportList();
-  }catch(ex){
-    document.getElementById('opsReportLoadingState').style.display='none';
-    if(!opsReportData.length){const b=document.getElementById('opsReportErrorBanner');b.style.display='block';b.textContent='فشل التحميل: '+ex.message;}
-  }
+function furnitureCountFor(floor,catLabel,subcat){
+  return furnitureSummary
+    .filter(r=>r.Floor===floor && r.Category===catLabel && (subcat===undefined||r.Subcategory===subcat))
+    .reduce((sum,r)=>sum+(Number(r.Quantity)||0),0);
 }
 
-function findOpsTypeKey(rec){
-  // ✅ بيدوّر على مفتاح النوع من نص "Report Type" المخزّن (بالعربي) عشان نرجع نعرف قالبه
-  return Object.entries(OPS_REPORT_TYPES).find(([,t])=>t.label===rec['Report Type'])?.[0] || null;
-}
-
-function renderOpsReportList(){
-  const typeFilter=document.getElementById('opsReportTypeFilter').value;
-  const data=[...opsReportData].filter(r=>{
-    if(!typeFilter)return true;
-    const tKey=findOpsTypeKey(r);
-    return tKey===typeFilter;
-  }).sort((a,b)=>(b['Timestamp']||'').localeCompare(a['Timestamp']||''));
-
+function renderFurnitureCategoryGrid(){
   document.getElementById('opsReportLoadingState').style.display='none';
-  const listEl=document.getElementById('opsReportList');
-  if(!data.length){
-    listEl.innerHTML='';
-    document.getElementById('opsReportEmptyState').style.display='block';
-    return;
-  }
-  document.getElementById('opsReportEmptyState').style.display='none';
-
-  listEl.innerHTML=data.map(r=>{
-    const photo=r['Photo']?`<img src="${r['Photo']}" style="width:100%;height:170px;object-fit:cover;border-radius:8px 8px 0 0;display:block">`:`<div style="width:100%;height:80px;background:var(--bg-2);display:flex;align-items:center;justify-content:center;color:var(--text-2);font-size:12px;border-radius:8px 8px 0 0;font-family:'Cairo',sans-serif">مفيش صورة</div>`;
-
-    const itemRows=[1,2,3].map(n=>{
-      const label=r[`Item${n} Label`],total=r[`Item${n} Total`],value=r[`Item${n} Value`];
-      if(!label)return '';
-      if(total){
-        const missing=parseInt(value,10)||0;
-        const ready=Math.max(0,parseInt(total,10)-missing);
-        return `<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--line-soft)">
-          <span style="color:var(--text-2)">${esc(label)}</span>
-          <span style="font-weight:700"><span style="color:var(--ok)">${ready} جاهز</span> / <span style="color:${missing>0?'var(--bad)':'var(--text-2)'}">${missing} ناقص</span></span>
-        </div>`;
-      }
-      return `<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--line-soft)">
-        <span style="color:var(--text-2)">${esc(label)}</span>
-        <span style="color:var(--text-0);font-weight:700;text-align:right;max-width:60%">${esc(value||'—')}</span>
-      </div>`;
-    }).join('');
-
-    return`<div class="ybk-history-card ops-ar" style="overflow:hidden">
-      ${photo}
-      <div style="padding:1rem 1.2rem">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span class="badge badge-shift" style="font-family:'Cairo',sans-serif">${esc(r['Report Type']||'—')}</span>
-          <span class="mono" style="font-size:10px;color:var(--text-2)">${esc(r['Timestamp']||'')}</span>
-        </div>
-        ${itemRows}
-        ${r['Note']?`<div style="margin-top:8px;font-size:13px;color:var(--text-1)">${esc(r['Note'])}</div>`:''}
-        <div style="display:flex;gap:8px;margin-top:12px">
-          <button class="icon-btn" title="تعديل" onclick="openEditOpsReportModal(${r['_row']})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button class="icon-btn danger" title="حذف" onclick="openDeleteOpsReportModal(${r['_row']})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
-        </div>
-      </div>
+  const grid=document.getElementById('furnitureCategoryGrid');
+  if(!selectedFurnitureFloor){grid.innerHTML='';return;}
+  grid.innerHTML=furnitureCategories.categories.map(cat=>{
+    const total=furnitureCountFor(selectedFurnitureFloor,cat.label);
+    return `<div class="ybk-history-card" style="padding:1.3rem 1rem;text-align:center;cursor:pointer" onclick="openFurnitureCategory('${esc(cat.key)}')">
+      <div style="font-size:15px;font-weight:700;color:var(--text-0);font-family:'Cairo',sans-serif;margin-bottom:8px">${esc(cat.label)}</div>
+      <div style="font-size:28px;font-weight:800;color:var(--signal)" class="mono">${total}</div>
+      <div style="font-size:11px;color:var(--text-2);margin-top:2px">قطعة</div>
     </div>`;
   }).join('');
 }
 
-function handleOpsPhotoSelect(event){
+// ── معرض قسم واحد ──
+function openFurnitureCategory(catKey){
+  const cat=furnitureCategories.categories.find(c=>c.key===catKey);
+  if(!cat)return;
+  currentFurnitureCategoryKey=catKey;
+  currentFurnitureSubcat=null;
+  document.getElementById('furnitureDrawerTitle').textContent=`${cat.label} — ${selectedFurnitureFloor}`;
+  renderFurnitureSubTabs();
+  loadFurnitureItemsForCurrentSelection();
+  document.getElementById('furnitureDrawerOverlay').classList.add('open');
+  document.getElementById('furnitureDrawerPanel').classList.add('open');
+}
+
+function closeFurnitureDrawer(){
+  document.getElementById('furnitureDrawerOverlay').classList.remove('open');
+  document.getElementById('furnitureDrawerPanel').classList.remove('open');
+}
+
+function renderFurnitureSubTabs(){
+  const cat=furnitureCategories.categories.find(c=>c.key===currentFurnitureCategoryKey);
+  const wrap=document.getElementById('furnitureSubTabs');
+  if(!cat||!cat.subcategories||!cat.subcategories.length){wrap.innerHTML='';return;}
+  const chips=['__all__',...cat.subcategories];
+  wrap.innerHTML=chips.map(sc=>{
+    const label=sc==='__all__'?'الكل':sc;
+    const active=(currentFurnitureSubcat===null&&sc==='__all__')||currentFurnitureSubcat===sc;
+    return `<button type="button" class="filter-chip${active?' active':''}" onclick="selectFurnitureSubcat('${sc==='__all__'?'':esc(sc)}')">${esc(label)}</button>`;
+  }).join('')+`<button type="button" class="filter-chip" onclick="openAddFurnitureCategoryModal(true)">+ نوع كرسي جديد</button>`;
+}
+
+function selectFurnitureSubcat(sc){
+  currentFurnitureSubcat=sc||null;
+  renderFurnitureSubTabs();
+  loadFurnitureItemsForCurrentSelection();
+}
+
+async function loadFurnitureItemsForCurrentSelection(){
+  const cat=furnitureCategories.categories.find(c=>c.key===currentFurnitureCategoryKey);
+  if(!cat)return;
+  document.getElementById('furnitureItemsLoading').style.display='block';
+  document.getElementById('furnitureItemsGrid').innerHTML='';
+  try{
+    let url=APPS_SCRIPT_URL+'?sheet=furnitureItems&floor='+encodeURIComponent(selectedFurnitureFloor)+'&category='+encodeURIComponent(cat.label);
+    if(currentFurnitureSubcat)url+='&subcategory='+encodeURIComponent(currentFurnitureSubcat);
+    const res=await fetch(url);
+    const json=await res.json();
+    furnitureItemsCache=json.items||[];
+    renderFurnitureItemsGrid();
+  }catch(ex){
+    document.getElementById('furnitureItemsLoading').style.display='none';
+  }
+}
+
+function renderFurnitureItemsGrid(){
+  document.getElementById('furnitureItemsLoading').style.display='none';
+  const total=furnitureItemsCache.reduce((s,r)=>s+(Number(r['Quantity'])||0),0);
+  document.getElementById('furnitureDrawerCount').textContent=total;
+  document.getElementById('furnitureItemsGrid').innerHTML=furnitureItemsCache.map(r=>`
+    <div style="position:relative">
+      <img src="${r['Photo']||''}" style="width:100%;height:110px;object-fit:cover;border-radius:8px;background:var(--bg-2)">
+      <div style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.6);color:#fff;font-size:10px;padding:2px 6px;border-radius:5px" class="mono">×${esc(r['Quantity']||'1')}</div>
+      <button type="button" onclick="openDeleteFurnitureItemModal(${r['_row']})" style="position:absolute;top:-6px;left:-6px;width:20px;height:20px;border-radius:50%;background:var(--bad);color:#fff;border:none;cursor:pointer;font-size:12px;line-height:1">×</button>
+    </div>`).join('');
+}
+
+// ── إضافة قطعة ──
+function openAddFurnitureItemModal(){
+  const cat=furnitureCategories.categories.find(c=>c.key===currentFurnitureCategoryKey);
+  if(!cat)return;
+  document.getElementById('furnitureItemFormError').style.display='none';
+  document.getElementById('furnitureQtyInput').value='1';
+  document.getElementById('furnitureItemPhotoPreview').innerHTML='';
+  pendingFurniturePhoto=null;
+  const ctx=cat.label+(currentFurnitureSubcat?' — '+currentFurnitureSubcat:'');
+  document.getElementById('furnitureItemContext').textContent=ctx;
+  document.getElementById('furnitureItemModalOverlay').style.display='flex';
+}
+function closeAddFurnitureItemModal(){document.getElementById('furnitureItemModalOverlay').style.display='none';}
+document.getElementById('furnitureItemModalOverlay').addEventListener('click',e=>{if(e.target.id==='furnitureItemModalOverlay')closeAddFurnitureItemModal();});
+
+function handleFurnitureItemPhotoSelect(event){
   const file=event.target.files&&event.target.files[0];
   if(!file)return;
   const reader=new FileReader();
@@ -2522,136 +2549,104 @@ function handleOpsPhotoSelect(event){
       const canvas=document.createElement('canvas');
       canvas.width=w;canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
-      pendingOpsPhotoDataUrl=canvas.toDataURL('image/jpeg',0.6);
-      document.getElementById('opsPhotoPreviewWrap').innerHTML=`<img src="${pendingOpsPhotoDataUrl}" style="max-width:100%;border-radius:8px;max-height:160px">`;
+      pendingFurniturePhoto=canvas.toDataURL('image/jpeg',0.6);
+      document.getElementById('furnitureItemPhotoPreview').innerHTML=`<img src="${pendingFurniturePhoto}" style="max-width:100%;border-radius:8px;max-height:160px">`;
     };
     img.src=e.target.result;
   };
   reader.readAsDataURL(file);
 }
 
-// ✅ بيرسم خانات البنود حسب النوع المختار — رقم "ناقص" لو الإجمالي معروف (وبيحسب الجاهز لايف)، أو خانة نص حرة لو مفيش إجمالي ثابت
-function renderOpsItemFields(prefill){
-  const typeKey=document.getElementById('opsTypeInput').value;
-  const type=OPS_REPORT_TYPES[typeKey];
-  const container=document.getElementById('opsItemFieldsContainer');
-  if(!type){container.innerHTML='';return;}
-
-  container.innerHTML=type.items.map((item,idx)=>{
-    const prefillVal=prefill&&prefill[`Item${idx+1} Value`]!=null?prefill[`Item${idx+1} Value`]:'';
-    if(item.total){
-      return `
-        <div class="form-group">
-          <label>${esc(item.label)} — الإجمالي: ${item.total}</label>
-          <div style="display:flex;align-items:center;gap:10px">
-            <input type="number" min="0" max="${item.total}" class="form-control ops-item-input" data-idx="${idx+1}" data-hastotal="1" value="${esc(prefillVal)}" placeholder="عدد الناقص" oninput="updateOpsReadyLabel(${idx+1},${item.total})" style="max-width:140px">
-            <span style="font-size:12.5px;color:var(--text-1)">ناقص، من أصل ${item.total}</span>
-          </div>
-          <div id="opsReadyLabel_${idx+1}" style="font-size:12.5px;color:var(--ok);margin-top:5px;font-weight:600"></div>
-        </div>`;
-    }
-    return `
-      <div class="form-group">
-        <label>${esc(item.label)}</label>
-        <input type="text" class="form-control ops-item-input" data-idx="${idx+1}" data-hastotal="0" value="${esc(prefillVal)}" placeholder="اكتب الحالة (مثلاً: تمام، أو 2 ناقص)">
-      </div>`;
-  }).join('');
-
-  // ✅ يحدّث لابل "الجاهز" فورًا لو فيه قيم متعبّية بالفعل (وضع التعديل)
-  type.items.forEach((item,idx)=>{ if(item.total)updateOpsReadyLabel(idx+1,item.total); });
-}
-
-function updateOpsReadyLabel(idx,total){
-  const input=document.querySelector(`.ops-item-input[data-idx="${idx}"]`);
-  const label=document.getElementById('opsReadyLabel_'+idx);
-  if(!input||!label)return;
-  const missing=parseInt(input.value,10)||0;
-  const ready=Math.max(0,total-missing);
-  label.textContent=`${ready} جاهز من أصل ${total}`;
-}
-
-function openAddOpsReportModal(){
-  document.getElementById('opsReportModalTitle').textContent='إضافة تقرير';
-  document.getElementById('opsReportFormError').style.display='none';
-  document.getElementById('opsTypeInput').value=Object.keys(OPS_REPORT_TYPES)[0];
-  renderOpsItemFields();
-  document.getElementById('opsNoteInput').value='';
-  document.getElementById('opsPhotoPreviewWrap').innerHTML='';
-  pendingOpsPhotoDataUrl=null;
-  document.getElementById('opsReportModalOverlay').dataset.row='';
-  document.getElementById('opsReportModalOverlay').style.display='flex';
-}
-
-function openEditOpsReportModal(rowNum){
-  const rec=opsReportData.find(r=>r['_row']===rowNum);
-  if(!rec)return;
-  document.getElementById('opsReportModalTitle').textContent='تعديل التقرير';
-  document.getElementById('opsReportFormError').style.display='none';
-  const typeKey=findOpsTypeKey(rec)||Object.keys(OPS_REPORT_TYPES)[0];
-  document.getElementById('opsTypeInput').value=typeKey;
-  renderOpsItemFields(rec);
-  document.getElementById('opsNoteInput').value=rec['Note']||'';
-  pendingOpsPhotoDataUrl=rec['Photo']||null;
-  document.getElementById('opsPhotoPreviewWrap').innerHTML=pendingOpsPhotoDataUrl?`<img src="${pendingOpsPhotoDataUrl}" style="max-width:100%;border-radius:8px;max-height:160px">`:'';
-  document.getElementById('opsReportModalOverlay').dataset.row=rowNum;
-  document.getElementById('opsReportModalOverlay').style.display='flex';
-}
-
-function closeOpsReportModal(){document.getElementById('opsReportModalOverlay').style.display='none';}
-document.getElementById('opsReportModalOverlay').addEventListener('click',e=>{if(e.target.id==='opsReportModalOverlay')closeOpsReportModal();});
-
-async function saveOpsReport(){
-  if(!getSession()){showError('انتهت الجلسة.','opsreport');closeOpsReportModal();return;}
-  const errDiv=document.getElementById('opsReportFormError'),btn=document.getElementById('opsReportSaveBtn');
+async function saveFurnitureItem(){
+  if(!getSession()){showError('انتهت الجلسة.','opsreport');closeAddFurnitureItemModal();return;}
+  const errDiv=document.getElementById('furnitureItemFormError'),btn=document.getElementById('furnitureItemSaveBtn');
   errDiv.style.display='none';
-  const rowNum=document.getElementById('opsReportModalOverlay').dataset.row;
-  const typeKey=document.getElementById('opsTypeInput').value;
-  const type=OPS_REPORT_TYPES[typeKey];
-
+  const cat=furnitureCategories.categories.find(c=>c.key===currentFurnitureCategoryKey);
+  const qty=parseInt(document.getElementById('furnitureQtyInput').value,10)||1;
+  if(!pendingFurniturePhoto){errDiv.textContent='محتاج ترفق صورة القطعة.';errDiv.style.display='block';return;}
   const payload={
-    'Report Type': type.label,
-    'Section': type.section,
-    'Note': document.getElementById('opsNoteInput').value.trim(),
-    'Photo': pendingOpsPhotoDataUrl||''
+    'Floor':selectedFurnitureFloor,
+    'Category':cat.label,
+    'Subcategory':currentFurnitureSubcat||'',
+    'Quantity':qty,
+    'Photo':pendingFurniturePhoto
   };
-  document.querySelectorAll('.ops-item-input').forEach(input=>{
-    const idx=input.dataset.idx;
-    const item=type.items[idx-1];
-    payload[`Item${idx} Label`]=item.label;
-    payload[`Item${idx} Total`]=item.total||'';
-    payload[`Item${idx} Value`]=input.value.trim();
-  });
-  // ✅ نفضّي أي خانات بنود مش مستخدمة (لو النوع الجديد عنده بنود أقل من القديم وقت التعديل)
-  for(let i=type.items.length+1;i<=3;i++){
-    payload[`Item${i} Label`]='';payload[`Item${i} Total`]='';payload[`Item${i} Value`]='';
-  }
-
-  const isEdit=rowNum&&rowNum!=='';
-  if(isEdit)payload['_row']=parseInt(rowNum,10);
-  closeOpsReportModal();
+  closeAddFurnitureItemModal();
   btn.disabled=true;
-  callScriptGeneric(isEdit?'editOpsReport':'addOpsReport',payload,()=>loadOpsReportData(true))
-    .then(()=>showSuccess(isEdit?'تم تحديث التقرير.':'تمت إضافة التقرير.','opsreport'))
-    .catch(ex=>showError('فشل الحفظ: '+ex.message,'opsreport'))
+  callScriptGeneric('addFurnitureItem',payload,async()=>{
+    await loadFurnitureData(true);
+    await loadFurnitureItemsForCurrentSelection();
+    renderFurnitureCategoryGrid();
+  }).then(()=>showSuccess('تمت الإضافة.','opsreport'))
+    .catch(ex=>showError('فشلت الإضافة: '+ex.message,'opsreport'))
     .finally(()=>{btn.disabled=false;});
 }
 
-let deleteOpsReportTargetRow=null;
-function openDeleteOpsReportModal(rowNum){
-  deleteOpsReportTargetRow=rowNum;
-  document.getElementById('deleteOpsReportModalOverlay').style.display='flex';
+function openDeleteFurnitureItemModal(rowNum){
+  deleteFurnitureItemTargetRow=rowNum;
+  document.getElementById('deleteFurnitureItemModalOverlay').style.display='flex';
 }
-function closeDeleteOpsReportModal(){document.getElementById('deleteOpsReportModalOverlay').style.display='none';deleteOpsReportTargetRow=null;}
-document.getElementById('deleteOpsReportModalOverlay').addEventListener('click',e=>{if(e.target.id==='deleteOpsReportModalOverlay')closeDeleteOpsReportModal();});
+function closeDeleteFurnitureItemModal(){document.getElementById('deleteFurnitureItemModalOverlay').style.display='none';deleteFurnitureItemTargetRow=null;}
+document.getElementById('deleteFurnitureItemModalOverlay').addEventListener('click',e=>{if(e.target.id==='deleteFurnitureItemModalOverlay')closeDeleteFurnitureItemModal();});
 
-async function confirmDeleteOpsReport(){
-  if(!deleteOpsReportTargetRow||!getSession()){closeDeleteOpsReportModal();return;}
-  const rowNum=deleteOpsReportTargetRow;
-  closeDeleteOpsReportModal();
-  callScriptGeneric('deleteOpsReport',{'_row':rowNum},()=>loadOpsReportData(true))
-    .then(()=>showSuccess('تم حذف التقرير.','opsreport'))
+async function confirmDeleteFurnitureItem(){
+  if(!deleteFurnitureItemTargetRow||!getSession()){closeDeleteFurnitureItemModal();return;}
+  const rowNum=deleteFurnitureItemTargetRow;
+  closeDeleteFurnitureItemModal();
+  callScriptGeneric('deleteFurnitureItem',{'_row':rowNum},async()=>{
+    await loadFurnitureData(true);
+    await loadFurnitureItemsForCurrentSelection();
+    renderFurnitureCategoryGrid();
+  }).then(()=>showSuccess('تم الحذف.','opsreport'))
     .catch(ex=>showError('فشل الحذف: '+ex.message,'opsreport'));
 }
+
+// ── إضافة نوع/تصنيف فرعي جديد ──
+let addingFurnitureSubcategory=false;
+function openAddFurnitureCategoryModal(forSubcategory){
+  addingFurnitureSubcategory=!!forSubcategory;
+  document.getElementById('addFurnitureCategoryTitle').textContent=addingFurnitureSubcategory?'إضافة نوع كرسي جديد':'إضافة نوع جديد';
+  document.getElementById('addFurnitureCategoryFormError').style.display='none';
+  document.getElementById('newFurnitureCategoryName').value='';
+  document.getElementById('addFurnitureCategoryModalOverlay').style.display='flex';
+}
+function closeAddFurnitureCategoryModal(){document.getElementById('addFurnitureCategoryModalOverlay').style.display='none';}
+document.getElementById('addFurnitureCategoryModalOverlay').addEventListener('click',e=>{if(e.target.id==='addFurnitureCategoryModalOverlay')closeAddFurnitureCategoryModal();});
+
+async function saveNewFurnitureCategory(){
+  const errDiv=document.getElementById('addFurnitureCategoryFormError');
+  errDiv.style.display='none';
+  const name=document.getElementById('newFurnitureCategoryName').value.trim();
+  if(!name){errDiv.textContent='اكتب الاسم الأول.';errDiv.style.display='block';return;}
+
+  const newConfig=JSON.parse(JSON.stringify(furnitureCategories));
+  if(addingFurnitureSubcategory){
+    const cat=newConfig.categories.find(c=>c.key===currentFurnitureCategoryKey);
+    if(!cat)return;
+    if(!cat.subcategories)cat.subcategories=[];
+    if(!cat.subcategories.includes(name))cat.subcategories.push(name);
+  }else{
+    const key=name.replace(/\s+/g,'_')+'_'+Date.now();
+    newConfig.categories.push({key,label:name,subcategories:[]});
+  }
+
+  closeAddFurnitureCategoryModal();
+  try{
+    await fetch(APPS_SCRIPT_URL,{
+      method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'updateFurnitureCategories',data:newConfig})
+    });
+    await new Promise(r=>setTimeout(r,600));
+    furnitureCategories=newConfig;
+    renderFurnitureCategoryGrid();
+    if(addingFurnitureSubcategory)renderFurnitureSubTabs();
+    showSuccess('تمت الإضافة.','opsreport');
+  }catch(ex){
+    showError('فشلت الإضافة: '+ex.message,'opsreport');
+  }
+}
+
 
 
 function populateViolationFilters(){
@@ -3766,7 +3761,7 @@ function showView(view){
     buildSalaryDateSelector();
   }
   if(view==='lateness'&&latenessData.length===0)loadLatenessData();
-  if(view==='opsreport'&&opsReportData.length===0)loadOpsReportData();
+  if(view==='opsreport')loadFurnitureData();
 }
 
 function bannerIds(scope){
