@@ -1041,18 +1041,18 @@
 <!-- DELETE LATENESS MODAL -->
 <div class="modal-overlay" id="deleteLatenessModalOverlay"><div class="modal-card delete-modal-card"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete lateness record</span><button class="modal-close" onclick="closeDeleteLatenessModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>Are you sure?</h3><p>You're about to permanently delete this lateness record for <span class="delete-name-highlight" id="deleteLatenessName">this entry</span>. This cannot be undone.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteLatenessModal()">Cancel</button><button type="button" class="btn-confirm-delete" id="deleteLatenessConfirmBtn" onclick="confirmDeleteLateness()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button></div></div></div>
 
-<!-- ADD FURNITURE ITEM MODAL (قطعة واحدة + صورة واحدة) -->
-<div class="modal-overlay" id="furnitureItemModalOverlay"><div class="modal-card ops-ar"><div class="modal-header"><span class="modal-title">إضافة قطعة</span><button class="modal-close" onclick="closeAddFurnitureItemModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<!-- ADD FURNITURE ITEM MODAL (كل صورة = قطعة) -->
+<div class="modal-overlay" id="furnitureItemModalOverlay"><div class="modal-card ops-ar"><div class="modal-header"><span class="modal-title">إضافة قطع</span><button class="modal-close" onclick="closeAddFurnitureItemModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
 <div class="modal-body">
   <div class="form-error" id="furnitureItemFormError"></div>
-  <p style="font-size:12.5px;color:var(--text-1);margin-bottom:1rem">هتضيف قطعة واحدة (أو أكتر لو نفس الشكل) لـ <b id="furnitureItemContext" style="color:var(--text-0)">—</b></p>
-  <div class="form-group"><label>الكمية</label><input type="number" id="furnitureQtyInput" class="form-control" value="1" min="1"></div>
+  <p style="font-size:12.5px;color:var(--text-1);margin-bottom:1rem">اختار صورة لكل قطعة لـ <b id="furnitureItemContext" style="color:var(--text-0)">—</b> — كل صورة هتتحسب كقطعة واحدة (تقدر تختار كذا صورة مرة واحدة)</p>
   <div class="form-group">
-    <label>صورة القطعة</label>
+    <label>صور القطع</label>
     <div id="furnitureItemPhotoPreview" style="margin-bottom:8px"></div>
-    <input type="file" id="furnitureItemPhotoInput" accept="image/*" style="display:none" onchange="handleFurnitureItemPhotoSelect(event)">
-    <button type="button" class="btn-ghost" onclick="document.getElementById('furnitureItemPhotoInput').click()">اختار صورة</button>
+    <input type="file" id="furnitureItemPhotoInput" accept="image/*" multiple style="display:none" onchange="handleFurnitureItemPhotoSelect(event)">
+    <button type="button" class="btn-ghost" onclick="document.getElementById('furnitureItemPhotoInput').click()">إضافة صور</button>
   </div>
+  <div id="furnitureItemCountLabel" style="font-size:13px;color:var(--signal);font-weight:700;margin-top:6px"></div>
 </div>
 <div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeAddFurnitureItemModal()">إلغاء</button><button type="button" class="btn-primary" id="furnitureItemSaveBtn" onclick="saveFurnitureItem()">حفظ</button></div>
 </div></div>
@@ -1099,7 +1099,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzfy6Dp3R_xR1ngWUgD6QrstygV0YPs4f_D040m0B2GLZswcug2WhE6gPEhDRkA0shFIA/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwo69LiLcwyJWmftNUBMr1brq72-0aNUlxSc-3ovm_KxFdHMtqTDB-ejiD025xjcyYD8Q/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -2401,7 +2401,7 @@ let furnitureCategories={floors:[],categories:[]};
 let furnitureSummary=[];
 let selectedFurnitureFloor=null;
 let currentFurnitureCategoryKey=null, currentFurnitureSubcat=null;
-let pendingFurniturePhoto=null;
+let pendingFurniturePhotos=[];
 let furnitureItemsCache=[];
 let deleteFurnitureItemTargetRow=null;
 
@@ -2591,9 +2591,9 @@ function openAddFurnitureItemModal(){
   const cat=furnitureCategories.categories.find(c=>c.key===currentFurnitureCategoryKey);
   if(!cat)return;
   document.getElementById('furnitureItemFormError').style.display='none';
-  document.getElementById('furnitureQtyInput').value='1';
   document.getElementById('furnitureItemPhotoPreview').innerHTML='';
-  pendingFurniturePhoto=null;
+  pendingFurniturePhotos=[];
+  updateFurnitureItemCountLabel();
   const ctx=cat.label+(currentFurnitureSubcat?' — '+currentFurnitureSubcat:'');
   document.getElementById('furnitureItemContext').textContent=ctx;
   document.getElementById('furnitureItemModalOverlay').style.display='flex';
@@ -2602,24 +2602,47 @@ function closeAddFurnitureItemModal(){document.getElementById('furnitureItemModa
 document.getElementById('furnitureItemModalOverlay').addEventListener('click',e=>{if(e.target.id==='furnitureItemModalOverlay')closeAddFurnitureItemModal();});
 
 function handleFurnitureItemPhotoSelect(event){
-  const file=event.target.files&&event.target.files[0];
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const img=new Image();
-    img.onload=()=>{
-      const maxDim=420;
-      const scale=Math.min(1,maxDim/Math.max(img.width,img.height));
-      const w=img.width*scale,h=img.height*scale;
-      const canvas=document.createElement('canvas');
-      canvas.width=w;canvas.height=h;
-      canvas.getContext('2d').drawImage(img,0,0,w,h);
-      pendingFurniturePhoto=canvas.toDataURL('image/jpeg',0.6);
-      document.getElementById('furnitureItemPhotoPreview').innerHTML=`<img src="${pendingFurniturePhoto}" style="max-width:100%;border-radius:8px;max-height:160px">`;
+  const files=event.target.files;
+  if(!files||!files.length)return;
+  [...files].forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const maxDim=420;
+        const scale=Math.min(1,maxDim/Math.max(img.width,img.height));
+        const w=img.width*scale,h=img.height*scale;
+        const canvas=document.createElement('canvas');
+        canvas.width=w;canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        pendingFurniturePhotos.push(canvas.toDataURL('image/jpeg',0.6));
+        renderFurnitureItemPhotoPreview();
+      };
+      img.src=e.target.result;
     };
-    img.src=e.target.result;
-  };
-  reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
+  });
+  event.target.value='';
+}
+
+function removePendingFurniturePhoto(idx){
+  pendingFurniturePhotos.splice(idx,1);
+  renderFurnitureItemPhotoPreview();
+}
+
+function renderFurnitureItemPhotoPreview(){
+  const wrap=document.getElementById('furnitureItemPhotoPreview');
+  wrap.innerHTML=pendingFurniturePhotos.length?`<div style="display:flex;flex-wrap:wrap;gap:8px">${pendingFurniturePhotos.map((p,idx)=>`
+    <div style="position:relative;width:72px;height:72px">
+      <img src="${p}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">
+      <button type="button" onclick="removePendingFurniturePhoto(${idx})" style="position:absolute;top:-6px;left:-6px;width:18px;height:18px;border-radius:50%;background:var(--bad);color:#fff;border:none;cursor:pointer;font-size:11px;line-height:1">×</button>
+    </div>`).join('')}</div>`:'';
+  updateFurnitureItemCountLabel();
+}
+
+function updateFurnitureItemCountLabel(){
+  const label=document.getElementById('furnitureItemCountLabel');
+  label.textContent=pendingFurniturePhotos.length?`هيتسجل ${pendingFurniturePhotos.length} قطعة`:'';
 }
 
 async function saveFurnitureItem(){
@@ -2627,14 +2650,12 @@ async function saveFurnitureItem(){
   const errDiv=document.getElementById('furnitureItemFormError'),btn=document.getElementById('furnitureItemSaveBtn');
   errDiv.style.display='none';
   const cat=furnitureCategories.categories.find(c=>c.key===currentFurnitureCategoryKey);
-  const qty=parseInt(document.getElementById('furnitureQtyInput').value,10)||1;
-  if(!pendingFurniturePhoto){errDiv.textContent='محتاج ترفق صورة القطعة.';errDiv.style.display='block';return;}
+  if(!pendingFurniturePhotos.length){errDiv.textContent='محتاج ترفق صورة واحدة على الأقل.';errDiv.style.display='block';return;}
   const payload={
     'Floor':selectedFurnitureFloor,
     'Category':cat.label,
     'Subcategory':currentFurnitureSubcat||'',
-    'Quantity':qty,
-    'Photo':pendingFurniturePhoto
+    'Photos':pendingFurniturePhotos
   };
   closeAddFurnitureItemModal();
   btn.disabled=true;
