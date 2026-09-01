@@ -2477,13 +2477,14 @@ function closeFurnitureDrawer(){
 function renderFurnitureSubTabs(){
   const cat=furnitureCategories.categories.find(c=>c.key===currentFurnitureCategoryKey);
   const wrap=document.getElementById('furnitureSubTabs');
-  if(!cat||!cat.subcategories||!cat.subcategories.length){wrap.innerHTML='';return;}
-  const chips=['__all__',...cat.subcategories];
+  if(!cat){wrap.innerHTML='';return;}
+  const subs=cat.subcategories||[];
+  const chips=['__all__',...subs];
   wrap.innerHTML=chips.map(sc=>{
     const label=sc==='__all__'?'الكل':sc;
     const active=(currentFurnitureSubcat===null&&sc==='__all__')||currentFurnitureSubcat===sc;
     return `<button type="button" class="filter-chip${active?' active':''}" onclick="selectFurnitureSubcat('${sc==='__all__'?'':esc(sc)}')">${esc(label)}</button>`;
-  }).join('')+`<button type="button" class="filter-chip" onclick="openAddFurnitureCategoryModal(true)">+ نوع كرسي جديد</button>`;
+  }).join('')+`<button type="button" class="filter-chip" onclick="openAddFurnitureCategoryModal(true)">+ نوع ${esc(cat.label)} جديد</button>`;
 }
 
 function selectFurnitureSubcat(sc){
