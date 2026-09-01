@@ -934,6 +934,7 @@
       <div class="toolbar">
         <button class="btn-ghost" onclick="loadFurnitureData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>تحديث</button>
         <button class="btn-ghost" onclick="openAddFurnitureCategoryModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>إضافة نوع جديد</button>
+        <button class="btn-primary" onclick="openFurnitureTotalsModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18.7 8 13 13.7l-3-3L5 16.4"/></svg>إجمالي كل الموقع</button>
       </div>
 
       <div class="loading" id="opsReportLoadingState"><div class="spinner"></div>جاري تحميل البيانات...</div>
@@ -1058,6 +1059,11 @@
 
 <!-- DELETE FURNITURE ITEM MODAL -->
 <div class="modal-overlay" id="deleteFurnitureItemModalOverlay"><div class="modal-card delete-modal-card ops-ar"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">حذف القطعة</span><button class="modal-close" onclick="closeDeleteFurnitureItemModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>متأكد؟</h3><p>هيتم حذف القطعة دي وصورتها نهائيًا.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteFurnitureItemModal()">إلغاء</button><button type="button" class="btn-confirm-delete" onclick="confirmDeleteFurnitureItem()">حذف</button></div></div></div>
+
+<!-- FURNITURE TOTALS SUMMARY MODAL -->
+<div class="modal-overlay" id="furnitureTotalsModalOverlay"><div class="modal-card ops-ar" style="max-width:560px"><div class="modal-header"><span class="modal-title">إجمالي كل الموقع</span><button class="modal-close" onclick="closeFurnitureTotalsModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<div class="modal-body" id="furnitureTotalsBody" style="max-height:70vh;overflow-y:auto"></div>
+</div></div>
 
 <!-- ADD FURNITURE CATEGORY / SUBCATEGORY MODAL -->
 <div class="modal-overlay" id="addFurnitureCategoryModalOverlay"><div class="modal-card ops-ar"><div class="modal-header"><span class="modal-title" id="addFurnitureCategoryTitle">إضافة نوع جديد</span><button class="modal-close" onclick="closeAddFurnitureCategoryModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
@@ -2455,6 +2461,40 @@ function renderFurnitureCategoryGrid(){
     </div>`;
   }).join('');
 }
+
+// ── إجمالي كل الموقع (كل الأدوار مع بعض) ──
+function openFurnitureTotalsModal(){
+  const body=document.getElementById('furnitureTotalsBody');
+  body.innerHTML=furnitureCategories.categories.map(cat=>{
+    const grandTotal=furnitureSummary.filter(r=>r.Category===cat.label).reduce((s,r)=>s+(Number(r.Quantity)||0),0);
+    let subRows='';
+    if(cat.subcategories&&cat.subcategories.length){
+      subRows=cat.subcategories.map(sc=>{
+        const scTotal=furnitureSummary.filter(r=>r.Category===cat.label&&r.Subcategory===sc).reduce((s,r)=>s+(Number(r.Quantity)||0),0);
+        return `<div style="display:flex;justify-content:space-between;padding:5px 0 5px 16px;font-size:13px;color:var(--text-1);border-bottom:1px solid var(--line-soft)">
+          <span>${esc(sc)}</span><span class="mono" style="font-weight:700">${scTotal}</span>
+        </div>`;
+      }).join('');
+      // ✅ لو فيه قطع مسجلة من غير نوع فرعي محدد، اعرضهم برضو
+      const noSubTotal=furnitureSummary.filter(r=>r.Category===cat.label&&!r.Subcategory).reduce((s,r)=>s+(Number(r.Quantity)||0),0);
+      if(noSubTotal>0){
+        subRows+=`<div style="display:flex;justify-content:space-between;padding:5px 0 5px 16px;font-size:13px;color:var(--text-2);border-bottom:1px solid var(--line-soft)">
+          <span>بدون تصنيف فرعي</span><span class="mono" style="font-weight:700">${noSubTotal}</span>
+        </div>`;
+      }
+    }
+    return `<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-family:'Cairo',sans-serif">
+        <span style="font-size:15px;font-weight:700;color:var(--text-0)">${esc(cat.label)}</span>
+        <span class="mono" style="font-size:18px;font-weight:800;color:var(--signal)">${grandTotal}</span>
+      </div>
+      ${subRows}
+    </div>`;
+  }).join('');
+  document.getElementById('furnitureTotalsModalOverlay').style.display='flex';
+}
+function closeFurnitureTotalsModal(){document.getElementById('furnitureTotalsModalOverlay').style.display='none';}
+document.getElementById('furnitureTotalsModalOverlay').addEventListener('click',e=>{if(e.target.id==='furnitureTotalsModalOverlay')closeFurnitureTotalsModal();});
 
 // ── معرض قسم واحد ──
 function openFurnitureCategory(catKey){
