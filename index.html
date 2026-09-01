@@ -2523,8 +2523,32 @@ function renderFurnitureSubTabs(){
   wrap.innerHTML=chips.map(sc=>{
     const label=sc==='__all__'?'الكل':sc;
     const active=(currentFurnitureSubcat===null&&sc==='__all__')||currentFurnitureSubcat===sc;
-    return `<button type="button" class="filter-chip${active?' active':''}" onclick="selectFurnitureSubcat('${sc==='__all__'?'':esc(sc)}')">${esc(label)}</button>`;
+    const removeBtn=sc==='__all__'?'':`<span onclick="event.stopPropagation();removeFurnitureSubcategory('${esc(sc)}')" style="margin-right:6px;color:${active?'#04181d':'var(--bad)'};cursor:pointer;font-weight:900">×</span>`;
+    return `<button type="button" class="filter-chip${active?' active':''}" onclick="selectFurnitureSubcat('${sc==='__all__'?'':esc(sc)}')">${esc(label)}${removeBtn}</button>`;
   }).join('')+`<button type="button" class="filter-chip" onclick="openAddFurnitureCategoryModal(true)">+ نوع ${esc(cat.label)} جديد</button>`;
+}
+
+async function removeFurnitureSubcategory(subName){
+  if(!confirm(`متأكد إنك عايز تشيل "${subName}"؟ (القطع اللي اتسجلت تحته هتفضل موجودة بس مش هتتصنف تحته تاني)`))return;
+  const newConfig=JSON.parse(JSON.stringify(furnitureCategories));
+  const cat=newConfig.categories.find(c=>c.key===currentFurnitureCategoryKey);
+  if(!cat||!cat.subcategories)return;
+  cat.subcategories=cat.subcategories.filter(s=>s!==subName);
+  try{
+    await fetch(APPS_SCRIPT_URL,{
+      method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'updateFurnitureCategories',data:newConfig})
+    });
+    await new Promise(r=>setTimeout(r,600));
+    furnitureCategories=newConfig;
+    if(currentFurnitureSubcat===subName)currentFurnitureSubcat=null;
+    renderFurnitureSubTabs();
+    loadFurnitureItemsForCurrentSelection();
+    showSuccess('تم الحذف.','opsreport');
+  }catch(ex){
+    showError('فشل الحذف: '+ex.message,'opsreport');
+  }
 }
 
 function selectFurnitureSubcat(sc){
