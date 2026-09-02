@@ -1099,7 +1099,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwo69LiLcwyJWmftNUBMr1brq72-0aNUlxSc-3ovm_KxFdHMtqTDB-ejiD025xjcyYD8Q/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwZ45OBW5J5DOHfoeTR6I-4kI59Z3M4T4FwTA5YUW2zOP6KqkUUpudvz5HKC7AfhJyjzg/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -3364,8 +3364,8 @@ function renderStFatimaReport(rows, date) {
   const inStFatima = r => getSiteForLocation((r.location||'').toLowerCase()) === 'st_fatima';
   const sfRowsAll = rows.filter(inStFatima).filter(r => !ybkIsWLA(r.deviceNo) && !ybkIsQTC(r.deviceNo));
 
-  // ✅ Total = كل اللي معاهم يوبيكي حقيقي، بغض النظر عن حالة اليوم ده (زي AVP/Mapping)
-  const withYubikey = sfRowsAll.filter(r => String(r.yubikey || '').trim().includes('@'));
+  // ✅ Total = كل اللي معاهم يوبيكي حقيقي واسم فعلي مسجل (مش صف بدون اسم)
+  const withYubikey = sfRowsAll.filter(r => String(r.yubikey || '').trim().includes('@') && String(r.name || '').trim() !== '');
   const total = withYubikey.length;
 
   let withLabelersCount=0, absentLabelersCount=0, trainingCount=0, emptyCount=0;
