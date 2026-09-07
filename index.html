@@ -444,6 +444,10 @@
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span class="tab-label-full" style="font-family:'Cairo',sans-serif">تقرير العمليات</span>
       </button>
+      <button class="nav-tab" id="tabItTicketsBtn" onclick="showView('itTickets')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M9 7v10"/><path d="M15 7v10"/></svg>
+        <span class="tab-label-full">IT Ticket Support</span>
+      </button>
       <button class="nav-tab" id="tabSheetsBtn" onclick="showView('sheets')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         <span class="tab-label-full">Sheets</span>
@@ -965,6 +969,27 @@
       </div>
     </div>
 
+    <!-- IT TICKET SUPPORT VIEW -->
+    <div id="itTicketsView" style="display:none">
+      <div class="error-banner" id="itTicketsErrorBanner"></div>
+      <div class="success-banner" id="itTicketsSuccessBanner"></div>
+      <div class="toolbar">
+        <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="itTicketsSearchInput" placeholder="Search by PC number or issue..." oninput="renderItTicketsTable()"></div>
+        <select id="itTicketsStatusFilter" onchange="renderItTicketsTable()"><option value="">All statuses</option><option value="Solved">Solved</option><option value="Not Solved">Not Solved</option></select>
+        <button class="btn-ghost" onclick="loadItTicketsData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
+        <button class="btn-primary" onclick="openAddItTicketModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Ticket</button>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><span class="table-title">IT Tickets</span><span class="table-count" id="itTicketsRowCount">—</span></div>
+        <div class="table-wrap">
+          <div class="loading" id="itTicketsLoadingState"><div class="spinner"></div>Loading tickets...</div>
+          <table id="itTicketsTable" style="display:none"><thead><tr><th>Date</th><th>PC Number</th><th>Project</th><th>Floor</th><th>Issue</th><th>Shift</th><th>Operations Name</th><th>Status</th><th class="no-sort"></th></tr></thead><tbody id="itTicketsTableBody"></tbody></table>
+          <div class="empty" id="itTicketsEmptyState" style="display:none"><div>No tickets found</div></div>
+        </div>
+        <div class="table-footer"><span id="itTicketsFooterInfo">—</span><span id="itTicketsFooterTime">—</span></div>
+      </div>
+    </div>
+
     <!-- SHEETS VIEW -->
     <div id="sheetsView" style="display:none">
       <div class="sheets-toolbar"><div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="sheetsSearchInput" placeholder="Search sheets and forms..." oninput="renderSheets()"></div></div>
@@ -1066,6 +1091,22 @@
 <!-- DELETE FURNITURE ITEM MODAL -->
 <div class="modal-overlay" id="deleteFurnitureItemModalOverlay"><div class="modal-card delete-modal-card ops-ar"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">حذف القطعة</span><button class="modal-close" onclick="closeDeleteFurnitureItemModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>متأكد؟</h3><p>هيتم حذف القطعة دي وصورتها نهائيًا.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteFurnitureItemModal()">إلغاء</button><button type="button" class="btn-confirm-delete" onclick="confirmDeleteFurnitureItem()">حذف</button></div></div></div>
 
+<!-- ADD/EDIT IT TICKET MODAL -->
+<div class="modal-overlay" id="itTicketModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title" id="itTicketModalTitle">New Ticket</span><button class="modal-close" onclick="closeItTicketModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<div class="modal-body">
+  <div class="form-error" id="itTicketFormError"></div>
+  <div class="form-row"><div class="form-group"><label>PC Number</label><input type="text" id="itPcNumberInput" class="form-control" placeholder="e.g. PC-C2-14" required></div><div class="form-group"><label>Project</label><input type="text" id="itProjectInput" class="form-control"></div></div>
+  <div class="form-row"><div class="form-group"><label>Floor</label><input type="text" id="itFloorInput" class="form-control"></div><div class="form-group"><label>Shift</label><input type="text" id="itShiftInput" class="form-control"></div></div>
+  <div class="form-group"><label>Issue</label><input type="text" id="itIssueInput" class="form-control" placeholder="e.g. Network cable not working" required></div>
+  <div class="form-group"><label>Operations Name</label><input type="text" id="itOpsNameInput" class="form-control" placeholder="Your name"></div>
+  <div class="form-group"><label>Status</label><select id="itStatusInput" class="form-control"><option value="Not Solved">Not Solved</option><option value="Solved">Solved</option></select></div>
+</div>
+<div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeItTicketModal()">Cancel</button><button type="button" class="btn-primary" id="itTicketSaveBtn" onclick="saveItTicket()">Save</button></div>
+</div></div>
+
+<!-- DELETE IT TICKET MODAL -->
+<div class="modal-overlay" id="deleteItTicketModalOverlay"><div class="modal-card delete-modal-card"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete ticket</span><button class="modal-close" onclick="closeDeleteItTicketModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>Are you sure?</h3><p>This ticket will be permanently deleted.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteItTicketModal()">Cancel</button><button type="button" class="btn-confirm-delete" onclick="confirmDeleteItTicket()">Delete</button></div></div></div>
+
 <!-- FURNITURE TOTALS SUMMARY MODAL -->
 <div class="modal-overlay" id="furnitureTotalsModalOverlay"><div class="modal-card ops-ar" style="max-width:560px"><div class="modal-header"><span class="modal-title">إجمالي كل الموقع</span><button class="modal-close" onclick="closeFurnitureTotalsModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
 <div class="modal-body" id="furnitureTotalsBody" style="max-height:70vh;overflow-y:auto"></div>
@@ -1105,7 +1146,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwZ45OBW5J5DOHfoeTR6I-4kI59Z3M4T4FwTA5YUW2zOP6KqkUUpudvz5HKC7AfhJyjzg/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxPl6uG3e5c6dqbP7JQWm9Lms-RbyEddanPW93CKwaQCiwAlgAZL1njiHBvMzVVhVLLqA/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1184,7 +1225,7 @@ function loadNightGtCache() {
 
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
-let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[], latenessData=[];
+let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[], latenessData=[], itTicketsData=[];
 let sortCol='', sortAsc=true, pollTimer=null, session=null, isSyncing=false;
 let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null;
 
@@ -2400,6 +2441,129 @@ async function confirmDeleteLateness(){
   callScriptGeneric('deleteLateness',{'_row':rowNum},()=>loadLatenessData(true))
     .then(()=>showSuccess('Lateness record deleted.','lateness'))
     .catch(ex=>showError('Delete failed: '+ex.message,'lateness'));
+}
+
+// ── IT Ticket Support ──
+async function loadItTicketsData(forceRefresh=false){
+  if(!getSession())return;
+  document.getElementById('itTicketsLoadingState').style.display=(itTicketsData.length>0)?'none':'block';
+  document.getElementById('itTicketsErrorBanner').style.display='none';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=itTickets'+(forceRefresh?'&force=1':''));
+    if(!res.ok)throw new Error('Failed to fetch tickets');
+    const json=await res.json();
+    if(json.error)throw new Error(json.error);
+    itTicketsData=json.itTickets||[];
+    renderItTicketsTable();
+  }catch(ex){
+    document.getElementById('itTicketsLoadingState').style.display='none';
+    if(!itTicketsData.length){const b=document.getElementById('itTicketsErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;}
+  }
+}
+
+function renderItTicketsTable(){
+  const search=(document.getElementById('itTicketsSearchInput').value||'').toLowerCase();
+  const statusFilter=document.getElementById('itTicketsStatusFilter').value;
+  const data=[...itTicketsData].filter(r=>{
+    const ms=!search||(r['PC Number']||'').toLowerCase().includes(search)||(r['Issue']||'').toLowerCase().includes(search);
+    const mst=!statusFilter||(r['Status']||'Not Solved')===statusFilter;
+    return ms&&mst;
+  }).sort((a,b)=>(b['Timestamp']||'').localeCompare(a['Timestamp']||''));
+
+  document.getElementById('itTicketsLoadingState').style.display='none';
+  document.getElementById('itTicketsRowCount').textContent=data.length+' tickets';
+  document.getElementById('itTicketsFooterInfo').textContent=`Showing ${data.length} of ${itTicketsData.length} tickets`;
+  document.getElementById('itTicketsFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!data.length){
+    document.getElementById('itTicketsTable').style.display='none';
+    document.getElementById('itTicketsEmptyState').style.display='block';
+    return;
+  }
+  document.getElementById('itTicketsEmptyState').style.display='none';
+  document.getElementById('itTicketsTable').style.display='table';
+  document.getElementById('itTicketsTableBody').innerHTML=data.map(r=>{
+    const solved=(r['Status']||'Not Solved')==='Solved';
+    const statusBadge=solved?'<span class="badge badge-active">Solved</span>':'<span class="badge badge-resigned">Not Solved</span>';
+    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Timestamp']||'—')}</td><td style="font-weight:600" class="mono">${esc(r['PC Number']||'—')}</td><td>${esc(r['Project']||'—')}</td><td style="color:var(--text-1)">${esc(r['Floor']||'—')}</td><td style="color:var(--text-1)">${esc(r['Issue']||'—')}</td><td><span class="badge badge-shift">${esc(r['Shift']||'—')}</span></td><td style="color:var(--text-1)">${esc(r['Operations Name']||'—')}</td><td>${statusBadge}</td><td><div class="action-cell"><button class="icon-btn" title="Toggle status" onclick="toggleItTicketStatus(${r['_row']},'${solved?'Not Solved':'Solved'}')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></button><button class="icon-btn" title="Edit" onclick="openEditItTicketModal(${r['_row']})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-btn danger" title="Delete" onclick="openDeleteItTicketModal(${r['_row']})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div></td></tr>`;
+  }).join('');
+}
+
+function openAddItTicketModal(){
+  document.getElementById('itTicketModalTitle').textContent='New Ticket';
+  document.getElementById('itTicketFormError').style.display='none';
+  ['itPcNumberInput','itProjectInput','itFloorInput','itShiftInput','itIssueInput','itOpsNameInput'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('itStatusInput').value='Not Solved';
+  document.getElementById('itTicketModalOverlay').dataset.row='';
+  document.getElementById('itTicketModalOverlay').style.display='flex';
+}
+
+function openEditItTicketModal(rowNum){
+  const rec=itTicketsData.find(r=>r['_row']===rowNum);
+  if(!rec)return;
+  document.getElementById('itTicketModalTitle').textContent='Edit Ticket';
+  document.getElementById('itTicketFormError').style.display='none';
+  document.getElementById('itPcNumberInput').value=rec['PC Number']||'';
+  document.getElementById('itProjectInput').value=rec['Project']||'';
+  document.getElementById('itFloorInput').value=rec['Floor']||'';
+  document.getElementById('itShiftInput').value=rec['Shift']||'';
+  document.getElementById('itIssueInput').value=rec['Issue']||'';
+  document.getElementById('itOpsNameInput').value=rec['Operations Name']||'';
+  document.getElementById('itStatusInput').value=rec['Status']||'Not Solved';
+  document.getElementById('itTicketModalOverlay').dataset.row=rowNum;
+  document.getElementById('itTicketModalOverlay').style.display='flex';
+}
+
+function closeItTicketModal(){document.getElementById('itTicketModalOverlay').style.display='none';}
+document.getElementById('itTicketModalOverlay').addEventListener('click',e=>{if(e.target.id==='itTicketModalOverlay')closeItTicketModal();});
+
+async function saveItTicket(){
+  if(!getSession()){showError('Session expired.','ittickets');closeItTicketModal();return;}
+  const errDiv=document.getElementById('itTicketFormError'),btn=document.getElementById('itTicketSaveBtn');
+  errDiv.style.display='none';
+  const rowNum=document.getElementById('itTicketModalOverlay').dataset.row;
+  const payload={
+    'PC Number':document.getElementById('itPcNumberInput').value.trim(),
+    'Project':document.getElementById('itProjectInput').value.trim(),
+    'Floor':document.getElementById('itFloorInput').value.trim(),
+    'Issue':document.getElementById('itIssueInput').value.trim(),
+    'Shift':document.getElementById('itShiftInput').value.trim(),
+    'Operations Name':document.getElementById('itOpsNameInput').value.trim(),
+    'Status':document.getElementById('itStatusInput').value
+  };
+  if(!payload['PC Number']||!payload['Issue']){errDiv.textContent='PC Number and Issue are required.';errDiv.style.display='block';return;}
+  const isEdit=rowNum&&rowNum!=='';
+  if(isEdit)payload['_row']=parseInt(rowNum,10);
+  closeItTicketModal();
+  btn.disabled=true;
+  callScriptGeneric(isEdit?'editItTicket':'addItTicket',payload,()=>loadItTicketsData(true))
+    .then(()=>showSuccess(isEdit?'Ticket updated.':'Ticket created.','ittickets'))
+    .catch(ex=>showError('Save failed: '+ex.message,'ittickets'))
+    .finally(()=>{btn.disabled=false;});
+}
+
+function toggleItTicketStatus(rowNum,newStatus){
+  if(!getSession())return;
+  callScriptGeneric('editItTicket',{'_row':rowNum,'Status':newStatus},()=>loadItTicketsData(true))
+    .then(()=>showSuccess(`Marked as ${newStatus}.`,'ittickets'))
+    .catch(ex=>showError('Update failed: '+ex.message,'ittickets'));
+}
+
+let deleteItTicketTargetRow=null;
+function openDeleteItTicketModal(rowNum){
+  deleteItTicketTargetRow=rowNum;
+  document.getElementById('deleteItTicketModalOverlay').style.display='flex';
+}
+function closeDeleteItTicketModal(){document.getElementById('deleteItTicketModalOverlay').style.display='none';deleteItTicketTargetRow=null;}
+document.getElementById('deleteItTicketModalOverlay').addEventListener('click',e=>{if(e.target.id==='deleteItTicketModalOverlay')closeDeleteItTicketModal();});
+
+async function confirmDeleteItTicket(){
+  if(!deleteItTicketTargetRow||!getSession()){closeDeleteItTicketModal();return;}
+  const rowNum=deleteItTicketTargetRow;
+  closeDeleteItTicketModal();
+  callScriptGeneric('deleteItTicket',{'_row':rowNum},()=>loadItTicketsData(true))
+    .then(()=>showSuccess('Ticket deleted.','ittickets'))
+    .catch(ex=>showError('Delete failed: '+ex.message,'ittickets'));
 }
 
 // ── جرد الأثاث بالصور (Furniture Inventory) ──
@@ -3844,7 +4008,7 @@ function optimisticMoveTrn(id){optimisticDeleteTrn(id);}
 function rollback(prevEmp,prevTrn){if(prevEmp!==undefined){allData=prevEmp;populateFilters();applyFilters();}if(prevTrn!==undefined){trainingData=prevTrn;populateTrainingFilters();renderTrainingStats();renderTrainingTable();}saveCache();}
 
 function showView(view){
-  ['employees','training','yubikey','violation','salary','lateness','opsreport','sheets'].forEach(v=>{
+  ['employees','training','yubikey','violation','salary','lateness','opsreport','itTickets','sheets'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
     const btn=document.getElementById('tab'+v[0].toUpperCase()+v.slice(1)+'Btn');
     if(btn)btn.classList.toggle('active',v===view);
@@ -3864,6 +4028,7 @@ function showView(view){
   }
   if(view==='lateness'&&latenessData.length===0)loadLatenessData();
   if(view==='opsreport')loadFurnitureData();
+  if(view==='itTickets'&&itTicketsData.length===0)loadItTicketsData();
 }
 
 function bannerIds(scope){
@@ -3871,6 +4036,7 @@ function bannerIds(scope){
   if(scope==='violation')return{err:'violationErrorBanner',ok:'violationSuccessBanner'};
   if(scope==='lateness')return{err:'latenessErrorBanner',ok:'latenessSuccessBanner'};
   if(scope==='opsreport')return{err:'opsReportErrorBanner',ok:'opsReportSuccessBanner'};
+  if(scope==='ittickets')return{err:'itTicketsErrorBanner',ok:'itTicketsSuccessBanner'};
   return{err:'errorBanner',ok:'successBanner'};
 }
 function showError(msg,scope){const ids=bannerIds(scope);const b=document.getElementById(ids.err);b.style.display='block';b.textContent=msg;document.getElementById(ids.ok).style.display='none';}
