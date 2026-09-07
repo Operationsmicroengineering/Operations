@@ -1096,7 +1096,7 @@
 <div class="modal-body">
   <div class="form-error" id="itTicketFormError"></div>
   <div class="form-row"><div class="form-group"><label>PC Number</label><input type="text" id="itPcNumberInput" class="form-control" placeholder="e.g. PC-C2-14" required></div><div class="form-group"><label>Project</label><select id="itProjectInput" class="form-control"><option value="AVP">AVP</option><option value="GT">GT</option><option value="Mapping">Mapping</option></select></div></div>
-  <div class="form-row"><div class="form-group"><label>Floor</label><input type="text" id="itFloorInput" class="form-control"></div><div class="form-group"><label>Shift</label><select id="itShiftInput" class="form-control"><option value="Morning">Morning</option><option value="Night">Night</option><option value="Over Night">Over Night</option></select></div></div>
+  <div class="form-row"><div class="form-group"><label>Floor</label><select id="itFloorInput" class="form-control"><option value="Room 106">Room 106</option><option value="Room 102">Room 102</option><option value="Room 103">Room 103</option><option value="Room 105">Room 105</option><option value="Room 108">Room 108</option><option value="Floor 2">Floor 2</option><option value="Room 1">Room 1</option><option value="Room 2">Room 2</option><option value="Room 3">Room 3</option><option value="Room 4">Room 4</option><option value="Room 5">Room 5</option><option value="Room 6">Room 6</option><option value="Room 8">Room 8</option><option value="Room 9">Room 9</option><option value="Room 10">Room 10</option><option value="Room 11">Room 11</option><option value="Room 12">Room 12</option><option value="Room 13">Room 13</option></select></div><div class="form-group"><label>Shift</label><select id="itShiftInput" class="form-control"><option value="Morning">Morning</option><option value="Night">Night</option><option value="Over Night">Over Night</option></select></div></div>
   <div class="form-group"><label>Issue</label><input type="text" id="itIssueInput" class="form-control" placeholder="e.g. Network cable not working" required></div>
   <div class="form-group"><label>Operations Name</label><select id="itOpsNameInput" class="form-control"><option value="Mohamed Kamal">Mohamed Kamal</option><option value="Heba Mahmoud">Heba Mahmoud</option><option value="Ahmed Alaa">Ahmed Alaa</option><option value="Ezzat Ashraf">Ezzat Ashraf</option></select></div>
   <div class="form-group"><label>Status</label><select id="itStatusInput" class="form-control"><option value="Not Solved">Not Solved</option><option value="Solved">Solved</option></select></div>
@@ -2971,7 +2971,7 @@ let VIOLATION_OPTIONS = {
   'Shift': ['Morning', 'Night', 'Over Night'],
   'Project': ['Gt', 'Avp', 'Mapping', 'poc'],
   'Room': ['Room 102', 'Room 106', 'Room 108', 'Floor 2', 'Floor4'],
-  'OPS Name': ['Islam kadry', 'Ahmed Alaa', 'Mohamed Moataz', 'Ahmed Hassan', 'Mohamed Magdy', 'HEBA MAHMOUD', 'ezzat', 'Mohamed Kamal']
+  'OPS Name': ['Ahmed Alaa','HEBA MAHMOUD', 'Ezzat Ashraf ', 'Mohamed Kamal']
 };
 
 async function loadViolationOptions(){
