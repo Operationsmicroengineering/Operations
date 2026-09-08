@@ -861,14 +861,11 @@
         </div>
         <div class="table-footer"><span id="nightYbkFooterInfo">—</span><span id="nightYbkFooterTime">—</span></div>
       </div>
+      </div>
+      <!-- ═══════════ END GT NIGHT SECTION ═══════════ -->
 
-      <!-- ═══════════ AVP NIGHT ═══════════ -->
-      <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--line)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-          <h3 style="font-size:15px;color:var(--text-0)">AVP — Night</h3>
-          <button class="btn-ghost" onclick="loadAvpNightData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
-        </div>
-
+      <!-- ═══════════ AVP NIGHT SECTION ═══════════ -->
+      <div id="ybkNightSection_avp" class="ybk-project-section" style="display:none">
         <div class="toolbar" style="margin-bottom:1.5rem">
           <span class="ybk-date-label">Select date:</span>
           <div class="ybk-date-selector" id="avpNightDateSelector"><span style="font-size:13px;color:var(--text-2)">Loading dates...</span></div>
@@ -1669,6 +1666,15 @@ function selectYbkProject(key){
     const sec=document.getElementById('ybkSection_'+k);
     if(sec)sec.style.display=(k===key?'block':'none');
     const card=document.getElementById('ybkProjectCard_'+k);
+    if(card)card.classList.toggle('active',k===key);
+  });
+}
+
+function selectYbkNightProject(key){
+  ['gt','avp'].forEach(k=>{
+    const sec=document.getElementById('ybkNightSection_'+k);
+    if(sec)sec.style.display=(k===key?'block':'none');
+    const card=document.getElementById('ybkNightProjectCard_'+k);
     if(card)card.classList.toggle('active',k===key);
   });
 }
