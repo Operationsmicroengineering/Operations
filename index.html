@@ -855,6 +855,30 @@
         <div class="table-footer"><span id="nightNasrCityFooterInfo">—</span><span id="nightNasrCityFooterTime">—</span></div>
       </div>
 
+      <!-- ✅ Masr El Gedida Daily Report (Night) -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header">
+          <span class="ybk-history-title">Masr El Gedida Daily Report</span>
+          <button class="btn-ghost" onclick="copyNightMasrElGedidaReport()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div style="padding:1.2rem 1.5rem">
+          <pre id="nightMasrElGedidaReportText" class="mono" style="white-space:pre-wrap; font-size:13px; line-height:1.7; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
+        </div>
+      </div>
+
+      <!-- ✅ Masr El Gedida records (Night) -->
+      <div class="ybk-history-card" style="margin-bottom:1.5rem">
+        <div class="ybk-history-header"><span class="ybk-history-title">Masr El Gedida records</span><span class="table-count" id="nightMasrElGedidaRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
+        <div class="ybk-scroll">
+          <table class="ybk-history-table" id="nightMasrElGedidaTable" style="display:none;min-width:600px"><thead><tr><th>Name</th><th>Device No.</th><th>Location</th><th>Yubikey</th><th class="ybk-date-col" id="nightMasrElGedidaDateColHeader">Date</th><th class="no-sort">Status</th></tr></thead><tbody id="nightMasrElGedidaTableBody"></tbody></table>
+          <div class="empty" id="nightMasrElGedidaEmptyState" style="display:none"><div>No records found</div></div>
+        </div>
+        <div class="table-footer"><span id="nightMasrElGedidaFooterInfo">—</span><span id="nightMasrElGedidaFooterTime">—</span></div>
+      </div>
+
       <!-- Records table (Night) -->
       <div class="ybk-history-card">
         <div class="ybk-history-header"><span class="ybk-history-title">Yubikey records</span><span class="table-count" id="nightYbkRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
@@ -4204,6 +4228,96 @@ function renderNightNasrCityTable(rows, date) {
   }).join('');
 }
 
+// ✅ Masr El Gedida (Night) — نفس فورمات St. Fatima بالظبط، بس لموقع "4th Floor"
+function isMasrElGedidaLocation(loc){
+  const n=(loc||'').toLowerCase().trim();
+  return n==='4th floor'||n==='4th';
+}
+
+function renderNightMasrElGedidaReport(rows, date) {
+  const el = document.getElementById('nightMasrElGedidaReportText');
+  if (!el) return;
+  if (!date) { el.textContent = '—'; return; }
+
+  const inMasrElGedida = r => isMasrElGedidaLocation(r.location);
+  const megRowsAll = rows.filter(inMasrElGedida).filter(r => !ybkIsWLA(r.deviceNo) && !ybkIsQTC(r.deviceNo));
+
+  const withYubikey = megRowsAll;
+  const total = withYubikey.length;
+
+  let withLabelersCount=0, absentLabelersCount=0, trainingCount=0, emptyCount=0;
+  withYubikey.forEach(r=>{
+    const v = r.attendance[date] || '';
+    if (ybkIsPresent(v)) withLabelersCount++;
+    else if (ybkIsAbsent(v)) absentLabelersCount++;
+    else if (ybkIsTraining(v)) trainingCount++;
+    else emptyCount++;
+  });
+
+  el.textContent =
+`GT YubiKeys (Masr El Gedida)
+All GT YubiKeys are in place at the end of the night shift.
+Total: ${total} YubiKeys
+Status:
+• With Labelers: ${withLabelersCount}
+• Absent Labelers: ${absentLabelersCount}
+• Empty: ${emptyCount}
+• Training : ${trainingCount}`;
+}
+
+function copyNightMasrElGedidaReport() {
+  const el = document.getElementById('nightMasrElGedidaReportText');
+  if (!el) return;
+  const text = el.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    showSuccess('Report copied to clipboard.');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch {}
+    document.body.removeChild(ta);
+    showSuccess('Report copied to clipboard.');
+  });
+}
+
+function renderNightMasrElGedidaTable(rows, date) {
+  const tableEl=document.getElementById('nightMasrElGedidaTable');
+  const emptyEl=document.getElementById('nightMasrElGedidaEmptyState');
+  if(!date){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    document.getElementById('nightMasrElGedidaRowCount').textContent='—';
+    return;
+  }
+  document.getElementById('nightMasrElGedidaDateColHeader').textContent=date;
+
+  const megRows=rows.filter(r=>isMasrElGedidaLocation(r.location)).filter(r=>!ybkIsWLA(r.deviceNo)&&!ybkIsQTC(r.deviceNo));
+
+  document.getElementById('nightMasrElGedidaRowCount').textContent=megRows.length+' records';
+  document.getElementById('nightMasrElGedidaFooterInfo').textContent=`Showing ${megRows.length} employees`;
+  document.getElementById('nightMasrElGedidaFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!megRows.length){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    return;
+  }
+  emptyEl.style.display='none';
+  tableEl.style.display='table';
+  document.getElementById('nightMasrElGedidaTableBody').innerHTML=megRows.map(r=>{
+    const v=r.attendance[date]||'';
+    const initials=esc((r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    let statusBadge;
+    if(ybkIsPresent(v))statusBadge='<span class="badge badge-active">Present</span>';
+    else if(ybkIsTraining(v))statusBadge='<span class="badge badge-training">Training</span>';
+    else if(ybkIsAbsent(v))statusBadge='<span class="badge badge-resigned">Absent</span>';
+    else statusBadge='<span style="color:var(--text-2);font-size:12px">—</span>';
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.deviceNo||'—')}</td><td style="color:var(--text-1)">${esc(r.location||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${ybkAttClass(v)}">${esc(ybkAttLabel(v))}</span>`:'—'}</td><td>${statusBadge}</td></tr>`;
+  }).join('');
+}
+
 function renderNightYbkTable(){
   const date=selectedNightDate;
   if(!date){
@@ -4217,6 +4331,8 @@ function renderNightYbkTable(){
   renderNightStFatimaReport(rows, date);
   renderNightNasrCityReport(rows, date);
   renderNightNasrCityTable(rows, date);
+  renderNightMasrElGedidaReport(rows, date);
+  renderNightMasrElGedidaTable(rows, date);
 
   let filtered=rows.filter(r=>{
     const loc=(r.location||'').toLowerCase().trim();
