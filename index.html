@@ -789,7 +789,7 @@
       <!-- ═══════════ NIGHT SHIFT ═══════════ -->
       <div id="ybkShift_night" class="ybk-shift-section" style="display:none">
 
-      <!-- ✅ Project selector: GT / AVP -->
+      <!-- ✅ Project selector: GT / AVP / Mapping -->
       <div class="ybk-project-cards">
         <div class="ybk-project-card active" id="ybkNightProjectCard_gt" onclick="selectYbkNightProject('gt')">
           <div class="ybk-project-card-name">GT</div>
@@ -799,9 +799,13 @@
           <div class="ybk-project-card-name">AVP</div>
           <div class="ybk-project-card-sub">St. Fatima</div>
         </div>
+        <div class="ybk-project-card" id="ybkNightProjectCard_mapping" onclick="selectYbkNightProject('mapping')">
+          <div class="ybk-project-card-name">Mapping</div>
+          <div class="ybk-project-card-sub">Night</div>
+        </div>
       </div>
       <div style="display:flex;justify-content:flex-end;margin-bottom:1.5rem">
-        <button class="btn-ghost" onclick="loadNightGtData(true);loadYubikeyData(true);loadAvpNightData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
+        <button class="btn-ghost" onclick="loadNightGtData(true);loadYubikeyData(true);loadAvpNightData(true);loadMappingNightData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
       </div>
 
       <!-- ═══════════ GT NIGHT SECTION ═══════════ -->
@@ -891,6 +895,36 @@
             <div class="empty" id="avpNightEmptyState" style="display:none"><div>No records found</div></div>
           </div>
           <div class="table-footer"><span id="avpNightFooterInfo">—</span><span id="avpNightFooterTime">—</span></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ MAPPING NIGHT SECTION ═══════════ -->
+      <div id="ybkNightSection_mapping" class="ybk-project-section" style="display:none">
+        <div class="toolbar" style="margin-bottom:1.5rem">
+          <span class="ybk-date-label">Select date:</span>
+          <div class="ybk-date-selector" id="mappingNightDateSelector"><span style="font-size:13px;color:var(--text-2)">Loading dates...</span></div>
+        </div>
+
+        <div class="ybk-history-card" style="margin-bottom:1.5rem">
+          <div class="ybk-history-header">
+            <span class="ybk-history-title">Mapping Night Daily Report</span>
+            <button class="btn-ghost" onclick="copyMappingNightReport()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+          <div style="padding:1.2rem 1.5rem">
+            <pre id="mappingNightReportText" class="mono" style="white-space:pre-wrap; font-size:13px; line-height:1.7; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
+          </div>
+        </div>
+
+        <div class="ybk-history-card">
+          <div class="ybk-history-header"><span class="ybk-history-title">Mapping Night records</span><span class="table-count" id="mappingNightRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
+          <div class="ybk-scroll">
+            <table class="ybk-history-table" id="mappingNightTable" style="display:none;min-width:600px"><thead><tr><th>Name</th><th>PC No.</th><th>Yubikey</th><th>Role</th><th class="ybk-date-col" id="mappingNightDateColHeader">Date</th><th class="no-sort">Status</th></tr></thead><tbody id="mappingNightTableBody"></tbody></table>
+            <div class="empty" id="mappingNightEmptyState" style="display:none"><div>No records found</div></div>
+          </div>
+          <div class="table-footer"><span id="mappingNightFooterInfo">—</span><span id="mappingNightFooterTime">—</span></div>
         </div>
       </div>
       </div>
@@ -1192,7 +1226,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzCXwXrbni_J3eHbyDkp_uGv-PPsv34PdFmq6-jLbn3Pc6imxtqo6BIsdg2_FJ3Rrm3BA/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyEtZES86amd9FDbLlq7fgwtNLiWxko0fP-4YApsTcHecA4j-Qr-UyexZOiC1nQOJfX/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1271,9 +1305,9 @@ function loadNightGtCache() {
 
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
-let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[], latenessData=[], itTicketsData=[], avpNightData={dateColumns:[],rows:[]};
+let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[], latenessData=[], itTicketsData=[], avpNightData={dateColumns:[],rows:[]}, mappingNightData={dateColumns:[],rows:[]};
 let sortCol='', sortAsc=true, pollTimer=null, session=null, isSyncing=false;
-let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null, selectedAvpNightDate=null;
+let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null, selectedAvpNightDate=null, selectedMappingNightDate=null;
 
 // ✅ Mapping ON status classifiers — P / 0 / E / T1-T3
 function mappingIsPresent(v){return String(v||'').trim().toUpperCase()==='P';}
@@ -1672,7 +1706,7 @@ function selectYbkProject(key){
 }
 
 function selectYbkNightProject(key){
-  ['gt','avp'].forEach(k=>{
+  ['gt','avp','mapping'].forEach(k=>{
     const sec=document.getElementById('ybkNightSection_'+k);
     if(sec)sec.style.display=(k===key?'block':'none');
     const card=document.getElementById('ybkNightProjectCard_'+k);
@@ -1691,6 +1725,7 @@ function selectYbkShift(key){
     if(!nightGtData.rows||nightGtData.rows.length===0)loadNightGtData();
     loadYubikeyData(true); // ✅ فورس ريفريش دايمًا هنا عشان نضمن وصول عمود الـ 12H الجديد، مش نسخة كاش قديمة
     if(!avpNightData.rows||avpNightData.rows.length===0)loadAvpNightData();
+    if(!mappingNightData.rows||mappingNightData.rows.length===0)loadMappingNightData();
   }
 }
 
@@ -3421,6 +3456,114 @@ function renderAvpNightTable(){
   }).join('');
 }
 
+// ── Mapping Night — نفس منطق Mapping Overnight بالظبط ──
+async function loadMappingNightData(forceRefresh=false){
+  if(!getSession())return;
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=mappingNight'+(forceRefresh?'&force=1':''));
+    if(!res.ok)throw new Error('Failed to fetch Mapping Night data');
+    const json=await res.json();
+    if(json.error)throw new Error(json.error);
+    mappingNightData=json.mappingNight||{dateColumns:[],rows:[]};
+    buildMappingNightDateSelector();renderMappingNightReport();renderMappingNightTable();
+  }catch(ex){
+    const el=document.getElementById('mappingNightReportText');
+    if(el&&!mappingNightData.rows?.length)el.textContent='Failed to load Mapping Night data: '+ex.message;
+  }
+}
+
+function buildMappingNightDateSelector(){
+  const dates=mappingNightData.dateColumns||[];const container=document.getElementById('mappingNightDateSelector');
+  if(!container)return;
+  if(!dates.length){container.innerHTML='<span style="font-size:13px;color:var(--text-2)">No dates available</span>';return;}
+  if(!selectedMappingNightDate||!dates.includes(selectedMappingNightDate))selectedMappingNightDate=dates[dates.length-1];
+  container.innerHTML=dates.map(d=>`<button class="ybk-date-btn${d===selectedMappingNightDate?' active':''}" onclick="selectMappingNightDate('${esc(d)}')">${esc(d)}</button>`).join('');
+}
+function selectMappingNightDate(d){selectedMappingNightDate=d;buildMappingNightDateSelector();renderMappingNightReport();renderMappingNightTable();}
+
+function renderMappingNightReport(){
+  const el=document.getElementById('mappingNightReportText');
+  if(!el)return;
+  const date=selectedMappingNightDate;
+  if(!date){el.textContent='—';return;}
+  const rows=(mappingNightData.rows||[]).filter(r=>{
+    const yk=String(r.yubikey||'').trim();
+    return yk.includes('@');
+  });
+  const total=rows.length;
+
+  let qcTl=0,labelers=0,absent=0,empty=0,training=0;
+  rows.forEach(r=>{
+    const v=r.attendance[date]||'';
+    const isQcTl=mappingIsQcTl(r.role);
+    if(mappingIsPresent(v)){
+      if(isQcTl)qcTl++; else labelers++;
+    } else if(mappingIsAbsent(v)) absent++;
+    else if(mappingIsEmpty(v)) empty++;
+    else if(mappingIsTraining(v)) training++;
+  });
+
+  el.textContent=
+`Mapping YubiKeys
+All Mapping YubiKeys are in place at the end of the night shift.
+Total: ${total} YubiKeys
+Status:
+• QC + TL: ${qcTl}
+• Working with Labelers: ${labelers}
+• Absent : ${absent}
+• Empty: ${empty}
+• Training: ${training}`;
+}
+
+function copyMappingNightReport(){
+  const el=document.getElementById('mappingNightReportText');
+  if(!el)return;
+  const text=el.textContent||'';
+  navigator.clipboard.writeText(text).then(()=>{
+    showSuccess('Report copied to clipboard.');
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');}catch{}
+    document.body.removeChild(ta);
+    showSuccess('Report copied to clipboard.');
+  });
+}
+
+function renderMappingNightTable(){
+  const date=selectedMappingNightDate;
+  const tableEl=document.getElementById('mappingNightTable');
+  const emptyEl=document.getElementById('mappingNightEmptyState');
+  if(!date){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    document.getElementById('mappingNightRowCount').textContent='—';
+    return;
+  }
+  document.getElementById('mappingNightDateColHeader').textContent=date;
+  const rows=(mappingNightData.rows||[]).filter(r=>{
+    const yk=String(r.yubikey||'').trim();
+    return yk.includes('@');
+  });
+
+  document.getElementById('mappingNightRowCount').textContent=rows.length+' records';
+  document.getElementById('mappingNightFooterInfo').textContent=`Showing ${rows.length} employees`;
+  document.getElementById('mappingNightFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!rows.length){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    return;
+  }
+  emptyEl.style.display='none';
+  tableEl.style.display='table';
+  document.getElementById('mappingNightTableBody').innerHTML=rows.map(r=>{
+    const v=r.attendance[date]||'';
+    const initials=esc((r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.pcNo||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td style="color:var(--text-1)">${esc(r.role||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${mappingAttClass(v)}">${esc(v)}</span>`:'<span class="ybk-att-cell ybk-att-buf">E</span>'}</td><td>${mappingStatusBadge(v)}</td></tr>`;
+  }).join('');
+}
+
 // ✅ SITE CARDS RENDERER
 // Note: WLA and QTC rows are excluded from site cards (each gets its own card),
 // and Buffer rows (attendance === "-") are excluded too (they get their own card).
@@ -4615,8 +4758,6 @@ const SHEETS_DATA=[
     {name:'Mapping Overnight Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1NEX_9R-kZYlQT8FLks3_1XnDn9JDr8VCyrvNl7hyd44/edit?gid=59640710'},
     {name:'Labelerslist Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1J_BvZ6AHD4HcpTVf_iACyTJhcu0hx7ehczucAhN2QhM/edit?gid=1562394029'},
     {name:'Attendance delays OP',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1DUFehN3sGupWwkIyZO44IL1izYUSbXggtCUiUbxcxUs/edit?gid=0'},
-    {name:' Mapping Nigth',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1wZowccvSdfxPJBkdhS0Nxqc-wZliNnYfg_nPhBrp26E/edit?gid=309589408#gid=309589408'},
-
   ]},
   {category:'Forms',items:[
     {name:'Form.meti portal',type:'form',url:'https://docs.google.com/forms/d/e/1FAIpQLSd2Krysi6kd_KWap5iXtNzCY4S_0Pg_HPVHRi4egEAfIoQ8nA/viewform?fbzx=1749840446210905879'},
