@@ -1284,6 +1284,7 @@ function mappingIsQcTl(role){const r=String(role||'').trim().toUpperCase();retur
 
 // ✅ أرقام Distribution مثبتة يدويًا — عدّل الأرقام دي من هنا لو اتغيرت
 const AVP_DISTRIBUTION = { TL: 1, QC: 5, USL: 7, SD: 30, PL: 8, SIM: 50 };
+const AVP_NIGHT_DISTRIBUTION = { QC: 5, SIM: 38, PL: 10, SD: 10, USL: 13, EM: 10, 'sid bar': 10 };
 
 // ✅ AVP ON attendance value classifiers
 function avpIsPresent(v){const u=String(v||'').trim().toUpperCase();return u==='P'||u==='ATTEND'||u==='T';}
@@ -3342,7 +3343,7 @@ function renderAvpNightReport(){
     else if(hasFlash&&avpIsEmpty(v))empty++;
   });
 
-  const d=AVP_DISTRIBUTION;
+  const d=AVP_NIGHT_DISTRIBUTION;
   const total=rows.filter(r=>String(r.yubikey||'').trim().includes('@')).length;
 
   el.textContent=
@@ -3350,12 +3351,13 @@ function renderAvpNightReport(){
 All AVP YubiKeys are in place at the end of the night shift.
 Total: ${total} YubiKeys
 Distribution:
-• TL: ${d.TL}
 • QC: ${d.QC}
-• USL: ${d.USL}
-• SD: ${d.SD}
-• PL: ${d.PL}
 • SIM: ${d.SIM}
+• PL: ${d.PL}
+• SD: ${d.SD}
+• USL: ${d.USL}
+• EM: ${d.EM}
+• sid bar: ${d['sid bar']}
 ---------------------------------------------
 Attendance:
 • Present: ${present}
