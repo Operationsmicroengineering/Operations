@@ -442,7 +442,7 @@
       </button>
       <button class="nav-tab" id="tabOpsreportBtn" onclick="showView('opsreport')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span class="tab-label-full" style="font-family:'Cairo',sans-serif"> operations report </span>
+        <span class="tab-label-full" style="font-family:'Cairo',sans-serif">تقرير العمليات</span>
       </button>
       <button class="nav-tab" id="tabItTicketsBtn" onclick="showView('itTickets')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M9 7v10"/><path d="M15 7v10"/></svg>
@@ -847,6 +847,41 @@
         </div>
         <div class="table-footer"><span id="nightYbkFooterInfo">—</span><span id="nightYbkFooterTime">—</span></div>
       </div>
+
+      <!-- ═══════════ AVP NIGHT ═══════════ -->
+      <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--line)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+          <h3 style="font-size:15px;color:var(--text-0)">AVP — Night</h3>
+          <button class="btn-ghost" onclick="loadAvpNightData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
+        </div>
+
+        <div class="toolbar" style="margin-bottom:1.5rem">
+          <span class="ybk-date-label">Select date:</span>
+          <div class="ybk-date-selector" id="avpNightDateSelector"><span style="font-size:13px;color:var(--text-2)">Loading dates...</span></div>
+        </div>
+
+        <div class="ybk-history-card" style="margin-bottom:1.5rem">
+          <div class="ybk-history-header">
+            <span class="ybk-history-title">AVP Night Daily Report</span>
+            <button class="btn-ghost" onclick="copyAvpNightReport()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+          <div style="padding:1.2rem 1.5rem">
+            <pre id="avpNightReportText" class="mono" style="white-space:pre-wrap; font-size:13px; line-height:1.7; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
+          </div>
+        </div>
+
+        <div class="ybk-history-card">
+          <div class="ybk-history-header"><span class="ybk-history-title">AVP Night records</span><span class="table-count" id="avpNightRowCount" style="color:var(--purple);background:var(--purple-dim);border-color:var(--purple-line)">—</span></div>
+          <div class="ybk-scroll">
+            <table class="ybk-history-table" id="avpNightTable" style="display:none;min-width:600px"><thead><tr><th>Name</th><th>PC No.</th><th>Yubikey</th><th>Role</th><th class="ybk-date-col" id="avpNightDateColHeader">Date</th><th class="no-sort">Status</th></tr></thead><tbody id="avpNightTableBody"></tbody></table>
+            <div class="empty" id="avpNightEmptyState" style="display:none"><div>No records found</div></div>
+          </div>
+          <div class="table-footer"><span id="avpNightFooterInfo">—</span><span id="avpNightFooterTime">—</span></div>
+        </div>
+      </div>
       </div>
     </div>
 
@@ -1146,7 +1181,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxPl6uG3e5c6dqbP7JQWm9Lms-RbyEddanPW93CKwaQCiwAlgAZL1njiHBvMzVVhVLLqA/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzCXwXrbni_J3eHbyDkp_uGv-PPsv34PdFmq6-jLbn3Pc6imxtqo6BIsdg2_FJ3Rrm3BA/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1225,9 +1260,9 @@ function loadNightGtCache() {
 
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
-let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[], latenessData=[], itTicketsData=[];
+let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[], latenessData=[], itTicketsData=[], avpNightData={dateColumns:[],rows:[]};
 let sortCol='', sortAsc=true, pollTimer=null, session=null, isSyncing=false;
-let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null;
+let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null, selectedAvpNightDate=null;
 
 // ✅ Mapping ON status classifiers — P / 0 / E / T1-T3
 function mappingIsPresent(v){return String(v||'').trim().toUpperCase()==='P';}
@@ -1634,6 +1669,7 @@ function selectYbkShift(key){
   if(key==='night'){
     if(!nightGtData.rows||nightGtData.rows.length===0)loadNightGtData();
     loadYubikeyData(true); // ✅ فورس ريفريش دايمًا هنا عشان نضمن وصول عمود الـ 12H الجديد، مش نسخة كاش قديمة
+    if(!avpNightData.rows||avpNightData.rows.length===0)loadAvpNightData();
   }
 }
 
@@ -3233,6 +3269,124 @@ function renderAvpTable(){
   emptyEl.style.display='none';
   tableEl.style.display='table';
   document.getElementById('avpTableBody').innerHTML=rows.map(r=>{
+    const v=r.attendance[date]||'';
+    const initials=esc((r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
+    let statusBadge;
+    if(avpIsPresent(v))statusBadge='<span class="badge badge-active">Present</span>';
+    else if(avpIsTraining(v))statusBadge='<span class="badge badge-training">Training</span>';
+    else if(avpIsAbsent(v))statusBadge='<span class="badge badge-resigned">Absent</span>';
+    else if(avpIsEmpty(v))statusBadge='<span class="badge" style="background:var(--bg-2);color:var(--text-1);border:1px solid var(--line)">Empty</span>';
+    else statusBadge='<span style="color:var(--text-2);font-size:12px">—</span>';
+    return`<tr><td><div class="name-cell"><div class="avatar" style="color:var(--purple)">${initials}</div><span style="font-weight:600">${esc(r.name)}</span></div></td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.pcNo||'—')}</td><td class="mono" style="color:var(--signal);font-size:12px">${esc(r.yubikey||'—')}</td><td style="color:var(--text-1)">${esc(r.role||'—')}</td><td class="ybk-date-col">${v?`<span class="ybk-att-cell ${avpIsPresent(v)?'ybk-att-p':avpIsAbsent(v)?'ybk-att-0':avpIsTraining(v)?'ybk-att-t':'ybk-att-buf'}">${esc(v)}</span>`:'<span class="ybk-att-cell ybk-att-buf">E</span>'}</td><td>${statusBadge}</td></tr>`;
+  }).join('');
+}
+
+// ── AVP Night — نفس منطق AVP Overnight بالظبط ──
+async function loadAvpNightData(forceRefresh=false){
+  if(!getSession())return;
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=avpNight'+(forceRefresh?'&force=1':''));
+    if(!res.ok)throw new Error('Failed to fetch AVP Night data');
+    const json=await res.json();
+    if(json.error)throw new Error(json.error);
+    avpNightData=json.avpNight||{dateColumns:[],rows:[]};
+    buildAvpNightDateSelector();renderAvpNightReport();renderAvpNightTable();
+  }catch(ex){
+    const el=document.getElementById('avpNightReportText');
+    if(el&&!avpNightData.rows?.length)el.textContent='Failed to load AVP Night data: '+ex.message;
+  }
+}
+
+function buildAvpNightDateSelector(){
+  const dates=avpNightData.dateColumns||[];const container=document.getElementById('avpNightDateSelector');
+  if(!container)return;
+  if(!dates.length){container.innerHTML='<span style="font-size:13px;color:var(--text-2)">No dates available</span>';return;}
+  if(!selectedAvpNightDate||!dates.includes(selectedAvpNightDate))selectedAvpNightDate=dates[dates.length-1];
+  container.innerHTML=dates.map(d=>`<button class="ybk-date-btn${d===selectedAvpNightDate?' active':''}" onclick="selectAvpNightDate('${esc(d)}')">${esc(d)}</button>`).join('');
+}
+function selectAvpNightDate(d){selectedAvpNightDate=d;buildAvpNightDateSelector();renderAvpNightReport();renderAvpNightTable();}
+
+function renderAvpNightReport(){
+  const el=document.getElementById('avpNightReportText');
+  if(!el)return;
+  const date=selectedAvpNightDate;
+  if(!date){el.textContent='—';return;}
+  const rows=avpNightData.rows||[];
+  let present=0,absent=0,empty=0,training=0;
+  rows.forEach(r=>{
+    const v=r.attendance[date]||'';
+    const hasFlash=String(r.yubikey||'').trim().includes('@');
+    if(avpIsPresent(v))present++;
+    else if(avpIsAbsent(v))absent++;
+    else if(avpIsTraining(v))training++;
+    else if(hasFlash&&avpIsEmpty(v))empty++;
+  });
+
+  const d=AVP_DISTRIBUTION;
+  const total=rows.filter(r=>String(r.yubikey||'').trim().includes('@')).length;
+
+  el.textContent=
+`AVP YubiKeys
+All AVP YubiKeys are in place at the end of the night shift.
+Total: ${total} YubiKeys
+Distribution:
+• TL: ${d.TL}
+• QC: ${d.QC}
+• USL: ${d.USL}
+• SD: ${d.SD}
+• PL: ${d.PL}
+• SIM: ${d.SIM}
+---------------------------------------------
+Attendance:
+• Present: ${present}
+• Absent: ${absent}
+• Empty: ${empty}
+• Training : ${training}`;
+}
+
+function copyAvpNightReport(){
+  const el=document.getElementById('avpNightReportText');
+  if(!el)return;
+  const text=el.textContent||'';
+  navigator.clipboard.writeText(text).then(()=>{
+    showSuccess('Report copied to clipboard.');
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');}catch{}
+    document.body.removeChild(ta);
+    showSuccess('Report copied to clipboard.');
+  });
+}
+
+function renderAvpNightTable(){
+  const date=selectedAvpNightDate;
+  const tableEl=document.getElementById('avpNightTable');
+  const emptyEl=document.getElementById('avpNightEmptyState');
+  if(!date){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    document.getElementById('avpNightRowCount').textContent='—';
+    return;
+  }
+  document.getElementById('avpNightDateColHeader').textContent=date;
+  const rows=(avpNightData.rows||[]).filter(r=>{
+    const yk=String(r.yubikey||'').trim();
+    return yk.includes('@');
+  });
+
+  document.getElementById('avpNightRowCount').textContent=rows.length+' records';
+  document.getElementById('avpNightFooterInfo').textContent=`Showing ${rows.length} employees`;
+  document.getElementById('avpNightFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!rows.length){
+    tableEl.style.display='none';
+    emptyEl.style.display='block';
+    return;
+  }
+  emptyEl.style.display='none';
+  tableEl.style.display='table';
+  document.getElementById('avpNightTableBody').innerHTML=rows.map(r=>{
     const v=r.attendance[date]||'';
     const initials=esc((r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''));
     let statusBadge;
