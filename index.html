@@ -3063,7 +3063,7 @@ let VIOLATION_OPTIONS = {
   'Shift': ['Morning', 'Night', 'Over Night'],
   'Project': ['Gt', 'Avp', 'Mapping', 'poc'],
   'Room': ['Room 102', 'Room 106', 'Room 108', 'Floor 2', 'Floor4'],
-  'OPS Name': ['Islam kadry', 'Ahmed Alaa', 'Mohamed Moataz', 'Ahmed Hassan', 'Mohamed Magdy', 'HEBA MAHMOUD', 'ezzat', 'Mohamed Kamal']
+  'OPS Name': ['Ahmed Alaa', 'Mohamed Moataz', 'HEBA MAHMOUD', 'Ezzat Ashraf ', 'Mohamed Kamal']
 };
 
 async function loadViolationOptions(){
@@ -4769,6 +4769,8 @@ const SHEETS_DATA=[
     {name:'Mapping Overnight Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1NEX_9R-kZYlQT8FLks3_1XnDn9JDr8VCyrvNl7hyd44/edit?gid=59640710'},
     {name:'Labelerslist Attendance',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1J_BvZ6AHD4HcpTVf_iACyTJhcu0hx7ehczucAhN2QhM/edit?gid=1562394029'},
     {name:'Attendance delays OP',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1DUFehN3sGupWwkIyZO44IL1izYUSbXggtCUiUbxcxUs/edit?gid=0'},
+    {name:'Mapping Night Attendance ',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1wZowccvSdfxPJBkdhS0Nxqc-wZliNnYfg_nPhBrp26E/edit?gid=309589408#gid=309589408'},
+
   ]},
   {category:'Forms',items:[
     {name:'Form.meti portal',type:'form',url:'https://docs.google.com/forms/d/e/1FAIpQLSd2Krysi6kd_KWap5iXtNzCY4S_0Pg_HPVHRi4egEAfIoQ8nA/viewform?fbzx=1749840446210905879'},
@@ -4789,6 +4791,9 @@ const SHEETS_DATA=[
     {name:'الأوراق المسلمة',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1V_FnuaBV4s9vLHYizGwPl-AFc5MMA1eviSw7iouxV6Q/edit?gid=0'},
     {name:'Master New Hire - Dataset',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1t3IATJAHtlrMur9QTuqcrbzEypi_oLOwnWA9c8WmrRw/edit?gid=0'},
   ]},
+    {category:'Operations Team Reports ',items:[
+    {name:'Operations Team',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1T7OUpSt3E6wF3lqhsi-uQaKPmCwlQf7fN0bBj4-dw7o/edit?pli=1&gid=1518837739#gid=1518837739'},
+
 ];
 
 function sheetIconSvg(type){if(type==='form')return'<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';return'<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>';}
