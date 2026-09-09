@@ -4080,7 +4080,6 @@ function renderNightStFatimaReport(rows, date) {
   const inStFatima = r => getSiteForLocation((r.location||'').toLowerCase()) === 'st_fatima';
   const sfRowsAll = rows.filter(inStFatima).filter(r => !ybkIsWLA(r.deviceNo) && !ybkIsQTC(r.deviceNo));
 
-  // ✅ في Night: العدد ياخد الكل بغض النظر عن اليوبيكي — مفيش فلترة "لازم يبقى معاه فلاشة"
   const withYubikey = sfRowsAll;
   const total = withYubikey.length;
 
