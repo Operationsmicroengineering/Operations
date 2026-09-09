@@ -463,6 +463,9 @@
       <button class="nav-icon-btn" onclick="openActivityDrawer()" title="Recent Activity">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
       </button>
+      <button class="nav-icon-btn admin-only-el" id="manageUsersBtn" onclick="openManageUsersModal()" title="Manage Users" style="display:none">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.5 21a8.5 8.5 0 0 0-17 0"/><circle cx="12" cy="8" r="5"/></svg>
+      </button>
       <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle light/dark theme">
         <svg id="themeIconMoon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         <svg id="themeIconSun" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -501,7 +504,7 @@
 
       <!-- Quick actions -->
       <div class="quick-actions-row">
-        <div class="quick-action-card primary" onclick="openAddModal()"><div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>Add Employee</div>
+        <div class="quick-action-card primary admin-only-el" onclick="openAddModal()"><div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>Add Employee</div>
         <div class="quick-action-card" onclick="loadData(true)"><div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg></div>Refresh</div>
         <div class="quick-action-card" onclick="exportEmployeesCSV()"><div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>Export CSV</div>
       </div>
@@ -936,7 +939,7 @@
       <div class="success-banner" id="violationSuccessBanner"></div>
       <div class="toolbar">
         <button class="btn-ghost" onclick="loadViolationData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
-        <button class="btn-primary" onclick="openAddViolationModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Violation</button>
+        <button class="btn-primary admin-only-el" onclick="openAddViolationModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Violation</button>
         <button class="btn-ghost" onclick="openManageOptionsModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Manage Options</button>
       </div>
       <div class="table-card">
@@ -954,7 +957,7 @@
     <div id="salaryView" style="display:none">
       <div class="error-banner" id="salaryErrorBanner"></div>
       <div class="toolbar">
-        <button class="btn-ghost" onclick="openSalarySheetModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Change Salary Sheet</button>
+        <button class="btn-ghost admin-only-el" onclick="openSalarySheetModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Change Salary Sheet</button>
         <button class="btn-ghost" onclick="loadSalaryData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
       </div>
       <div class="toolbar" style="margin-bottom:1.5rem">
@@ -994,7 +997,7 @@
       <div class="toolbar">
         <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="latenessSearchInput" placeholder="Search by name..." oninput="renderLatenessTable()"></div>
         <button class="btn-ghost" onclick="loadLatenessData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
-        <button class="btn-primary" onclick="openAddLatenessModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Lateness</button>
+        <button class="btn-primary admin-only-el" onclick="openAddLatenessModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Lateness</button>
       </div>
       <div class="table-card">
         <div class="table-header"><span class="table-title">Lateness records</span><span class="table-count" id="latenessRowCount">—</span></div>
@@ -1017,7 +1020,7 @@
 
       <div class="toolbar">
         <button class="btn-ghost" onclick="loadFurnitureData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>تحديث</button>
-        <button class="btn-ghost" onclick="openAddFurnitureCategoryModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>إضافة نوع جديد</button>
+        <button class="btn-ghost admin-only-el" onclick="openAddFurnitureCategoryModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>إضافة نوع جديد</button>
         <button class="btn-primary" onclick="openFurnitureTotalsModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18.7 8 13 13.7l-3-3L5 16.4"/></svg>إجمالي كل الموقع</button>
       </div>
 
@@ -1057,7 +1060,7 @@
         <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="itTicketsSearchInput" placeholder="Search by PC number or issue..." oninput="renderItTicketsTable()"></div>
         <select id="itTicketsStatusFilter" onchange="renderItTicketsTable()"><option value="">All statuses</option><option value="Solved">Solved</option><option value="Not Solved">Not Solved</option></select>
         <button class="btn-ghost" onclick="loadItTicketsData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
-        <button class="btn-primary" onclick="openAddItTicketModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Ticket</button>
+        <button class="btn-primary admin-only-el" onclick="openAddItTicketModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Ticket</button>
       </div>
       <div class="table-card">
         <div class="table-header"><span class="table-title">IT Tickets</span><span class="table-count" id="itTicketsRowCount">—</span></div>
@@ -1117,6 +1120,19 @@
   </div>
   <div class="drawer-body" id="drawerBody"></div>
 </div>
+
+<!-- MANAGE USERS MODAL -->
+<div class="modal-overlay" id="manageUsersModalOverlay"><div class="modal-card" style="max-width:520px"><div class="modal-header"><span class="modal-title">Manage Users</span><button class="modal-close" onclick="closeManageUsersModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<div class="modal-body">
+  <div class="form-error" id="manageUsersFormError"></div>
+  <p style="font-size:12.5px;color:var(--text-1);margin-bottom:1rem">Admins have full access (add/edit/delete). Viewers can only view data.</p>
+  <div class="form-row" style="align-items:flex-end">
+    <div class="form-group" style="flex:1"><label>Add user by email</label><input type="text" id="newUserEmailInput" class="form-control" placeholder="name@operation.com"></div>
+    <button type="button" class="btn-primary" onclick="addUserRoleEntry()" style="margin-bottom:1.1rem">Add</button>
+  </div>
+  <div id="manageUsersList" style="margin-top:0.5rem;max-height:50vh;overflow-y:auto"></div>
+</div>
+</div></div>
 
 <!-- PROFILE MODAL -->
 <div class="modal-overlay" id="profileModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title">Edit profile</span><button class="modal-close" onclick="closeProfileModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
@@ -1226,7 +1242,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyEtZES86amd9FDbLlq7fgwtNLiWxko0fP-4YApsTcHecA4j-Qr-UyexZOiC1nQOJfX/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwgxE9Ni05s5sOTu5Zf17ETfF2iVuNUkjAnjem_FHUMuxzmcDkDi6rTY1P6OVlHvxfMHw/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1476,6 +1492,18 @@ function renderNavIdentity(){
   }
 }
 
+let currentUserRole='Admin';
+
+function applyRolePermissions(){
+  const isAdmin=currentUserRole==='Admin';
+  const manageBtn=document.getElementById('manageUsersBtn');
+  if(manageBtn)manageBtn.style.display=isAdmin?'flex':'none';
+  document.querySelectorAll('.admin-only-el').forEach(el=>{
+    if(el.id==='manageUsersBtn')return; // متعامل معاه فوق لوحده
+    el.style.display=isAdmin?'':'none';
+  });
+}
+
 async function loadUserProfile(email){
   currentUserProfile={email,displayName:'',avatar:''};
   renderNavIdentity();
@@ -1485,7 +1513,9 @@ async function loadUserProfile(email){
     const json=await res.json();
     if(json.profile){
       currentUserProfile={email,displayName:json.profile.displayName||'',avatar:json.profile.avatar||''};
+      currentUserRole=json.profile.role||'Admin';
       renderNavIdentity();
+      applyRolePermissions();
     }
   }catch(ex){ /* يفضل شغال بالإيميل لو السيرفر مش متاح */ }
 }
@@ -1552,6 +1582,76 @@ async function saveProfile(){
     errDiv.textContent='Save failed: '+ex.message;errDiv.style.display='block';
   }finally{
     btn.disabled=false;
+  }
+}
+
+// ── Manage Users (Admin/Viewer roles) ──
+let allUsersCache=[];
+
+async function openManageUsersModal(){
+  document.getElementById('manageUsersFormError').style.display='none';
+  document.getElementById('newUserEmailInput').value='';
+  document.getElementById('manageUsersList').innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text-2);font-size:13px">Loading...</div>';
+  document.getElementById('manageUsersModalOverlay').style.display='flex';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=allUsers');
+    const json=await res.json();
+    allUsersCache=json.users||[];
+    renderManageUsersList();
+  }catch(ex){
+    document.getElementById('manageUsersList').innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--bad);font-size:13px">Failed to load users.</div>';
+  }
+}
+function closeManageUsersModal(){document.getElementById('manageUsersModalOverlay').style.display='none';}
+document.getElementById('manageUsersModalOverlay').addEventListener('click',e=>{if(e.target.id==='manageUsersModalOverlay')closeManageUsersModal();});
+
+function renderManageUsersList(){
+  const listEl=document.getElementById('manageUsersList');
+  if(!allUsersCache.length){listEl.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text-2);font-size:13px">No users yet — add one above.</div>';return;}
+  listEl.innerHTML=allUsersCache.map(u=>{
+    const label=u.displayName||u.email;
+    const isAdmin=u.role==='Admin';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line-soft)">
+      <div style="min-width:0">
+        <div style="font-weight:600;font-size:13px;color:var(--text-0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(label)}</div>
+        <div class="mono" style="font-size:11px;color:var(--text-2)">${esc(u.email)}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button type="button" class="filter-chip${isAdmin?' active':''}" onclick="setUserRole('${esc(u.email)}','Admin')">Admin</button>
+        <button type="button" class="filter-chip${!isAdmin?' active':''}" onclick="setUserRole('${esc(u.email)}','Viewer')">Viewer</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addUserRoleEntry(){
+  const errDiv=document.getElementById('manageUsersFormError');
+  errDiv.style.display='none';
+  const email=document.getElementById('newUserEmailInput').value.trim().toLowerCase();
+  if(!email||!email.includes('@')){errDiv.textContent='Please enter a valid email.';errDiv.style.display='block';return;}
+  if(allUsersCache.some(u=>u.email.toLowerCase()===email)){errDiv.textContent='This user is already in the list.';errDiv.style.display='block';return;}
+  document.getElementById('newUserEmailInput').value='';
+  setUserRole(email,'Viewer');
+}
+
+async function setUserRole(targetEmail,role){
+  if(!getSession())return;
+  const errDiv=document.getElementById('manageUsersFormError');
+  errDiv.style.display='none';
+  try{
+    await fetch(APPS_SCRIPT_URL,{
+      method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'setUserRole',data:{targetEmail,role,_actor:getSession()?.user?.email||''}})
+    });
+    await new Promise(r=>setTimeout(r,600));
+    const existing=allUsersCache.find(u=>u.email.toLowerCase()===targetEmail.toLowerCase());
+    if(existing)existing.role=role;
+    else allUsersCache.push({email:targetEmail,displayName:'',avatar:'',role});
+    renderManageUsersList();
+    showSuccess(`${targetEmail} is now ${role}.`);
+  }catch(ex){
+    errDiv.textContent='Failed: '+ex.message;errDiv.style.display='block';
   }
 }
 
