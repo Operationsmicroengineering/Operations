@@ -448,6 +448,10 @@
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M9 7v10"/><path d="M15 7v10"/></svg>
         <span class="tab-label-full">IT Ticket Support</span>
       </button>
+      <button class="nav-tab" id="tabDailyreportBtn" onclick="showView('dailyreport')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
+        <span class="tab-label-full">Daily Report</span>
+      </button>
       <button class="nav-tab" id="tabSheetsBtn" onclick="showView('sheets')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         <span class="tab-label-full">Sheets</span>
@@ -462,6 +466,9 @@
       <div class="nav-info mono" id="lastSync"><span class="sync-dot" id="syncDot"></span><span id="syncText">Loading...</span></div>
       <button class="nav-icon-btn" onclick="openActivityDrawer()" title="Recent Activity">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+      </button>
+      <button class="nav-icon-btn admin-only-el" id="manageUsersBtn" onclick="openManageUsersModal()" title="Manage Users" style="display:none">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.5 21a8.5 8.5 0 0 0-17 0"/><circle cx="12" cy="8" r="5"/></svg>
       </button>
       <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle light/dark theme">
         <svg id="themeIconMoon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -501,7 +508,7 @@
 
       <!-- Quick actions -->
       <div class="quick-actions-row">
-        <div class="quick-action-card primary" onclick="openAddModal()"><div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>Add Employee</div>
+        <div class="quick-action-card primary admin-only-el" onclick="openAddModal()"><div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>Add Employee</div>
         <div class="quick-action-card" onclick="loadData(true)"><div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg></div>Refresh</div>
         <div class="quick-action-card" onclick="exportEmployeesCSV()"><div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>Export CSV</div>
       </div>
@@ -936,7 +943,7 @@
       <div class="success-banner" id="violationSuccessBanner"></div>
       <div class="toolbar">
         <button class="btn-ghost" onclick="loadViolationData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
-        <button class="btn-primary" onclick="openAddViolationModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Violation</button>
+        <button class="btn-primary admin-only-el" onclick="openAddViolationModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Violation</button>
         <button class="btn-ghost" onclick="openManageOptionsModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Manage Options</button>
       </div>
       <div class="table-card">
@@ -954,7 +961,7 @@
     <div id="salaryView" style="display:none">
       <div class="error-banner" id="salaryErrorBanner"></div>
       <div class="toolbar">
-        <button class="btn-ghost" onclick="openSalarySheetModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Change Salary Sheet</button>
+        <button class="btn-ghost admin-only-el" onclick="openSalarySheetModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Change Salary Sheet</button>
         <button class="btn-ghost" onclick="loadSalaryData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
       </div>
       <div class="toolbar" style="margin-bottom:1.5rem">
@@ -994,7 +1001,7 @@
       <div class="toolbar">
         <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="latenessSearchInput" placeholder="Search by name..." oninput="renderLatenessTable()"></div>
         <button class="btn-ghost" onclick="loadLatenessData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
-        <button class="btn-primary" onclick="openAddLatenessModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Lateness</button>
+        <button class="btn-primary admin-only-el" onclick="openAddLatenessModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Lateness</button>
       </div>
       <div class="table-card">
         <div class="table-header"><span class="table-title">Lateness records</span><span class="table-count" id="latenessRowCount">—</span></div>
@@ -1017,7 +1024,7 @@
 
       <div class="toolbar">
         <button class="btn-ghost" onclick="loadFurnitureData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>تحديث</button>
-        <button class="btn-ghost" onclick="openAddFurnitureCategoryModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>إضافة نوع جديد</button>
+        <button class="btn-ghost admin-only-el" onclick="openAddFurnitureCategoryModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>إضافة نوع جديد</button>
         <button class="btn-primary" onclick="openFurnitureTotalsModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18.7 8 13 13.7l-3-3L5 16.4"/></svg>إجمالي كل الموقع</button>
       </div>
 
@@ -1057,7 +1064,7 @@
         <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="itTicketsSearchInput" placeholder="Search by PC number or issue..." oninput="renderItTicketsTable()"></div>
         <select id="itTicketsStatusFilter" onchange="renderItTicketsTable()"><option value="">All statuses</option><option value="Solved">Solved</option><option value="Not Solved">Not Solved</option></select>
         <button class="btn-ghost" onclick="loadItTicketsData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
-        <button class="btn-primary" onclick="openAddItTicketModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Ticket</button>
+        <button class="btn-primary admin-only-el" onclick="openAddItTicketModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Ticket</button>
       </div>
       <div class="table-card">
         <div class="table-header"><span class="table-title">IT Tickets</span><span class="table-count" id="itTicketsRowCount">—</span></div>
@@ -1067,6 +1074,40 @@
           <div class="empty" id="itTicketsEmptyState" style="display:none"><div>No tickets found</div></div>
         </div>
         <div class="table-footer"><span id="itTicketsFooterInfo">—</span><span id="itTicketsFooterTime">—</span></div>
+      </div>
+    </div>
+
+    <!-- DAILY OPERATIONS REPORT VIEW -->
+    <div id="dailyreportView" style="display:none">
+      <div class="toolbar" style="flex-wrap:wrap;align-items:flex-end">
+        <div class="form-group" style="margin:0"><label style="font-size:11px">Site</label><input type="text" id="drSite" class="form-control" value="Saint Fatima" style="width:150px"></div>
+        <div class="form-group" style="margin:0"><label style="font-size:11px">Shift</label><input type="text" id="drShift" class="form-control" value="ON - N Shift" style="width:130px"></div>
+        <div class="form-group" style="margin:0"><label style="font-size:11px">Date</label><input type="text" id="drDate" class="form-control" style="width:170px"></div>
+        <button class="btn-ghost" onclick="resetDailyReportForm()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Reset all to "لا يوجد"</button>
+      </div>
+      <div class="toolbar" style="flex-wrap:wrap;align-items:flex-end">
+        <div class="form-group" style="margin:0;flex:1;min-width:220px"><label style="font-size:11px">Overall Status</label><input type="text" id="drOverallStatus" class="form-control" placeholder="e.g. All systems operational"></div>
+        <div class="form-group" style="margin:0;flex:1;min-width:220px"><label style="font-size:11px">CC (one per line)</label><textarea id="drCC" class="form-control" rows="1" style="resize:vertical">@Eng Beshoy
+@Ahmed Alaa</textarea></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px;align-items:start">
+        <div id="drRoomsContainer"></div>
+
+        <div style="position:sticky;top:80px">
+          <div class="ybk-history-card">
+            <div class="ybk-history-header">
+              <span class="ybk-history-title">Generated Report</span>
+              <button class="btn-ghost" onclick="copyDailyReport()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy
+              </button>
+            </div>
+            <div style="padding:1.2rem 1.5rem;max-height:75vh;overflow-y:auto">
+              <pre id="drOutputText" class="mono" style="white-space:pre-wrap; font-size:12.5px; line-height:1.6; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1117,6 +1158,19 @@
   </div>
   <div class="drawer-body" id="drawerBody"></div>
 </div>
+
+<!-- MANAGE USERS MODAL -->
+<div class="modal-overlay" id="manageUsersModalOverlay"><div class="modal-card" style="max-width:520px"><div class="modal-header"><span class="modal-title">Manage Users</span><button class="modal-close" onclick="closeManageUsersModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<div class="modal-body">
+  <div class="form-error" id="manageUsersFormError"></div>
+  <p style="font-size:12.5px;color:var(--text-1);margin-bottom:1rem">Admins have full access (add/edit/delete). Viewers can only view data.</p>
+  <div class="form-row" style="align-items:flex-end">
+    <div class="form-group" style="flex:1"><label>Add user by email</label><input type="text" id="newUserEmailInput" class="form-control" placeholder="name@operation.com"></div>
+    <button type="button" class="btn-primary" onclick="addUserRoleEntry()" style="margin-bottom:1.1rem">Add</button>
+  </div>
+  <div id="manageUsersList" style="margin-top:0.5rem;max-height:50vh;overflow-y:auto"></div>
+</div>
+</div></div>
 
 <!-- PROFILE MODAL -->
 <div class="modal-overlay" id="profileModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title">Edit profile</span><button class="modal-close" onclick="closeProfileModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
@@ -1476,16 +1530,31 @@ function renderNavIdentity(){
   }
 }
 
+let currentUserRole='Admin';
+
+function applyRolePermissions(){
+  const isAdmin=currentUserRole==='Admin';
+  const manageBtn=document.getElementById('manageUsersBtn');
+  if(manageBtn)manageBtn.style.display=isAdmin?'flex':'none';
+  document.querySelectorAll('.admin-only-el').forEach(el=>{
+    if(el.id==='manageUsersBtn')return; // متعامل معاه فوق لوحده
+    el.style.display=isAdmin?'':'none';
+  });
+}
+
 async function loadUserProfile(email){
   currentUserProfile={email,displayName:'',avatar:''};
   renderNavIdentity();
+  applyRolePermissions(); // ✅ يظهر الزرار فورًا بافتراض Admin، لحد ما نتأكد من السيرفر (بدل ما يفضل مخفي لو الطلب فشل)
   try{
     const res=await fetch(APPS_SCRIPT_URL+'?sheet=userProfile&email='+encodeURIComponent(email));
     if(!res.ok)return;
     const json=await res.json();
     if(json.profile){
       currentUserProfile={email,displayName:json.profile.displayName||'',avatar:json.profile.avatar||''};
+      currentUserRole=json.profile.role||'Admin';
       renderNavIdentity();
+      applyRolePermissions();
     }
   }catch(ex){ /* يفضل شغال بالإيميل لو السيرفر مش متاح */ }
 }
@@ -1552,6 +1621,76 @@ async function saveProfile(){
     errDiv.textContent='Save failed: '+ex.message;errDiv.style.display='block';
   }finally{
     btn.disabled=false;
+  }
+}
+
+// ── Manage Users (Admin/Viewer roles) ──
+let allUsersCache=[];
+
+async function openManageUsersModal(){
+  document.getElementById('manageUsersFormError').style.display='none';
+  document.getElementById('newUserEmailInput').value='';
+  document.getElementById('manageUsersList').innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text-2);font-size:13px">Loading...</div>';
+  document.getElementById('manageUsersModalOverlay').style.display='flex';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=allUsers');
+    const json=await res.json();
+    allUsersCache=json.users||[];
+    renderManageUsersList();
+  }catch(ex){
+    document.getElementById('manageUsersList').innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--bad);font-size:13px">Failed to load users.</div>';
+  }
+}
+function closeManageUsersModal(){document.getElementById('manageUsersModalOverlay').style.display='none';}
+document.getElementById('manageUsersModalOverlay').addEventListener('click',e=>{if(e.target.id==='manageUsersModalOverlay')closeManageUsersModal();});
+
+function renderManageUsersList(){
+  const listEl=document.getElementById('manageUsersList');
+  if(!allUsersCache.length){listEl.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text-2);font-size:13px">No users yet — add one above.</div>';return;}
+  listEl.innerHTML=allUsersCache.map(u=>{
+    const label=u.displayName||u.email;
+    const isAdmin=u.role==='Admin';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line-soft)">
+      <div style="min-width:0">
+        <div style="font-weight:600;font-size:13px;color:var(--text-0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(label)}</div>
+        <div class="mono" style="font-size:11px;color:var(--text-2)">${esc(u.email)}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button type="button" class="filter-chip${isAdmin?' active':''}" onclick="setUserRole('${esc(u.email)}','Admin')">Admin</button>
+        <button type="button" class="filter-chip${!isAdmin?' active':''}" onclick="setUserRole('${esc(u.email)}','Viewer')">Viewer</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addUserRoleEntry(){
+  const errDiv=document.getElementById('manageUsersFormError');
+  errDiv.style.display='none';
+  const email=document.getElementById('newUserEmailInput').value.trim().toLowerCase();
+  if(!email||!email.includes('@')){errDiv.textContent='Please enter a valid email.';errDiv.style.display='block';return;}
+  if(allUsersCache.some(u=>u.email.toLowerCase()===email)){errDiv.textContent='This user is already in the list.';errDiv.style.display='block';return;}
+  document.getElementById('newUserEmailInput').value='';
+  setUserRole(email,'Viewer');
+}
+
+async function setUserRole(targetEmail,role){
+  if(!getSession())return;
+  const errDiv=document.getElementById('manageUsersFormError');
+  errDiv.style.display='none';
+  try{
+    await fetch(APPS_SCRIPT_URL,{
+      method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'setUserRole',data:{targetEmail,role,_actor:getSession()?.user?.email||''}})
+    });
+    await new Promise(r=>setTimeout(r,600));
+    const existing=allUsersCache.find(u=>u.email.toLowerCase()===targetEmail.toLowerCase());
+    if(existing)existing.role=role;
+    else allUsersCache.push({email:targetEmail,displayName:'',avatar:'',role});
+    renderManageUsersList();
+    showSuccess(`${targetEmail} is now ${role}.`);
+  }catch(ex){
+    errDiv.textContent='Failed: '+ex.message;errDiv.style.display='block';
   }
 }
 
@@ -2657,6 +2796,127 @@ async function confirmDeleteItTicket(){
     .then(()=>showSuccess('Ticket deleted.','ittickets'))
     .catch(ex=>showError('Delete failed: '+ex.message,'ittickets'));
 }
+
+// ── Daily Operations Report generator ──
+const DAILY_REPORT_NONE='لا يوجد.';
+const DAILY_REPORT_FULL_CATEGORIES=['Technical Issues','IT Issues','Application Issues','Facilities & Maintenance Issues'];
+const DAILY_REPORT_STRUCTURE=[
+  {floor:'FLOOR 4',rooms:[
+    {name:'Room 1'},{name:'Room 2'},{name:'Room 3'},{name:'Room 4'},
+    {name:'(POC) Room 5'},{name:'Room 6'},{name:'Room 7'},{name:'Room 8'},{name:'Room 9'},
+    {name:'(BASE MAP Mapping) Room 10'},{name:'(Semantic Mapping) Room 11'},{name:'Room 12'},{name:'Room 13'}
+  ]},
+  {floor:'FLOOR 2 — AVP',rooms:[
+    {name:'Area 1 — PC-1 to PC-40'},{name:'Area 2 — PC-41 to PC-80'},{name:'Meeting Room'}
+  ]},
+  {floor:'FLOOR 3',rooms:[
+    {name:'HR Room 1'},{name:'HR Room 2'},
+    {name:'Break Area',categories:['Facilities & Maintenance Issues']}
+  ]}
+];
+
+let dailyReportInitialized=false;
+
+function drFieldId(roomName,category){
+  return 'dr__'+roomName.replace(/[^a-zA-Z0-9]/g,'_')+'__'+category.replace(/[^a-zA-Z0-9]/g,'_');
+}
+
+function initDailyReportForm(){
+  dailyReportInitialized=true;
+  const now=new Date();
+  document.getElementById('drDate').value=now.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+  const container=document.getElementById('drRoomsContainer');
+  container.innerHTML=DAILY_REPORT_STRUCTURE.map(section=>{
+    const roomsHtml=section.rooms.map(room=>{
+      const cats=room.categories||DAILY_REPORT_FULL_CATEGORIES;
+      const fieldsHtml=cats.map(cat=>`
+        <div class="form-group" style="margin-bottom:8px">
+          <label style="font-size:11px;color:var(--text-2)">${esc(cat)}</label>
+          <input type="text" id="${drFieldId(room.name,cat)}" class="form-control" value="${esc(DAILY_REPORT_NONE)}" oninput="renderDailyReportOutput()">
+        </div>`).join('');
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--line-soft)">
+        <div style="font-weight:700;font-size:13px;color:var(--text-0);margin-bottom:8px">${esc(room.name)}</div>
+        ${fieldsHtml}
+      </div>`;
+    }).join('');
+    return `<div class="ybk-history-card" style="margin-bottom:14px">
+      <div class="ybk-history-header"><span class="ybk-history-title">${esc(section.floor)}</span></div>
+      <div style="padding:0.5rem 1.5rem">${roomsHtml}</div>
+    </div>`;
+  }).join('');
+
+  ['drSite','drShift','drDate','drOverallStatus','drCC'].forEach(id=>{
+    document.getElementById(id).addEventListener('input',renderDailyReportOutput);
+  });
+
+  renderDailyReportOutput();
+}
+
+function renderDailyReportOutput(){
+  const site=document.getElementById('drSite').value.trim();
+  const shift=document.getElementById('drShift').value.trim();
+  const date=document.getElementById('drDate').value.trim();
+  const overall=document.getElementById('drOverallStatus').value.trim();
+  const cc=document.getElementById('drCC').value.trim();
+
+  let lines=[];
+  lines.push('Daily Operations Report');
+  lines.push('');
+  lines.push(`Site: ${site}`);
+  lines.push(`Shift: ${shift}`);
+  lines.push(`Date: ${date}`);
+  lines.push('');
+
+  DAILY_REPORT_STRUCTURE.forEach(section=>{
+    lines.push(section.floor);
+    lines.push('');
+    section.rooms.forEach(room=>{
+      const cats=room.categories||DAILY_REPORT_FULL_CATEGORIES;
+      lines.push(room.name);
+      lines.push('');
+      cats.forEach(cat=>{
+        const el=document.getElementById(drFieldId(room.name,cat));
+        const val=(el?el.value.trim():'')||DAILY_REPORT_NONE;
+        lines.push(`${cat}: ${val}`);
+      });
+      lines.push('');
+    });
+  });
+
+  lines.push('OVERALL STATUS');
+  lines.push('');
+  if(overall)lines.push(overall);
+  lines.push('');
+  lines.push('CC:');
+  if(cc)cc.split('\n').forEach(l=>{ if(l.trim())lines.push(l.trim()); });
+
+  document.getElementById('drOutputText').textContent=lines.join('\n');
+}
+
+function resetDailyReportForm(){
+  if(!confirm('Reset all rooms back to "لا يوجد"؟'))return;
+  document.querySelectorAll('#drRoomsContainer input.form-control').forEach(input=>{
+    input.value=DAILY_REPORT_NONE;
+  });
+  document.getElementById('drOverallStatus').value='';
+  renderDailyReportOutput();
+  showSuccess('All fields reset.');
+}
+
+function copyDailyReport(){
+  const text=document.getElementById('drOutputText').textContent||'';
+  navigator.clipboard.writeText(text).then(()=>{
+    showSuccess('Report copied to clipboard.');
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');}catch{}
+    document.body.removeChild(ta);
+    showSuccess('Report copied to clipboard.');
+  });
+}
+
 
 // ── جرد الأثاث بالصور (Furniture Inventory) ──
 let furnitureCategories={floors:[],categories:[]};
@@ -4338,7 +4598,7 @@ function optimisticMoveTrn(id){optimisticDeleteTrn(id);}
 function rollback(prevEmp,prevTrn){if(prevEmp!==undefined){allData=prevEmp;populateFilters();applyFilters();}if(prevTrn!==undefined){trainingData=prevTrn;populateTrainingFilters();renderTrainingStats();renderTrainingTable();}saveCache();}
 
 function showView(view){
-  ['employees','training','yubikey','violation','salary','lateness','opsreport','itTickets','sheets'].forEach(v=>{
+  ['employees','training','yubikey','violation','salary','lateness','opsreport','itTickets','dailyreport','sheets'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
     const btn=document.getElementById('tab'+v[0].toUpperCase()+v.slice(1)+'Btn');
     if(btn)btn.classList.toggle('active',v===view);
@@ -4359,6 +4619,7 @@ function showView(view){
   if(view==='lateness'&&latenessData.length===0)loadLatenessData();
   if(view==='opsreport')loadFurnitureData();
   if(view==='itTickets'&&itTicketsData.length===0)loadItTicketsData();
+  if(view==='dailyreport'&&!dailyReportInitialized)initDailyReportForm();
 }
 
 function bannerIds(scope){
