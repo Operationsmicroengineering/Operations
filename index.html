@@ -1107,6 +1107,16 @@
               <pre id="drOutputText" class="mono" style="white-space:pre-wrap; font-size:12.5px; line-height:1.6; color:var(--text-0); background:var(--bg-0); border:1px solid var(--line); border-radius:8px; padding:1rem 1.2rem;">—</pre>
             </div>
           </div>
+
+          <div class="ybk-history-card" style="margin-top:14px">
+            <div class="ybk-history-header">
+              <span class="ybk-history-title">Issues Summary</span>
+              <span class="table-count" id="drIssuesCount" style="color:var(--bad);background:var(--bad-dim);border-color:rgba(240,85,107,0.3)">0 issues</span>
+            </div>
+            <div style="padding:1rem 1.5rem" id="drIssuesSummary">
+              <div style="color:var(--text-2);font-size:12.5px">No issues reported — everything is "لا يوجد".</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2861,6 +2871,7 @@ function renderDailyReportOutput(){
   const cc=document.getElementById('drCC').value.trim();
 
   let lines=[];
+  const issues=[]; // ✅ {floor, room, category, value}
   lines.push('Daily Operations Report');
   lines.push('');
   lines.push(`Site: ${site}`);
@@ -2877,8 +2888,12 @@ function renderDailyReportOutput(){
       lines.push('');
       cats.forEach(cat=>{
         const el=document.getElementById(drFieldId(room.name,cat));
-        const val=(el?el.value.trim():'')||DAILY_REPORT_NONE;
+        const raw=el?el.value.trim():'';
+        const val=raw||DAILY_REPORT_NONE;
         lines.push(`${cat}: ${val}`);
+        if(val!==DAILY_REPORT_NONE){
+          issues.push({floor:section.floor,room:room.name,category:cat,value:val});
+        }
       });
       lines.push('');
     });
@@ -2892,6 +2907,29 @@ function renderDailyReportOutput(){
   if(cc)cc.split('\n').forEach(l=>{ if(l.trim())lines.push(l.trim()); });
 
   document.getElementById('drOutputText').textContent=lines.join('\n');
+  renderDailyReportIssuesSummary(issues);
+}
+
+function renderDailyReportIssuesSummary(issues){
+  document.getElementById('drIssuesCount').textContent=issues.length+(issues.length===1?' issue':' issues');
+  const el=document.getElementById('drIssuesSummary');
+  if(!issues.length){
+    el.innerHTML='<div style="color:var(--text-2);font-size:12.5px">No issues reported — everything is "لا يوجد".</div>';
+    return;
+  }
+  // ✅ نجمعهم حسب الدور عشان يبقى مرتب
+  const byFloor={};
+  issues.forEach(i=>{ (byFloor[i.floor]=byFloor[i.floor]||[]).push(i); });
+
+  el.innerHTML=Object.entries(byFloor).map(([floor,items])=>`
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--text-2);letter-spacing:0.5px;margin-bottom:6px">${esc(floor)}</div>
+      ${items.map(i=>`
+        <div style="background:var(--bad-dim);border:1px solid rgba(240,85,107,0.25);border-radius:8px;padding:8px 10px;margin-bottom:6px">
+          <div style="font-weight:700;font-size:12.5px;color:var(--text-0)">${esc(i.room)} <span style="color:var(--text-2);font-weight:500">— ${esc(i.category)}</span></div>
+          <div style="font-size:12.5px;color:var(--bad);margin-top:2px">${esc(i.value)}</div>
+        </div>`).join('')}
+    </div>`).join('');
 }
 
 function resetDailyReportForm(){
