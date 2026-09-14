@@ -1290,7 +1290,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwpJvAcMEjS-23z0xDmAd3sDfIkIxd0a_FVNoc-KJ4DUm85826uL_-ESHkXwBQOkug8WQ/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyYh90tsYMuDnfx3Tw5CMUAUs2jIlxXB4Y-OVx2E_5ZALKv4U8bPNuaiUVKRLPi5Gprfw/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1543,12 +1543,11 @@ function renderNavIdentity(){
 let currentUserRole='Admin';
 
 function applyRolePermissions(){
-  const isAdmin=currentUserRole==='Admin';
+  // ✅ نظام الأدوار (Admin/Viewer) اتلغى — كل الأزرار ظاهرة للجميع دايمًا
   const manageBtn=document.getElementById('manageUsersBtn');
-  if(manageBtn)manageBtn.style.display=isAdmin?'flex':'none';
+  if(manageBtn)manageBtn.style.display='none';
   document.querySelectorAll('.admin-only-el').forEach(el=>{
-    if(el.id==='manageUsersBtn')return; // متعامل معاه فوق لوحده
-    el.style.display=isAdmin?'':'none';
+    el.style.display='';
   });
 }
 
