@@ -1772,8 +1772,10 @@ async function loadData(forceVisible=false){
     ['empTable','emptyState','trnTable','trnEmptyState','errorBanner'].forEach(id=>document.getElementById(id).style.display='none');
   }
   setSyncState('syncing','Syncing...');isSyncing=true;
+  const controller=new AbortController();
+  const timeoutId=setTimeout(()=>controller.abort(),15000); // ✅ 15 ثانية حد أقصى — بعدها بيفشل بوضوح بدل ما يعلّق للأبد
   try{
-    const res=await fetch(APPS_SCRIPT_URL);
+    const res=await fetch(APPS_SCRIPT_URL,{signal:controller.signal});
     if(!res.ok)throw new Error(`Fetch error: ${res.status}`);
     const json=await res.json();
     if(json.error)throw new Error(json.error);
@@ -1783,9 +1785,10 @@ async function loadData(forceVisible=false){
     saveCache();
     setSyncState('ok',`Updated ${new Date().toLocaleTimeString('en-US')}`);
   }catch(ex){
-    if(isFirst){['loadingState','trnLoadingState'].forEach(id=>document.getElementById(id).style.display='none');showError('Failed to load: '+esc(ex.message));}
+    const msg=ex.name==='AbortError'?'Server took too long to respond (timeout)':ex.message;
+    if(isFirst){['loadingState','trnLoadingState'].forEach(id=>document.getElementById(id).style.display='none');showError('Failed to load: '+esc(msg));}
     setSyncState('error','Sync failed');
-  }finally{isSyncing=false;}
+  }finally{isSyncing=false;clearTimeout(timeoutId);}
 }
 
 async function callScriptGeneric(action, payload, refreshFn) {
