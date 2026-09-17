@@ -374,6 +374,40 @@
     .form-row { grid-template-columns:1fr; } .nav-tab span.tab-label-full { display:none; }
     .site-totals { gap:10px; } .site-total-val { font-size:18px; }
   }
+
+  /* ── Operations Biometric Attendance ── */
+  .ops-attendance-wrap{max-width:1100px;margin:0 auto;}
+  .ops-attendance-grid{display:grid;grid-template-columns:minmax(320px,1fr) minmax(420px,1.5fr);gap:16px;align-items:start;}
+  .ops-attendance-card,.ops-attendance-history{background:var(--bg-1);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-card);}
+  .ops-attendance-card{padding:28px;text-align:center;}
+  .ops-attendance-history{overflow:hidden;}
+  .ops-attendance-icon{width:72px;height:72px;margin:0 auto 16px;border-radius:18px;background:var(--signal-dim);border:1px solid var(--signal-line);color:var(--signal);display:flex;align-items:center;justify-content:center;font-size:32px;}
+  .ops-attendance-title{font-size:20px;font-weight:800;margin-bottom:7px;}
+  .ops-attendance-sub{font-size:12px;color:var(--text-1);margin-bottom:18px;}
+  .ops-attendance-clock{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;letter-spacing:1px;margin:16px 0 24px;color:var(--text-0);}
+  .ops-attendance-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .ops-attendance-btn{border:1px solid var(--line);border-radius:8px;padding:12px 16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
+  .ops-attendance-btn:disabled{opacity:.5;cursor:not-allowed;}
+  .ops-attendance-btn.checkin{background:var(--ok);color:#06150d;border-color:var(--ok);}
+  .ops-attendance-btn.checkout{background:var(--bg-2);color:var(--text-0);}
+  .ops-attendance-btn.register{grid-column:1/-1;background:var(--signal-dim);color:var(--signal);border-color:var(--signal-line);}
+  .ops-attendance-status{margin-top:16px;padding:11px 13px;border-radius:8px;font-size:12px;display:none;}
+  .ops-attendance-status.success{display:block;background:var(--ok-dim);color:var(--ok);border:1px solid rgba(61,214,140,.25);}
+  .ops-attendance-status.error{display:block;background:var(--bad-dim);color:var(--bad);border:1px solid rgba(240,85,107,.25);}
+  .ops-attendance-status.info{display:block;background:var(--signal-dim);color:var(--signal);border:1px solid var(--signal-line);}
+  .ops-attendance-history-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .ops-attendance-history-title{font-size:14px;font-weight:700;}
+  .ops-attendance-history-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-2);}
+  .ops-attendance-table-wrap{overflow:auto;}
+  .ops-attendance-table{width:100%;min-width:520px;border-collapse:collapse;}
+  .ops-attendance-table th{cursor:default;padding:11px 14px;}
+  .ops-attendance-table td{padding:11px 14px;}
+  .ops-attendance-empty{padding:38px 20px;text-align:center;color:var(--text-2);font-size:12px;}
+  .ops-attendance-badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;}
+  .ops-attendance-badge.in{background:var(--ok-dim);color:var(--ok);}
+  .ops-attendance-badge.out{background:var(--signal-dim);color:var(--signal);}
+  @media(max-width:850px){.ops-attendance-grid{grid-template-columns:1fr}.ops-attendance-buttons{grid-template-columns:1fr}.ops-attendance-btn.register{grid-column:auto}}
+
 </style>
 </head>
 <body>
@@ -455,6 +489,10 @@
       <button class="nav-tab" id="tabSheetsBtn" onclick="showView('sheets')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         <span class="tab-label-full">Sheets</span>
+      </button>
+      <button class="nav-tab" id="tabOpsAttendanceBtn" onclick="showView('opsAttendance')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/><path d="M8 2l-1 2M16 2l1 2"/></svg>
+        <span class="tab-label-full">Ops Attendance</span>
       </button>
     </div>
     <div class="nav-left">
@@ -1126,7 +1164,46 @@
       <div class="sheets-toolbar"><div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="sheetsSearchInput" placeholder="Search sheets and forms..." oninput="renderSheets()"></div></div>
       <div id="sheetsContainer"></div>
     </div>
-  </main>
+      <!-- OPERATIONS ATTENDANCE VIEW -->
+    <div id="opsAttendanceView" style="display:none;">
+      <div class="ops-attendance-wrap">
+        <div class="page-header" style="margin-bottom:18px;">
+          <div>
+            <h1>Operations Attendance</h1>
+            <p>Biometric attendance for the Operations Team</p>
+          </div>
+        </div>
+
+        <div class="ops-attendance-grid">
+          <div class="ops-attendance-card">
+            <div class="ops-attendance-icon">◉</div>
+            <div class="ops-attendance-title">Operations Check-in</div>
+            <div class="ops-attendance-sub" id="opsAttendanceUser">Loading user...</div>
+            <div class="ops-attendance-clock" id="opsAttendanceClock">--:--:--</div>
+
+            <div class="ops-attendance-buttons">
+              <button class="ops-attendance-btn checkin" id="opsCheckInBtn" onclick="operationsBiometricAttendance('CHECK_IN')">Check In</button>
+              <button class="ops-attendance-btn checkout" id="opsCheckOutBtn" onclick="operationsBiometricAttendance('CHECK_OUT')">Check Out</button>
+              <button class="ops-attendance-btn register" id="opsRegisterBiometricBtn" onclick="registerOperationsBiometric()">Register This Device</button>
+            </div>
+
+            <div class="ops-attendance-status" id="opsAttendanceStatus"></div>
+          </div>
+
+          <div class="ops-attendance-history">
+            <div class="ops-attendance-history-head">
+              <div class="ops-attendance-history-title">Today's Operations Attendance</div>
+              <div class="ops-attendance-history-date" id="opsAttendanceHistoryDate"></div>
+            </div>
+            <div class="ops-attendance-table-wrap" id="opsAttendanceTable">
+              <div class="ops-attendance-empty">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</main>
 </div>
 
 <!-- ADD EMPLOYEE MODAL -->
@@ -1290,7 +1367,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzlLFRky5ZiSsUwjqbvBrwRwCNYGl3AzLSMUC7Z-4bjeXCsUuczfTXyxmkjAO_IuBz79Q/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzUQYNtSBMBLUeftTDeZOrXul7W9cAWft5Hn3OYbpBdOkI-VqoRYNA81Db1g_Tvj1Ga4Q/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 30 * 60 * 1000;
@@ -4661,7 +4738,7 @@ function optimisticMoveTrn(id){optimisticDeleteTrn(id);}
 function rollback(prevEmp,prevTrn){if(prevEmp!==undefined){allData=prevEmp;populateFilters();applyFilters();}if(prevTrn!==undefined){trainingData=prevTrn;populateTrainingFilters();renderTrainingStats();renderTrainingTable();}saveCache();}
 
 function showView(view){
-  ['employees','training','yubikey','violation','salary','lateness','opsreport','itTickets','dailyreport','sheets'].forEach(v=>{
+  ['employees','training','yubikey','violation','salary','lateness','opsreport','itTickets','dailyreport','sheets','opsAttendance'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
     const btn=document.getElementById('tab'+v[0].toUpperCase()+v.slice(1)+'Btn');
     if(btn)btn.classList.toggle('active',v===view);
@@ -4683,6 +4760,7 @@ function showView(view){
   if(view==='opsreport')loadFurnitureData();
   if(view==='itTickets'&&itTicketsData.length===0)loadItTicketsData();
   if(view==='dailyreport'&&!dailyReportInitialized)initDailyReportForm();
+  if(view==='opsAttendance')initOperationsAttendance();
 }
 
 function bannerIds(scope){
@@ -5127,6 +5205,199 @@ function renderSheets(){
   SHEETS_DATA.forEach(group=>{const items=group.items.filter(it=>!q||it.name.toLowerCase().includes(q));if(!items.length)return;anyResults=true;html+=`<div class="sheets-category"><div class="sheets-category-head"><span class="sheets-category-title">${esc(group.category)}</span><span class="sheets-category-count">${items.length}</span></div><div class="sheets-grid">${items.map(it=>`<a class="sheet-card" href="${esc(it.url)}" target="_blank" rel="noopener noreferrer"><div class="sheet-icon ${it.type==='form'?'form':''}">${sheetIconSvg(it.type)}</div><div class="sheet-info"><div class="sheet-name">${esc(it.name)}</div><div class="sheet-type">${it.type==='form'?'Form':'Sheet'}</div></div><svg class="sheet-open" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>`).join('')}</div></div>`;});
   container.innerHTML=anyResults?html:`<div class="sheets-empty">No sheets match your search</div>`;
 }
+
+
+// ── Operations Biometric Attendance ─────────────────────────
+const OPS_BIOMETRIC_CRED_KEY = 'ops_biometric_credential_v1';
+let opsAttendanceClockTimer = null;
+let opsAttendanceInitialized = false;
+
+function opsBase64Url(buffer){
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for(let i=0;i<bytes.length;i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+
+function opsRandomBytes(length=32){
+  const bytes = new Uint8Array(length);
+  crypto.getRandomValues(bytes);
+  return bytes;
+}
+
+function opsCredentialId(){
+  try{return localStorage.getItem(OPS_BIOMETRIC_CRED_KEY)||'';}catch{return '';}
+}
+
+function setOpsCredentialId(id){
+  try{localStorage.setItem(OPS_BIOMETRIC_CRED_KEY,id);}catch{}
+}
+
+function supportsOpsBiometric(){
+  return !!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.create && navigator.credentials.get && window.isSecureContext);
+}
+
+function setOpsAttendanceStatus(message,type='info'){
+  const el=document.getElementById('opsAttendanceStatus');
+  if(!el)return;
+  el.textContent=message;
+  el.className='ops-attendance-status '+type;
+}
+
+function initOperationsAttendance(){
+  if(!getSession())return;
+  const userEmail=getSession()?.user?.email||'';
+  const displayName=currentUserProfile.displayName||userEmail||'Operations User';
+  const userEl=document.getElementById('opsAttendanceUser');
+  if(userEl)userEl.textContent=displayName;
+  const dateEl=document.getElementById('opsAttendanceHistoryDate');
+  if(dateEl)dateEl.textContent=new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'2-digit'});
+  updateOpsAttendanceClock();
+  if(opsAttendanceClockTimer)clearInterval(opsAttendanceClockTimer);
+  opsAttendanceClockTimer=setInterval(updateOpsAttendanceClock,1000);
+  opsAttendanceInitialized=true;
+  const registerBtn=document.getElementById('opsRegisterBiometricBtn');
+  if(registerBtn){
+    registerBtn.style.display=supportsOpsBiometric()?'block':'none';
+  }
+  if(!supportsOpsBiometric()){
+    setOpsAttendanceStatus('This browser/device does not support Face ID / Windows Hello biometric authentication.','error');
+  }
+  loadOperationsAttendance();
+}
+
+function updateOpsAttendanceClock(){
+  const el=document.getElementById('opsAttendanceClock');
+  if(!el)return;
+  el.textContent=new Date().toLocaleTimeString('en-US',{hour12:false});
+}
+
+async function registerOperationsBiometric(){
+  const session=getSession();
+  if(!session){setOpsAttendanceStatus('Please sign in first.','error');return;}
+  if(!supportsOpsBiometric()){
+    setOpsAttendanceStatus('Biometric authentication requires HTTPS and a supported browser/device.','error');
+    return;
+  }
+  const email=session.user?.email||'';
+  const btn=document.getElementById('opsRegisterBiometricBtn');
+  if(btn){btn.disabled=true;btn.textContent='Registering...';}
+  try{
+    const userId=opsRandomBytes(16);
+    const credential=await navigator.credentials.create({publicKey:{
+      challenge:opsRandomBytes(32),
+      rp:{name:'Operations Team',id:location.hostname},
+      user:{id:userId,name:email,displayName:currentUserProfile.displayName||email},
+      pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+      authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'preferred',userVerification:'required'},
+      timeout:60000,
+      attestation:'none'
+    }});
+    if(!credential)throw new Error('Biometric registration was cancelled.');
+    const credentialId=opsBase64Url(credential.rawId);
+    setOpsCredentialId(credentialId);
+    await callScriptGeneric('operationsBiometricRegister',{
+      email,
+      credentialId,
+      clientDataJSON:opsBase64Url(credential.response.clientDataJSON),
+      attestationObject:opsBase64Url(credential.response.attestationObject),
+      registeredAt:new Date().toISOString()
+    });
+    setOpsAttendanceStatus('This device is registered. You can now use Check In / Check Out.','success');
+  }catch(ex){
+    console.error(ex);
+    setOpsAttendanceStatus(ex.name==='NotAllowedError'?'Biometric registration was cancelled or not allowed.':(ex.message||'Biometric registration failed.'),'error');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Register This Device';}
+  }
+}
+
+async function operationsBiometricAttendance(action){
+  const session=getSession();
+  if(!session){setOpsAttendanceStatus('Please sign in first.','error');return;}
+  if(!supportsOpsBiometric()){
+    setOpsAttendanceStatus('Biometric authentication requires HTTPS and a supported browser/device.','error');
+    return;
+  }
+  let credentialId=opsCredentialId();
+  if(!credentialId){
+    setOpsAttendanceStatus('Register this device first.','info');
+    await registerOperationsBiometric();
+    credentialId=opsCredentialId();
+    if(!credentialId)return;
+  }
+  const btn=document.getElementById(action==='CHECK_IN'?'opsCheckInBtn':'opsCheckOutBtn');
+  if(btn){btn.disabled=true;btn.textContent='Verifying...';}
+  try{
+    const assertion=await navigator.credentials.get({publicKey:{
+      challenge:opsRandomBytes(32),
+      rpId:location.hostname,
+      allowCredentials:[{type:'public-key',id:Uint8Array.from(atob(credentialId.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0))}],
+      userVerification:'required',
+      timeout:60000
+    }});
+    if(!assertion)throw new Error('Biometric verification was cancelled.');
+    const email=session.user?.email||'';
+    await callScriptGeneric('operationsBiometricAttendance',{
+      email,
+      name:currentUserProfile.displayName||email,
+      action,
+      credentialId,
+      clientDataJSON:opsBase64Url(assertion.response.clientDataJSON),
+      authenticatorData:opsBase64Url(assertion.response.authenticatorData),
+      signature:opsBase64Url(assertion.response.signature),
+      userHandle:assertion.response.userHandle?opsBase64Url(assertion.response.userHandle):'',
+      timestamp:new Date().toISOString()
+    },()=>loadOperationsAttendance(true));
+    setOpsAttendanceStatus(action==='CHECK_IN'?'Check In recorded successfully.':'Check Out recorded successfully.','success');
+  }catch(ex){
+    console.error(ex);
+    setOpsAttendanceStatus(ex.name==='NotAllowedError'?'Biometric verification was cancelled or not allowed.':(ex.message||'Biometric verification failed.'),'error');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=action==='CHECK_IN'?'Check In':'Check Out';}
+  }
+}
+
+function opsDecodeBase64Url(value){
+  let s=String(value||'').replace(/-/g,'+').replace(/_/g,'/');
+  while(s.length%4)s+='=';
+  const binary=atob(s);
+  const bytes=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+  return bytes;
+}
+
+async function loadOperationsAttendance(force=false){
+  const container=document.getElementById('opsAttendanceTable');
+  if(!container||!getSession())return;
+  try{
+    const date=new Date();
+    const dateStr=date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=operationsAttendance&date='+encodeURIComponent(dateStr));
+    if(!res.ok)throw new Error('Failed to load attendance.');
+    const json=await res.json();
+    renderOperationsAttendance(Array.isArray(json.rows)?json.rows:[]);
+  }catch(ex){
+    console.error(ex);
+    container.innerHTML='<div class="ops-attendance-empty">Unable to load attendance records.</div>';
+  }
+}
+
+function renderOperationsAttendance(rows){
+  const container=document.getElementById('opsAttendanceTable');
+  if(!container)return;
+  if(!rows.length){
+    container.innerHTML='<div class="ops-attendance-empty">No Operations attendance records for today.</div>';
+    return;
+  }
+  container.innerHTML=`<table class="ops-attendance-table"><thead><tr><th>Operations Name</th><th>Time</th><th>Action</th></tr></thead><tbody>${rows.map(r=>{
+    const action=String(r.action||r.Action||'').toUpperCase();
+    const badge=action==='CHECK_OUT'?'out':'in';
+    const label=action==='CHECK_OUT'?'Check Out':'Check In';
+    return `<tr><td>${esc(r.name||r['Operations Name']||r.email||'—')}</td><td class="mono">${esc(r.time||r.Time||'—')}</td><td><span class="ops-attendance-badge ${badge}">${label}</span></td></tr>`;
+  }).join('')}</tbody></table>`;
+}
+
 </script>
 </body>
 </html>
