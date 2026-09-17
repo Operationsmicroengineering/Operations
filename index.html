@@ -1765,6 +1765,26 @@ async function changePassword(){
   }
 }
 
+// ✅ بيحاول تاني تلقائيًا لو السيرفر بطّأ أو فشل مرة، قبل ما يستسلم ويقول "فشل" — بيقلل ظهور الأعطال المؤقتة قدام المستخدم
+async function fetchWithRetry(url, retries=2, timeoutMs=15000){
+  let lastError;
+  for(let attempt=0;attempt<=retries;attempt++){
+    const controller=new AbortController();
+    const timeoutId=setTimeout(()=>controller.abort(),timeoutMs);
+    try{
+      const res=await fetch(url,{signal:controller.signal});
+      clearTimeout(timeoutId);
+      if(!res.ok)throw new Error(`Fetch error: ${res.status}`);
+      return res;
+    }catch(ex){
+      clearTimeout(timeoutId);
+      lastError=ex.name==='AbortError'?new Error('Server took too long to respond (timeout)'):ex;
+      if(attempt<retries)await new Promise(r=>setTimeout(r,800*(attempt+1))); // ✅ استنى شوية أكتر كل مرة قبل ما يحاول تاني
+    }
+  }
+  throw lastError;
+}
+
 async function loadData(forceVisible=false){
   if(!getSession()||isSyncing)return;
   const isFirst=allData.length===0&&trainingData.length===0;
@@ -1773,11 +1793,8 @@ async function loadData(forceVisible=false){
     ['empTable','emptyState','trnTable','trnEmptyState','errorBanner'].forEach(id=>document.getElementById(id).style.display='none');
   }
   setSyncState('syncing','Syncing...');isSyncing=true;
-  const controller=new AbortController();
-  const timeoutId=setTimeout(()=>controller.abort(),15000); // ✅ 15 ثانية حد أقصى — بعدها بيفشل بوضوح بدل ما يعلّق للأبد
   try{
-    const res=await fetch(APPS_SCRIPT_URL,{signal:controller.signal});
-    if(!res.ok)throw new Error(`Fetch error: ${res.status}`);
+    const res=await fetchWithRetry(APPS_SCRIPT_URL,2,15000);
     const json=await res.json();
     if(json.error)throw new Error(json.error);
     allData=json.employees||[];trainingData=json.training||[];
@@ -1786,10 +1803,9 @@ async function loadData(forceVisible=false){
     saveCache();
     setSyncState('ok',`Updated ${new Date().toLocaleTimeString('en-US')}`);
   }catch(ex){
-    const msg=ex.name==='AbortError'?'Server took too long to respond (timeout)':ex.message;
-    if(isFirst){['loadingState','trnLoadingState'].forEach(id=>document.getElementById(id).style.display='none');showError('Failed to load: '+esc(msg));}
+    if(isFirst){['loadingState','trnLoadingState'].forEach(id=>document.getElementById(id).style.display='none');showError('Failed to load: '+esc(ex.message));}
     setSyncState('error','Sync failed');
-  }finally{isSyncing=false;clearTimeout(timeoutId);}
+  }finally{isSyncing=false;}
 }
 
 async function callScriptGeneric(action, payload, refreshFn) {
