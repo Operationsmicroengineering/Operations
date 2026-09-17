@@ -1290,7 +1290,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbws0bwxOnGcx_yDUlbi-hVSxfoCZ_Lv3twFTOyxsMt5Qz9HC2LhOfGzs3bJMk2GdQ6ICg/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzcMj9vUoHWeSatBCrntQ18vo5auqBFWoJ5pco3Uo3ZvG0aSbT8lCBUPx2OrQOgRAQdnQ/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1543,11 +1543,12 @@ function renderNavIdentity(){
 let currentUserRole='Admin';
 
 function applyRolePermissions(){
-  // ✅ نظام الأدوار (Admin/Viewer) اتلغى — كل الأزرار ظاهرة للجميع دايمًا
+  const isAdmin=currentUserRole==='Admin';
   const manageBtn=document.getElementById('manageUsersBtn');
-  if(manageBtn)manageBtn.style.display='none';
+  if(manageBtn)manageBtn.style.display=isAdmin?'flex':'none';
   document.querySelectorAll('.admin-only-el').forEach(el=>{
-    el.style.display='';
+    if(el.id==='manageUsersBtn')return;
+    el.style.display=isAdmin?'':'none';
   });
 }
 
@@ -5100,6 +5101,7 @@ const SHEETS_DATA=[
   ]},
     {category:'Operations Team Reports ',items:[
     {name:'Operations Team',type:'sheet',url:'https://docs.google.com/spreadsheets/d/1T7OUpSt3E6wF3lqhsi-uQaKPmCwlQf7fN0bBj4-dw7o/edit?pli=1&gid=1518837739#gid=1518837739'},
+    {name:'New Sheet',type:'sheet',url:'https://docs.google.com/spreadsheets/d/169pw3h0RpseH94mJd-RTcmFCfVYO2Op9J-e2jocWmaQ/edit?gid=1772583322#gid=1772583322'},
   ]},
 ];
 
