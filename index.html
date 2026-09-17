@@ -1290,7 +1290,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzcMj9vUoHWeSatBCrntQ18vo5auqBFWoJ5pco3Uo3ZvG0aSbT8lCBUPx2OrQOgRAQdnQ/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyCHVOaFUtbxPzGMU4-7oz0p3AJtbQDnOqUhTCVL36SWvXt2QO6NCV_yrGcg30Ajj3JdA/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 10 * 60 * 1000;
@@ -1518,7 +1518,7 @@ function showWelcomeToast(email){
   setTimeout(()=>toast.classList.remove('show'),4000);
 }
 
-function startPolling(){stopPolling();pollTimer=setInterval(()=>{getSession()?loadData():stopPolling();},120000);}
+function startPolling(){stopPolling();pollTimer=setInterval(()=>{getSession()?loadData():stopPolling();},300000);}
 function stopPolling(){if(pollTimer){clearInterval(pollTimer);pollTimer=null;}}
 
 // ── User Profile (Display Name + Avatar) ──
