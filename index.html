@@ -1142,6 +1142,10 @@
           <div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
           <span>Enrolled People</span>
         </div>
+        <div class="quick-action-card" id="bioTabCard_attendance" onclick="switchBioTab('attendance')">
+          <div class="quick-action-card-icon"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg></div>
+          <span>Attendance Log</span>
+        </div>
       </div>
 
       <div id="bioModelStatus" style="text-align:center;padding:1rem;color:var(--text-1);font-size:13px"></div>
@@ -1194,6 +1198,17 @@
         <div class="ybk-history-card">
           <div class="ybk-history-header"><span class="ybk-history-title">Enrolled People</span><button class="btn-ghost" onclick="loadBioEnrollments(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button></div>
           <div id="bioEnrollList" style="padding:0.5rem 1rem"></div>
+        </div>
+      </div>
+
+      <!-- Attendance log pane -->
+      <div id="bioPane_attendance" style="display:none">
+        <div class="table-card">
+          <div class="table-header"><span class="table-title">Face Attendance Log</span><span class="table-count" id="bioAttendanceRowCount">—</span></div>
+          <div class="table-wrap">
+            <table id="bioAttendanceTable" style="display:none"><thead><tr><th>Name</th><th>Date</th><th>Time</th></tr></thead><tbody id="bioAttendanceTableBody"></tbody></table>
+            <div class="empty" id="bioAttendanceEmptyState" style="display:none"><div>No check-ins recorded yet</div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1367,7 +1382,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycby214GZjNUDcEEMZlUFh_qdcWn7qwqyt5QfNNtp-AaY6oShkWblpcXKK5MdSm3P-GGYog/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxwxUg2vamtHhJEn5QV186VKynhTMEf3VxLo1GSLXODQTcZM16BsRokmDD41hOKbtAWBQ/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 30 * 60 * 1000;
@@ -3132,12 +3147,13 @@ function startBioDetectionLoop(kind){
 }
 
 function switchBioTab(name){
-  ['register','verify','list'].forEach(t=>{
+  ['register','verify','list','attendance'].forEach(t=>{
     const pane=document.getElementById('bioPane_'+t);
-    pane.style.display=(t===name)?(t==='list'?'block':'grid'):'none';
+    pane.style.display=(t===name)?(t==='list'||t==='attendance'?'block':'grid'):'none';
     document.getElementById('bioTabCard_'+t).classList.toggle('active',t===name);
   });
   if(name==='list')loadBioEnrollments();
+  if(name==='attendance')loadBioAttendanceLog();
 }
 
 async function captureAndRegister(){
@@ -3197,7 +3213,18 @@ async function captureAndVerify(){
       <img src="${best.photo}" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:2px solid var(--ok)">
       <div style="font-size:22px;font-weight:800;margin:8px 0 4px;color:var(--ok)">${esc(best.name)}</div>
       <div style="font-size:13px;color:var(--text-1)">Match confidence: ${confidence}%</div>
+      <div style="font-size:12px;color:var(--text-2);margin-top:8px" id="verAttendanceStatus">Recording attendance...</div>
     </div>`;
+    // ✅ تسجيل حضور تلقائي عند التطابق
+    callScriptGeneric('addFaceAttendance',{name:best.name},()=>{})
+      .then(()=>{
+        const el=document.getElementById('verAttendanceStatus');
+        if(el)el.innerHTML=`<span style="color:var(--ok)">✓ Attendance recorded at ${new Date().toLocaleTimeString('en-US')}</span>`;
+      })
+      .catch(ex=>{
+        const el=document.getElementById('verAttendanceStatus');
+        if(el)el.innerHTML=`<span style="color:var(--bad)">Failed to record attendance: ${esc(ex.message)}</span>`;
+      });
   }else{
     resultEl.innerHTML=`<div style="text-align:center;padding:1.5rem">
       <div style="font-size:22px;font-weight:800;margin:8px 0 4px;color:var(--bad)">No Match Found</div>
@@ -3222,6 +3249,30 @@ async function deleteBioEnrollment(rowNum){
   callScriptGeneric('deleteFaceEnrollment',{'_row':rowNum},()=>loadBioEnrollments(true))
     .then(()=>showSuccess('Enrollment deleted.','biometric'))
     .catch(ex=>showError('Delete failed: '+ex.message,'biometric'));
+}
+
+async function loadBioAttendanceLog(){
+  document.getElementById('bioAttendanceTable').style.display='none';
+  document.getElementById('bioAttendanceEmptyState').style.display='none';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=faceAttendance&force=1');
+    const json=await res.json();
+    const rows=(json.log||[]).sort((a,b)=>{
+      const ad=a.date+' '+a.time,bd=b.date+' '+b.time;
+      return bd.localeCompare(ad);
+    });
+    document.getElementById('bioAttendanceRowCount').textContent=rows.length+' check-ins';
+    if(!rows.length){
+      document.getElementById('bioAttendanceEmptyState').style.display='block';
+      return;
+    }
+    document.getElementById('bioAttendanceTable').style.display='table';
+    document.getElementById('bioAttendanceTableBody').innerHTML=rows.map(r=>
+      `<tr><td style="font-weight:600">${esc(r.name)}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.date)}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.time)}</td></tr>`
+    ).join('');
+  }catch(ex){
+    showError('Failed to load attendance log: '+ex.message,'biometric');
+  }
 }
 
 
