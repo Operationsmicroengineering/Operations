@@ -78,12 +78,13 @@
   #dashboardSection { display:none; }
   @keyframes viewFadeIn { from{opacity:0;transform:translateY(4px);} to{opacity:1;transform:translateY(0);} }
   #employeesView, #trainingView, #yubikeyView, #violationView, #sheetsView { animation:viewFadeIn 0.28s ease; }
-  .welcome-toast { position:fixed; top:22px; left:50%; transform:translateX(-50%) translateY(-20px); background:var(--bg-1); border:1px solid var(--signal-line); border-radius:12px; padding:0.9rem 1.6rem; box-shadow:var(--shadow-pop); display:flex; align-items:center; gap:12px; z-index:500; opacity:0; pointer-events:none; transition:opacity 0.35s ease, transform 0.35s ease; }
-  .welcome-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-  .welcome-toast-icon { width:34px; height:34px; border-radius:9px; background:linear-gradient(160deg,var(--signal) 0%,#2a8fa8 100%); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .welcome-toast { position:fixed; top:22px; left:50%; transform:translateX(-50%) translateY(-24px) scale(0.96); background:linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%); border:1px solid var(--signal-line); border-radius:16px; padding:1.1rem 1.8rem 1.1rem 1.1rem; box-shadow:0 20px 50px rgba(0,0,0,0.45), 0 0 0 1px rgba(79,209,232,0.08); display:flex; align-items:center; gap:14px; z-index:500; opacity:0; pointer-events:none; transition:opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.45s cubic-bezier(0.16,1,0.3,1); }
+  .welcome-toast::before { content:''; position:absolute; inset:0; border-radius:16px; padding:1px; background:linear-gradient(135deg, var(--signal), transparent 40%, transparent 60%, var(--signal)); -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; opacity:0.5; pointer-events:none; }
+  .welcome-toast.show { opacity:1; transform:translateX(-50%) translateY(0) scale(1); }
+  .welcome-toast-icon { width:46px; height:46px; border-radius:12px; background:linear-gradient(160deg,var(--signal) 0%,#2a8fa8 100%); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; overflow:hidden; box-shadow:0 6px 16px rgba(79,209,232,0.35); animation:markGlowPulse 3s ease-in-out infinite; }
   .welcome-toast-text { display:flex; flex-direction:column; }
-  .welcome-toast-title { font-size:14px; font-weight:700; color:var(--text-0); }
-  .welcome-toast-sub { font-size:12px; color:var(--text-1); margin-top:2px; }
+  .welcome-toast-title { font-size:15.5px; font-weight:800; color:var(--text-0); letter-spacing:-0.2px; }
+  .welcome-toast-sub { font-size:12px; color:var(--text-1); margin-top:3px; }
   nav { background:rgba(12,15,21,0.85); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 2rem; height:70px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; position:relative; }
   nav::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px; background:linear-gradient(90deg,transparent,var(--signal-line) 20%,var(--signal-line) 80%,transparent); }
   .nav-brand { display:flex; align-items:center; gap:11px; }
@@ -495,7 +496,7 @@
 
 <div id="dashboardSection">
 <div class="welcome-toast" id="welcomeToast">
-  <div class="welcome-toast-icon">👋</div>
+  <div class="welcome-toast-icon" id="welcomeToastIcon">👋</div>
   <div class="welcome-toast-text">
     <div class="welcome-toast-title" id="welcomeToastTitle">Welcome back!</div>
     <div class="welcome-toast-sub" id="welcomeToastSub"></div>
@@ -1618,13 +1619,14 @@ async function handleLogout(){
   document.getElementById('loginError').style.display='none';
 }
 
-function showDashboard(){
+async function showDashboard(){
   document.getElementById('loginSection').style.display='none';
   document.getElementById('dashboardSection').style.display='block';
   const userEmail=getSession()?.user?.email||'';
   document.getElementById('navUserEmail').textContent=userEmail;
-  showWelcomeToast(userEmail);
-  loadUserProfile(userEmail);
+  currentUserProfile={email:userEmail,displayName:'',avatar:''};
+  await loadUserProfile(userEmail); // ✅ نستنى الاسم المسجّل (Display Name) يوصل الأول، عشان رسالة الترحيب تاخده صح
+  showWelcomeToast();
   refreshSupabaseSession();
   const cached=loadCache();
   if(cached){
@@ -1637,17 +1639,31 @@ function showDashboard(){
   startPolling();
 }
 
-function showWelcomeToast(email){
+// ✅ بياخد أول اسمين بس من الـ Display Name (زي "Mohamed Kamal")، أو من الإيميل لو الاسم مش متسجل
+function getWelcomeDisplayName(){
+  const displayName=(currentUserProfile.displayName||'').trim();
+  if(displayName)return displayName.split(/\s+/).slice(0,2).join(' ');
+  const emailPrefix=(currentUserProfile.email||'').split('@')[0]||'there';
+  const cleaned=emailPrefix.replace(/[._]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  return cleaned.split(/\s+/).slice(0,2).join(' ');
+}
+
+function showWelcomeToast(){
   const toast=document.getElementById('welcomeToast');
   if(!toast)return;
   const hour=new Date().getHours();
   const greeting=hour<5?'Working late tonight':hour<12?'Good morning':hour<17?'Good afternoon':hour<21?'Good evening':'Working late tonight';
-  const namePart=(email||'').split('@')[0]||'there';
-  const name=namePart.replace(/[._]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  const name=getWelcomeDisplayName();
   document.getElementById('welcomeToastTitle').textContent=`${greeting}, ${name}!`;
-  document.getElementById('welcomeToastSub').textContent="Here's your Operations dashboard.";
+  document.getElementById('welcomeToastSub').textContent="Welcome back to your Operations dashboard.";
+  const iconEl=document.getElementById('welcomeToastIcon');
+  if(iconEl){
+    iconEl.innerHTML=currentUserProfile.avatar
+      ?`<img src="${currentUserProfile.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">`
+      :'👋';
+  }
   requestAnimationFrame(()=>toast.classList.add('show'));
-  setTimeout(()=>toast.classList.remove('show'),4000);
+  setTimeout(()=>toast.classList.remove('show'),4500);
 }
 
 function startPolling(){stopPolling();pollTimer=setInterval(()=>{getSession()?loadData():stopPolling();},300000);}
