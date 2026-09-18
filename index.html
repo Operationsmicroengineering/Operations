@@ -1206,7 +1206,7 @@
         <div class="table-card">
           <div class="table-header"><span class="table-title">Face Attendance Log</span><span class="table-count" id="bioAttendanceRowCount">—</span></div>
           <div class="table-wrap">
-            <table id="bioAttendanceTable" style="display:none"><thead><tr><th>Name</th><th>Date</th><th>Time</th></tr></thead><tbody id="bioAttendanceTableBody"></tbody></table>
+            <table id="bioAttendanceTable" style="display:none"><thead><tr><th>Photo</th><th>Name</th><th>Date</th><th>Time</th></tr></thead><tbody id="bioAttendanceTableBody"></tbody></table>
             <div class="empty" id="bioAttendanceEmptyState" style="display:none"><div>No check-ins recorded yet</div></div>
           </div>
         </div>
@@ -1382,7 +1382,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxwxUg2vamtHhJEn5QV186VKynhTMEf3VxLo1GSLXODQTcZM16BsRokmDD41hOKbtAWBQ/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxbMsmfZqv3p6rtRyOrFvKVGCn4ZxcdiIYsEw03acpUizX5VqLbfLVfQGThD4_6L8_3Hg/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 30 * 60 * 1000;
@@ -3089,33 +3089,57 @@ function loadBioLibrary(){
   });
 }
 
+let bioRegStream=null, bioVerStream=null;
+
 async function initBiometricTab(){
-  if(bioInitStarted)return;
-  bioInitStarted=true;
-  const statusEl=document.getElementById('bioModelStatus');
-  statusEl.textContent='Loading face recognition library...';
+  if(!bioInitStarted){
+    bioInitStarted=true;
+    const statusEl=document.getElementById('bioModelStatus');
+    statusEl.textContent='Loading face recognition library...';
+    try{
+      await loadBioLibrary();
+      statusEl.textContent='Loading models...';
+      await faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL);
+      await faceapi.nets.faceLandmark68Net.loadFromUri(FACE_MODEL_URL);
+      await faceapi.nets.faceRecognitionNet.loadFromUri(FACE_MODEL_URL);
+      bioModelsReady=true;
+      statusEl.textContent='';
+      startBioDetectionLoop('reg');
+      startBioDetectionLoop('ver');
+    }catch(ex){
+      statusEl.textContent='Failed: '+ex.message+' (camera access or network issue)';
+      statusEl.style.color='var(--bad)';
+      return;
+    }
+  }
+  await startBioCameras(); // ✅ يشغّل الكاميرا لو مقفولة (أول مرة، أو رجعت للتاب بعد ما سبته)
+}
+
+async function startBioCameras(){
   try{
-    await loadBioLibrary();
-    statusEl.textContent='Loading models...';
-    await faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL);
-    await faceapi.nets.faceLandmark68Net.loadFromUri(FACE_MODEL_URL);
-    await faceapi.nets.faceRecognitionNet.loadFromUri(FACE_MODEL_URL);
-    bioModelsReady=true;
-    statusEl.textContent='';
-    await setupBioCamera(document.getElementById('regVideo'));
-    await setupBioCamera(document.getElementById('verVideo'));
-    startBioDetectionLoop('reg');
-    startBioDetectionLoop('ver');
+    if(!bioRegStream)bioRegStream=await setupBioCamera(document.getElementById('regVideo'));
+    if(!bioVerStream)bioVerStream=await setupBioCamera(document.getElementById('verVideo'));
   }catch(ex){
-    statusEl.textContent='Failed: '+ex.message+' (camera access or network issue)';
+    const statusEl=document.getElementById('bioModelStatus');
+    statusEl.textContent='Camera access failed: '+ex.message;
     statusEl.style.color='var(--bad)';
   }
+}
+
+// ✅ بيقفل الكاميرا فعليًا (مش بس يخفي الفيديو) — عشان أيقونة الكاميرا الحمرا في المتصفح تنطفي لما تسيب التاب ده
+function stopBioCameras(){
+  [bioRegStream,bioVerStream].forEach(stream=>{
+    if(stream)stream.getTracks().forEach(t=>t.stop());
+  });
+  bioRegStream=null;bioVerStream=null;
+  regDetection=null;verDetection=null;
 }
 
 async function setupBioCamera(videoEl){
   const stream=await navigator.mediaDevices.getUserMedia({video:{width:480,height:360}});
   videoEl.srcObject=stream;
-  return new Promise(resolve=>{videoEl.onloadedmetadata=()=>resolve();});
+  await new Promise(resolve=>{videoEl.onloadedmetadata=()=>resolve();});
+  return stream;
 }
 
 function startBioDetectionLoop(kind){
@@ -3123,10 +3147,11 @@ function startBioDetectionLoop(kind){
   const canvas=document.getElementById(kind==='reg'?'regCanvas':'verCanvas');
   const status=document.getElementById(kind==='reg'?'regStatus':'verStatus');
   const btn=document.getElementById(kind==='reg'?'regCaptureBtn':'verCaptureBtn');
-  faceapi.matchDimensions(canvas,{width:video.videoWidth||480,height:video.videoHeight||360});
 
   setInterval(async()=>{
-    if(!bioModelsReady||document.getElementById('biometricView').style.display==='none')return;
+    const stream=kind==='reg'?bioRegStream:bioVerStream;
+    if(!bioModelsReady||!stream||document.getElementById('biometricView').style.display==='none')return;
+    faceapi.matchDimensions(canvas,{width:video.videoWidth||480,height:video.videoHeight||360});
     const detection=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
     const ctx=canvas.getContext('2d');
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -3215,8 +3240,16 @@ async function captureAndVerify(){
       <div style="font-size:13px;color:var(--text-1)">Match confidence: ${confidence}%</div>
       <div style="font-size:12px;color:var(--text-2);margin-top:8px" id="verAttendanceStatus">Recording attendance...</div>
     </div>`;
+    // ✅ نلتقط صورة سناب من الكاميرا وقت التحقق، ونبعتها مع تسجيل الحضور
+    const verVideo=document.getElementById('verVideo');
+    const snap=document.createElement('canvas');
+    const maxDim=220,scale=Math.min(1,maxDim/Math.max(verVideo.videoWidth,verVideo.videoHeight));
+    snap.width=verVideo.videoWidth*scale;snap.height=verVideo.videoHeight*scale;
+    snap.getContext('2d').drawImage(verVideo,0,0,snap.width,snap.height);
+    const checkinPhoto=snap.toDataURL('image/jpeg',0.6);
+
     // ✅ تسجيل حضور تلقائي عند التطابق
-    callScriptGeneric('addFaceAttendance',{name:best.name},()=>{})
+    callScriptGeneric('addFaceAttendance',{name:best.name,photo:checkinPhoto},()=>{})
       .then(()=>{
         const el=document.getElementById('verAttendanceStatus');
         if(el)el.innerHTML=`<span style="color:var(--ok)">✓ Attendance recorded at ${new Date().toLocaleTimeString('en-US')}</span>`;
@@ -3268,7 +3301,7 @@ async function loadBioAttendanceLog(){
     }
     document.getElementById('bioAttendanceTable').style.display='table';
     document.getElementById('bioAttendanceTableBody').innerHTML=rows.map(r=>
-      `<tr><td style="font-weight:600">${esc(r.name)}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.date)}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.time)}</td></tr>`
+      `<tr><td>${r.photo?`<img src="${r.photo}" style="width:32px;height:32px;border-radius:6px;object-fit:cover">`:'—'}</td><td style="font-weight:600">${esc(r.name)}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.date)}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r.time)}</td></tr>`
     ).join('');
   }catch(ex){
     showError('Failed to load attendance log: '+ex.message,'biometric');
@@ -4956,6 +4989,7 @@ function optimisticMoveTrn(id){optimisticDeleteTrn(id);}
 function rollback(prevEmp,prevTrn){if(prevEmp!==undefined){allData=prevEmp;populateFilters();applyFilters();}if(prevTrn!==undefined){trainingData=prevTrn;populateTrainingFilters();renderTrainingStats();renderTrainingTable();}saveCache();}
 
 function showView(view){
+  if(view!=='biometric'&&typeof stopBioCameras==='function')stopBioCameras(); // ✅ يقفل الكاميرا فعليًا لما تسيب التاب ده لأي تاب تاني
   ['employees','training','yubikey','violation','salary','lateness','opsreport','itTickets','dailyreport','biometric','sheets'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
     const btn=document.getElementById('tab'+v[0].toUpperCase()+v.slice(1)+'Btn');
