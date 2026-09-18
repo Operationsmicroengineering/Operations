@@ -376,6 +376,95 @@
     .form-row { grid-template-columns:1fr; } .nav-tab span.tab-label-full { display:none; }
     .site-totals { gap:10px; } .site-total-val { font-size:18px; }
   }
+
+  /* ══════════ مؤثرات حركية واحترافية ══════════ */
+
+  /* ✅ خلفية متحركة خلف كارت تسجيل الدخول — بقع ضوء بتتحرك ببطء */
+  .login-container::before, .login-container::after {
+    content:''; position:absolute; border-radius:50%; filter:blur(80px); opacity:0.35; z-index:0; pointer-events:none;
+    animation:loginBlobFloat 14s ease-in-out infinite;
+  }
+  .login-container::before { width:380px; height:380px; background:var(--signal); top:-120px; left:-100px; animation-delay:0s; }
+  .login-container::after { width:340px; height:340px; background:#2a8fa8; bottom:-120px; right:-100px; animation-delay:-7s; }
+  @keyframes loginBlobFloat {
+    0%,100% { transform:translate(0,0) scale(1); }
+    50% { transform:translate(40px,30px) scale(1.15); }
+  }
+
+  /* ✅ ظهور كارت تسجيل الدخول بحركة ناعمة */
+  .login-card { animation:cardRiseIn 0.55s cubic-bezier(0.16,1,0.3,1) both; }
+  @keyframes cardRiseIn {
+    from { opacity:0; transform:translateY(18px) scale(0.98); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+  }
+
+  /* ✅ توهّج نابض حول اللوجو */
+  .login-mark, .nav-mark { animation:markGlowPulse 3s ease-in-out infinite; }
+  @keyframes markGlowPulse {
+    0%,100% { box-shadow:0 4px 14px rgba(79,209,232,0.35); }
+    50%     { box-shadow:0 4px 26px rgba(79,209,232,0.7); }
+  }
+
+  /* ✅ انتقال ناعم بين التابات لما تفتح أي شاشة */
+  #dashboardSection main > div[id$="View"] { animation:viewFadeIn 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+  @keyframes viewFadeIn {
+    from { opacity:0; transform:translateY(10px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ✅ كروت بترتفع وتلمع شوية لما تحوّم عليها بالماوس */
+  .ybk-history-card, .table-card, .quick-action-card, .stat-card {
+    transition:transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .ybk-history-card:hover, .table-card:hover, .stat-card:hover {
+    transform:translateY(-3px);
+    box-shadow:0 14px 34px rgba(0,0,0,0.35), 0 0 0 1px var(--signal-line);
+  }
+  .quick-action-card:hover {
+    transform:translateY(-2px) scale(1.015);
+    border-color:var(--signal-line);
+    box-shadow:0 10px 26px rgba(79,209,232,0.15);
+  }
+
+  /* ✅ أزرار بتستجيب بحركة صغيرة عند الضغط والتحويم */
+  button, .btn-primary, .btn-ghost, .nav-tab, .icon-btn, .nav-icon-btn {
+    transition:transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+  .btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(79,209,232,0.35); }
+  .btn-primary:active, .btn-ghost:active, .icon-btn:active { transform:scale(0.94); }
+  .nav-tab:hover { transform:translateY(-1px); }
+
+  /* ✅ نبضة خفيفة على مؤشر الحالة "Syncing" وقت التحديث */
+  .sync-dot.syncing { animation:syncPulse 1s ease-in-out infinite; }
+  @keyframes syncPulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%     { opacity:0.5; transform:scale(1.3); }
+  }
+
+  /* ✅ ظهور تدريجي للصفوف في الجداول لما تتحمّل */
+  tbody tr { animation:rowFadeIn 0.3s ease both; }
+  @keyframes rowFadeIn {
+    from { opacity:0; transform:translateX(-6px); }
+    to   { opacity:1; transform:translateX(0); }
+  }
+
+  /* ✅ تلميعة (Shimmer) بسيطة تعدي على شريط التنقل فوق كل شوية */
+  nav { position:relative; overflow:hidden; }
+  nav::after {
+    content:''; position:absolute; top:0; left:-40%; width:35%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(79,209,232,0.05), transparent);
+    animation:navShimmer 9s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes navShimmer {
+    0%   { left:-40%; }
+    50%  { left:120%; }
+    100% { left:120%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
 </style>
 </head>
 <body>
