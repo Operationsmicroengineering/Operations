@@ -523,10 +523,6 @@
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <span class="tab-label-full">Violation Report</span>
       </button>
-      <button class="nav-tab" id="tabSalaryBtn" onclick="showView('salary')">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        <span class="tab-label-full">Salary</span>
-      </button>
       <button class="nav-tab" id="tabLatenessBtn" onclick="showView('lateness')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <span class="tab-label-full">Lateness</span>
@@ -1052,43 +1048,6 @@
       </div>
     </div>
 
-    <!-- SALARY VIEW -->
-    <div id="salaryView" style="display:none">
-      <div class="error-banner" id="salaryErrorBanner"></div>
-      <div class="toolbar">
-        <button class="btn-ghost admin-only-el" onclick="openSalarySheetModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Change Salary Sheet</button>
-        <button class="btn-ghost" onclick="loadSalaryData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
-      </div>
-      <div class="toolbar" style="margin-bottom:1.5rem">
-        <span class="ybk-date-label">Attendance date:</span>
-        <div class="ybk-date-selector" id="salaryDateSelector"><span style="font-size:13px;color:var(--text-2)">Loading dates...</span></div>
-      </div>
-      <div class="toolbar">
-        <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="salarySearchInput" placeholder="Search by name (English or Arabic)..." oninput="renderSalaryTable()"></div>
-        <select id="salaryShiftFilter" onchange="renderSalaryTable()"><option value="">All shifts</option></select>
-        <select id="salaryProjectFilter" onchange="renderSalaryTable()"><option value="">All projects</option></select>
-        <select id="salaryRoomFilter" onchange="renderSalaryTable()"><option value="">All rooms</option></select>
-        <select id="salaryAttendanceFilter" onchange="renderSalaryTable()">
-          <option value="">All attendance</option>
-          <option value="present">Present</option>
-          <option value="absent">Absent</option>
-          <option value="training">Training</option>
-          <option value="norecord">No record</option>
-          <option value="notfound">Not found</option>
-        </select>
-        <button class="btn-ghost" onclick="copySalaryList()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy List</button>
-      </div>
-      <div class="table-card">
-        <div class="table-header"><span class="table-title">Full Pay — Salary List</span><span class="table-count" id="salaryRowCount">—</span></div>
-        <div class="table-wrap">
-          <div class="loading" id="salaryLoadingState"><div class="spinner"></div>Loading salary list...</div>
-          <table id="salaryTable" style="display:none"><thead><tr><th>Number</th><th>Name</th><th>Resource Name (Arabic)</th><th>Shift</th><th>Project</th><th>National ID</th><th>Room</th><th>PC</th><th>Attendance</th></tr></thead><tbody id="salaryTableBody"></tbody></table>
-          <div class="empty" id="salaryEmptyState" style="display:none"><div>No matching records</div></div>
-        </div>
-        <div class="table-footer"><span id="salaryFooterInfo">—</span><span id="salaryFooterTime">—</span></div>
-      </div>
-    </div>
-
     <!-- LATENESS VIEW -->
     <div id="latenessView" style="display:none">
       <div class="error-banner" id="latenessErrorBanner"></div>
@@ -1448,16 +1407,6 @@
 <div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeAddFurnitureCategoryModal()">إلغاء</button><button type="button" class="btn-primary" onclick="saveNewFurnitureCategory()">إضافة</button></div>
 </div></div>
 
-<!-- CHANGE SALARY SHEET MODAL -->
-<div class="modal-overlay" id="salarySheetModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title">Change Salary Sheet</span><button class="modal-close" onclick="closeSalarySheetModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-<div class="modal-body">
-  <div class="form-error" id="salarySheetFormError"></div>
-  <p style="font-size:12.5px;color:var(--text-1);margin-bottom:1.2rem;line-height:1.6">لما فريق الحسابات يبعتلك شيت جديد كل شهر، الصق رابطه هنا كامل — الموقع هياخد رقم الملف والتبويب منه تلقائيًا.</p>
-  <div class="form-group"><label>Google Sheets link</label><input type="text" id="salarySheetUrlInput" class="form-control" placeholder="https://docs.google.com/spreadsheets/d/..."></div>
-</div>
-<div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeSalarySheetModal()">Cancel</button><button type="button" class="btn-primary" id="salarySheetSaveBtn" onclick="saveSalarySheetConfig()">Save & Reload</button></div>
-</div></div>
-
 <!-- MANAGE VIOLATION OPTIONS MODAL -->
 <div class="modal-overlay" id="manageOptionsModalOverlay"><div class="modal-card" style="max-width:560px"><div class="modal-header"><span class="modal-title">Manage dropdown options</span><button class="modal-close" onclick="closeManageOptionsModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body">
   <div class="form-error" id="manageOptionsFormError"></div>
@@ -1552,7 +1501,7 @@ function loadNightGtCache() {
 
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
-let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, salaryData=[], latenessData=[], itTicketsData=[], avpNightData={dateColumns:[],rows:[]}, mappingNightData={dateColumns:[],rows:[]};
+let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, latenessData=[], itTicketsData=[], avpNightData={dateColumns:[],rows:[]}, mappingNightData={dateColumns:[],rows:[]};
 let sortCol='', sortAsc=true, pollTimer=null, session=null, isSyncing=false;
 let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null, selectedAvpNightDate=null, selectedMappingNightDate=null;
 
@@ -2031,7 +1980,6 @@ async function loadYubikeyData(forceRefresh=false){
     if(json.error)throw new Error(json.error);
     yubikeyData=json.yubikey||{dateColumns:[],rows:[]};
     buildDateSelector();renderYubikeyTable();saveYbkCache();
-    buildSalaryDateSelector();if(document.getElementById('salaryView').style.display!=='none')renderSalaryTable();
     if(selectedNightDate)renderNightYbkTable();
   }catch(ex){
     document.getElementById('ybkLoadingState').style.display='none';
@@ -2094,7 +2042,6 @@ async function loadAvpData(forceRefresh=false){
     if(json.error)throw new Error(json.error);
     avpData=json.avp||{dateColumns:[],rows:[]};
     buildAvpDateSelector();renderAvpReport();renderAvpTable();renderAvpBufferReport();renderAvpBufferTable();
-    buildSalaryDateSelector();if(document.getElementById('salaryView').style.display!=='none')renderSalaryTable();
     saveAvpCache();
   }catch(ex){
     const el=document.getElementById('avpReportText');
@@ -2261,7 +2208,6 @@ async function loadMappingData(forceRefresh=false){
     if(json.error)throw new Error(json.error);
     mappingData=json.mapping||{dateColumns:[],rows:[]};
     buildMappingDateSelector();renderMappingReport();renderMappingTable();renderMappingBufferReport();renderMappingBufferTable();
-    buildSalaryDateSelector();if(document.getElementById('salaryView').style.display!=='none')renderSalaryTable();
     saveMappingCache();
   }catch(ex){
     const el=document.getElementById('mappingReportText');
@@ -2475,286 +2421,6 @@ async function loadViolationData(forceRefresh=false){
   }catch(ex){
     document.getElementById('violationLoadingState').style.display='none';
     if(!violationData.length){const b=document.getElementById('violationErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;}
-  }
-}
-
-// ── Salary (external file) ──
-function saveSalaryCache(){
-  try{localStorage.setItem('ops_salary_cache_v1',JSON.stringify({data:salaryData,ts:Date.now()}));}catch{}
-}
-function loadSalaryCache(){
-  try{const r=JSON.parse(localStorage.getItem('ops_salary_cache_v1')||'null');return r&&Date.now()-r.ts<CACHE_MAX_AGE?r:null;}catch{return null;}
-}
-
-let salaryShiftDefaultApplied=false, selectedSalaryDate=null;
-
-async function loadSalaryData(forceRefresh=false){
-  if(!getSession())return;
-  if(!forceRefresh){
-    const cached=loadSalaryCache();
-    if(cached){salaryData=cached.data||[];populateSalaryFilters();renderSalaryTable();}
-  }
-  document.getElementById('salaryLoadingState').style.display=(salaryData.length>0)?'none':'block';
-  document.getElementById('salaryErrorBanner').style.display='none';
-  try{
-    const res=await fetch(APPS_SCRIPT_URL+'?sheet=salary'+(forceRefresh?'&force=1':''));
-    if(!res.ok)throw new Error('Failed to fetch salary data');
-    const json=await res.json();
-    if(json.error)throw new Error(json.error);
-    salaryData=json.salary||[];
-    populateSalaryFilters();
-    buildSalaryDateSelector();
-    renderSalaryTable();
-    saveSalaryCache();
-  }catch(ex){
-    document.getElementById('salaryLoadingState').style.display='none';
-    if(!salaryData.length){const b=document.getElementById('salaryErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;}
-  }
-}
-
-function buildSalaryDateSelector(){
-  const container=document.getElementById('salaryDateSelector');
-  if(!container)return;
-  const dm=new Map();
-  [...(yubikeyData.dateColumns||[]),...(avpData.dateColumns||[]),...(mappingData.dateColumns||[])].forEach(d=>{if(!dm.has(d))dm.set(d,d);});
-  const dates=[...dm.values()];
-  if(!dates.length){container.innerHTML='<span style="font-size:13px;color:var(--text-2)">No dates available yet — open Yubikeys Report once first</span>';return;}
-  if(!selectedSalaryDate||!dates.includes(selectedSalaryDate))selectedSalaryDate=dates[dates.length-1];
-  container.innerHTML=dates.map(d=>`<button class="ybk-date-btn${d===selectedSalaryDate?' active':''}" onclick="selectSalaryDate('${esc(d)}')">${esc(d)}</button>`).join('');
-}
-function selectSalaryDate(d){selectedSalaryDate=d;buildSalaryDateSelector();renderSalaryTable();}
-
-// ✅ بيدوّر على حضور الشخص في اليوم المختار — بيبدأ بمصدر بيانات مطابق للمشروع بتاعه، وبعدين يجرب الباقي
-function cleanNameWords(s){
-  return (s||'').replace(/\(.*?\)/g,'').trim().toLowerCase().split(/\s+/).filter(Boolean);
-}
-function levenshteinDist(a,b){
-  const m=a.length,n=b.length;
-  if(m===0)return n; if(n===0)return m;
-  const dp=Array.from({length:m+1},()=>new Array(n+1).fill(0));
-  for(let i=0;i<=m;i++)dp[i][0]=i;
-  for(let j=0;j<=n;j++)dp[0][j]=j;
-  for(let i=1;i<=m;i++){
-    for(let j=1;j<=n;j++){
-      dp[i][j]=Math.min(
-        dp[i-1][j]+1,
-        dp[i][j-1]+1,
-        dp[i-1][j-1]+(a[i-1]===b[j-1]?0:1)
-      );
-    }
-  }
-  return dp[m][n];
-}
-function wordsSimilar(w1,w2){
-  if(w1===w2)return true;
-  const maxLen=Math.max(w1.length,w2.length);
-  if(maxLen===0)return true;
-  const dist=levenshteinDist(w1,w2);
-  return (1-dist/maxLen)>=0.58; // ✅ بيسمح بفروق تهجئة أوضح (زي Abass/Abbas)، والحماية من غلطات المطابقة بييجي من شرط الـ 3 كلمات
-}
-function namesMatchFuzzy(nameA,nameB){
-  const wordsA=cleanNameWords(nameA),wordsB=cleanNameWords(nameB);
-  if(!wordsA.length||!wordsB.length)return false;
-  const minLen=Math.min(wordsA.length,wordsB.length);
-  let matches=0;
-  for(let i=0;i<minLen;i++){if(wordsSimilar(wordsA[i],wordsB[i]))matches++;}
-  const needed=Math.min(minLen,3);
-  return matches>=needed && (matches/minLen)>=0.75;
-}
-
-// ✅ مستوى تالت: مقارنة الاسم كله كسلسلة حروف من غير مسافات — بيحل مشكلة كلمة اتقسمت لكلمتين أو العكس (زي "El Den" مقابل "Eldein")
-function normalizeNameFull(s){
-  return (s||'').replace(/\(.*?\)/g,'').toLowerCase().replace(/[^a-z]/g,'');
-}
-function namesMatchWhole(nameA,nameB){
-  const a=normalizeNameFull(nameA),b=normalizeNameFull(nameB);
-  if(!a||!b)return false;
-  const maxLen=Math.max(a.length,b.length);
-  if(maxLen<10)return a===b; // أسماء قصيرة جدًا لازم تتطابق بالظبط، تجنبًا لتطابقات غلط
-  const dist=levenshteinDist(a,b);
-  return (1-dist/maxLen)>=0.85;
-}
-
-function findSalaryAttendance(row,date){
-  if(!date)return null;
-  const name=(row['Name']||'').trim().toLowerCase();
-  if(!name)return null;
-  const project=(row['Project']||'').trim().toLowerCase();
-  const sources=[
-    {key:'avp',data:avpData.rows||[]},
-    {key:'gt', data:yubikeyData.rows||[]},
-    {key:'mapping',data:mappingData.rows||[]}
-  ];
-  // رتّب الأول حسب المشروع بتاع الشخص عشان يلاقيه أسرع، لكن يفضل يدوّر في الباقي لو مالقهوش
-  sources.sort((a,b)=>{
-    const aMatch=project.includes(a.key)?0:1;
-    const bMatch=project.includes(b.key)?0:1;
-    return aMatch-bMatch;
-  });
-  // ✅ محاولة أولى: مطابقة حرفية كاملة (أدق وأسرع)
-  for(const src of sources){
-    const match=src.data.find(r=>(r.name||'').trim().toLowerCase()===name);
-    if(match){
-      const v=match.attendance ? match.attendance[date] : '';
-      return {source:src.key, value:v||'', fuzzy:false};
-    }
-  }
-  // ✅ محاولة تانية: مطابقة "بالشبه" (أول 3 كلمات على الأقل متطابقة بالترتيب) — للأسماء التلاتية/الرباعية المختلفة
-  for(const src of sources){
-    const match=src.data.find(r=>namesMatchFuzzy(r.name,row['Name']));
-    if(match){
-      const v=match.attendance ? match.attendance[date] : '';
-      return {source:src.key, value:v||'', fuzzy:true};
-    }
-  }
-  // ✅ محاولة تالتة: مطابقة السلسلة كلها من غير مسافات — بتحل مشكلة كلمة اتقسمت لكلمتين (زي El Den / Eldein)
-  for(const src of sources){
-    const match=src.data.find(r=>namesMatchWhole(r.name,row['Name']));
-    if(match){
-      const v=match.attendance ? match.attendance[date] : '';
-      return {source:src.key, value:v||'', fuzzy:true};
-    }
-  }
-  return null;
-}
-
-function salaryAttendanceBadge(found){
-  if(!found)return '<span style="color:var(--text-2);font-size:12px">Not found</span>';
-  const v=found.value;
-  const srcLabel=found.source.toUpperCase()+(found.fuzzy?' ~':'');
-  if(!v)return `<span class="badge" style="background:var(--bg-2);color:var(--text-1);border:1px solid var(--line)">No record (${esc(srcLabel)})</span>`;
-  if(ybkIsPresent(v))return `<span class="badge badge-active">Present (${esc(srcLabel)})</span>`;
-  if(ybkIsAbsent(v))return `<span class="badge badge-resigned">Absent (${esc(srcLabel)})</span>`;
-  if(ybkIsTraining(v))return `<span class="badge badge-training">Training (${esc(srcLabel)})</span>`;
-  return `<span class="badge" style="background:var(--bg-2);color:var(--text-1);border:1px solid var(--line)">${esc(v)} (${esc(srcLabel)})</span>`;
-}
-
-function populateSalaryFilters(){
-  const sm=new Map();salaryData.forEach(r=>{const s=(r['Current Shift']||'').trim();if(s&&!sm.has(s.toLowerCase()))sm.set(s.toLowerCase(),s);});
-  const shifts=[...sm.values()].sort();
-  const pm=new Map();salaryData.forEach(r=>{const p=(r['Project']||'').trim();if(p&&!pm.has(p.toLowerCase()))pm.set(p.toLowerCase(),p);});
-  const projects=[...pm.values()].sort();
-
-  const ss=document.getElementById('salaryShiftFilter'),prevS=ss.value;
-  ss.innerHTML='<option value="">All shifts</option>';
-  shifts.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});
-  if(shifts.includes(prevS))ss.value=prevS;
-
-  // ✅ أول مرة بس، لو لقينا شيفت شكله "Night"، نختاره تلقائي (الأوفر نايت اللي بيهمك)
-  if(!salaryShiftDefaultApplied){
-    const nightMatch=shifts.find(s=>s.toLowerCase().includes('night'));
-    if(nightMatch)ss.value=nightMatch;
-    salaryShiftDefaultApplied=true;
-  }
-
-  const sp=document.getElementById('salaryProjectFilter'),prevP=sp.value;
-  sp.innerHTML='<option value="">All projects</option>';
-  projects.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;sp.appendChild(o);});
-  if(projects.includes(prevP))sp.value=prevP;
-
-  const rm=new Map();salaryData.forEach(r=>{const rn=(r['Room']||'').trim();if(rn&&!rm.has(rn.toLowerCase()))rm.set(rn.toLowerCase(),rn);});
-  const rooms=[...rm.values()].sort();
-  const sr=document.getElementById('salaryRoomFilter'),prevR=sr.value;
-  sr.innerHTML='<option value="">All rooms</option>';
-  rooms.forEach(rn=>{const o=document.createElement('option');o.value=rn;o.textContent=rn;sr.appendChild(o);});
-  if(rooms.includes(prevR))sr.value=prevR;
-}
-
-function classifySalaryAttendance(found){
-  if(!found)return 'notfound';
-  if(!found.value)return 'norecord';
-  if(ybkIsPresent(found.value))return 'present';
-  if(ybkIsAbsent(found.value))return 'absent';
-  if(ybkIsTraining(found.value))return 'training';
-  return 'norecord';
-}
-
-let lastRenderedSalaryList=[];
-
-function renderSalaryTable(){
-  const search=(document.getElementById('salarySearchInput').value||'').toLowerCase();
-  const shift=document.getElementById('salaryShiftFilter').value;
-  const project=document.getElementById('salaryProjectFilter').value;
-  const room=document.getElementById('salaryRoomFilter').value;
-  const attFilter=document.getElementById('salaryAttendanceFilter').value;
-  const data=salaryData.filter(r=>{
-    const ms=!search||(r['Name']||'').toLowerCase().includes(search)||(r['Resource Name']||'').toLowerCase().includes(search)||(r['National ID Consolidated']||'').includes(search);
-    const msh=!shift||(r['Current Shift']||'').trim().toLowerCase()===shift.toLowerCase();
-    const mp=!project||(r['Project']||'').trim().toLowerCase()===project.toLowerCase();
-    const mr=!room||(r['Room']||'').trim().toLowerCase()===room.toLowerCase();
-    return ms&&msh&&mp&&mr;
-  }).map(r=>{
-    const found=findSalaryAttendance(r,selectedSalaryDate);
-    return {row:r, found, status:classifySalaryAttendance(found)};
-  }).filter(x=>!attFilter||x.status===attFilter);
-
-  lastRenderedSalaryList=data;
-
-  document.getElementById('salaryLoadingState').style.display='none';
-  document.getElementById('salaryRowCount').textContent=data.length+' records';
-  document.getElementById('salaryFooterInfo').textContent=`Showing ${data.length} of ${salaryData.length} records`;
-  document.getElementById('salaryFooterTime').textContent=new Date().toLocaleDateString('en-US');
-
-  if(!data.length){
-    document.getElementById('salaryTable').style.display='none';
-    document.getElementById('salaryEmptyState').style.display='block';
-    return;
-  }
-  document.getElementById('salaryEmptyState').style.display='none';
-  document.getElementById('salaryTable').style.display='table';
-  document.getElementById('salaryTableBody').innerHTML=data.map(({row:r,found})=>{
-    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Number']||'—')}</td><td style="font-weight:600">${esc(r['Name']||'—')}</td><td dir="rtl" style="text-align:right">${esc(r['Resource Name']||'—')}</td><td><span class="badge badge-shift">${esc(r['Current Shift']||'—')}</span></td><td>${esc(r['Project']||'—')}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['National ID Consolidated']||'—')}</td><td style="color:var(--text-1)">${esc(r['Room']||'—')}</td><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['PC']||'—')}</td><td>${salaryAttendanceBadge(found)}</td></tr>`;
-  }).join('');
-}
-
-function copySalaryList(){
-  if(!lastRenderedSalaryList.length){showError('No records to copy.');return;}
-  const statusLabel={present:'Present',absent:'Absent',training:'Training',norecord:'No record',notfound:'Not found'};
-  const lines=lastRenderedSalaryList.map(({row:r,status})=>`${r['Name']||'—'} — ${statusLabel[status]}`);
-  const text=`Salary Attendance List (${selectedSalaryDate||'—'})\n\n`+lines.join('\n');
-  navigator.clipboard.writeText(text).then(()=>{
-    showSuccess('List copied to clipboard.');
-  }).catch(()=>{
-    const ta=document.createElement('textarea');
-    ta.value=text;document.body.appendChild(ta);ta.select();
-    try{document.execCommand('copy');}catch{}
-    document.body.removeChild(ta);
-    showSuccess('List copied to clipboard.');
-  });
-}
-
-// ── Change Salary Sheet modal ──
-function openSalarySheetModal(){
-  document.getElementById('salarySheetFormError').style.display='none';
-  document.getElementById('salarySheetUrlInput').value='';
-  document.getElementById('salarySheetModalOverlay').style.display='flex';
-}
-function closeSalarySheetModal(){document.getElementById('salarySheetModalOverlay').style.display='none';}
-document.getElementById('salarySheetModalOverlay').addEventListener('click',e=>{if(e.target.id==='salarySheetModalOverlay')closeSalarySheetModal();});
-
-async function saveSalarySheetConfig(){
-  const errDiv=document.getElementById('salarySheetFormError'),btn=document.getElementById('salarySheetSaveBtn');
-  errDiv.style.display='none';
-  const url=document.getElementById('salarySheetUrlInput').value.trim();
-  if(!url||!url.includes('/spreadsheets/d/')){
-    errDiv.textContent='Please paste a valid Google Sheets link.';errDiv.style.display='block';return;
-  }
-  btn.disabled=true;
-  try{
-    await fetch(APPS_SCRIPT_URL,{
-      method:'POST',mode:'no-cors',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({action:'updateSalarySheetConfig',data:{url}})
-    });
-    await new Promise(r=>setTimeout(r,600));
-    closeSalarySheetModal();
-    salaryShiftDefaultApplied=false;
-    await loadSalaryData(true);
-    showSuccess('Salary sheet updated successfully.');
-  }catch(ex){
-    errDiv.textContent='Save failed: '+ex.message;errDiv.style.display='block';
-  }finally{
-    btn.disabled=false;
   }
 }
 
@@ -5087,7 +4753,7 @@ function rollback(prevEmp,prevTrn){if(prevEmp!==undefined){allData=prevEmp;popul
 
 function showView(view){
   if(view!=='biometric'&&typeof stopBioCameras==='function')stopBioCameras(); // ✅ يقفل الكاميرا فعليًا لما تسيب التاب ده لأي تاب تاني
-  ['employees','training','yubikey','violation','salary','lateness','opsreport','itTickets','dailyreport','biometric','sheets'].forEach(v=>{
+  ['employees','training','yubikey','violation','lateness','opsreport','itTickets','dailyreport','biometric','sheets'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
     const btn=document.getElementById('tab'+v[0].toUpperCase()+v.slice(1)+'Btn');
     if(btn)btn.classList.toggle('active',v===view);
@@ -5098,13 +4764,6 @@ function showView(view){
   if(view==='yubikey'&&mappingData.rows.length===0)loadMappingData();
   if(view==='violation'&&violationData.length===0)loadViolationData();
   if(view==='violation')loadViolationOptions();
-  if(view==='salary'){
-    if(salaryData.length===0)loadSalaryData();
-    if(!yubikeyData.rows||yubikeyData.rows.length===0)loadYubikeyData();
-    if(!avpData.rows||avpData.rows.length===0)loadAvpData();
-    if(!mappingData.rows||mappingData.rows.length===0)loadMappingData();
-    buildSalaryDateSelector();
-  }
   if(view==='lateness'&&latenessData.length===0)loadLatenessData();
   if(view==='opsreport')loadFurnitureData();
   if(view==='itTickets'&&itTicketsData.length===0)loadItTicketsData();
