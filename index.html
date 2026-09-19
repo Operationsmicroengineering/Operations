@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+  // ✅ بيتعرف على نوع الجهاز نفسه (موبايل حقيقي) مش بس عرض الشاشة — عشان يفضل ثابت في الطول والعرض
+  (function(){
+    var isMobileUA = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    if(isMobileUA && isTouch) document.documentElement.classList.add('is-mobile-device');
+  })();
+</script>
 <title>Operations Team</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#07090d">
@@ -389,6 +397,13 @@
     .nav-tabs { display:none; } /* ✅ الشريط القديم بيختفي، القائمة الجديدة بتاخد مكانه */
     .mobile-menu-btn { display:flex; align-items:center; justify-content:center; width:38px; height:38px; background:var(--bg-2); border:1px solid var(--line); border-radius:8px; color:var(--text-1); cursor:pointer; flex-shrink:0; }
   }
+
+  /* ✅ نسخة ثابتة بناءً على نوع الجهاز نفسه — شغالة بالطول والعرض، مش متأثرة بعرض الشاشة اللحظي */
+  html.is-mobile-device .nav-brand-text .subtitle { display:none !important; }
+  html.is-mobile-device .nav-user { display:none !important; }
+  html.is-mobile-device .nav-tab span.tab-label-full { display:none !important; }
+  html.is-mobile-device .nav-tabs { display:none !important; }
+  html.is-mobile-device .mobile-menu-btn { display:flex !important; align-items:center; justify-content:center; width:38px; height:38px; background:var(--bg-2); border:1px solid var(--line); border-radius:8px; color:var(--text-1); cursor:pointer; flex-shrink:0; }
 
   /* ══════════ مؤثرات حركية واحترافية ══════════ */
 
