@@ -639,6 +639,10 @@
       <span>Operations Services</span>
       <button class="modal-close" onclick="closeMobileMenu()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
+    <button class="mobile-menu-item" onclick="showView('home');closeMobileMenu()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </button>
     <button class="mobile-menu-item" onclick="showView('employees');closeMobileMenu()">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
       <span>Employees</span>
@@ -687,8 +691,35 @@
   </div>
 
   <main>
+    <!-- HOME VIEW -->
+    <div id="homeView">
+      <div style="margin-bottom:1.5rem">
+        <h2 style="font-size:18px;font-weight:800;color:var(--text-0)" id="homeGreeting">Welcome back</h2>
+        <p style="font-size:13px;color:var(--text-2);margin-top:2px">Here's what's happening across Operations today.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:1.5rem">
+        <div class="ybk-history-card" style="padding:1.3rem;cursor:pointer" onclick="showView('employees')">
+          <div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:8px">Active Employees</div>
+          <div style="font-size:30px;font-weight:800;color:var(--signal)" class="mono" id="homeActiveEmployees">—</div>
+        </div>
+        <div class="ybk-history-card" style="padding:1.3rem;cursor:pointer" onclick="showView('itTickets')">
+          <div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:8px">Open IT Tickets</div>
+          <div style="font-size:30px;font-weight:800;color:var(--bad)" class="mono" id="homeOpenTickets">—</div>
+        </div>
+        <div class="ybk-history-card" style="padding:1.3rem;cursor:pointer" onclick="showView('violation')">
+          <div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:8px">Violations This Month</div>
+          <div style="font-size:30px;font-weight:800;color:var(--warn)" class="mono" id="homeViolationsMonth">—</div>
+        </div>
+        <div class="ybk-history-card" style="padding:1.3rem;cursor:pointer" onclick="showView('activityhub')">
+          <div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:8px">Most Active Operations</div>
+          <div style="font-size:18px;font-weight:800;color:var(--text-0)" id="homeTopOps">—</div>
+        </div>
+      </div>
+      <p style="font-size:11.5px;color:var(--text-2)">Tap any card to jump to that section.</p>
+    </div>
+
     <!-- EMPLOYEES VIEW -->
-    <div id="employeesView">
+    <div id="employeesView" style="display:none">
       <div class="error-banner" id="errorBanner"></div>
       <div class="success-banner" id="successBanner"></div>
       <div class="stats">
@@ -1779,6 +1810,10 @@ async function showDashboard(){
   startPolling();
   loadItTicketsBadgeOnly(); // ✅ يجيب عدد التذاكر "Not Solved" فورًا، من غير ما تفتح تاب التذاكر أصلاً
   setInterval(()=>{ if(getSession())loadItTicketsBadgeOnly(true); },60000); // ✅ فحص دوري كل دقيقة عشان يكتشف أي تذكرة جديدة لحظة وصولها
+
+  let lastView='home';
+  try{ lastView=localStorage.getItem('ops_last_view_v1')||'home'; }catch{}
+  showView(lastView);
 }
 
 // ✅ بياخد أول اسمين بس من الـ Display Name (زي "Mohamed Kamal")، أو من الإيميل لو الاسم مش متسجل
@@ -3307,6 +3342,52 @@ let activityHubRecords=[]; // ✅ كل سجل موحّد: {person, type, date, d
 async function fetchJsonSafe(url){
   try{ const res=await fetch(url); if(!res.ok)return null; return await res.json(); }
   catch(ex){ return null; }
+}
+
+// ── Home — ملخص شامل لأهم الأرقام في مكان واحد ──
+async function loadHomeData(){
+  const greetEl=document.getElementById('homeGreeting');
+  if(greetEl)greetEl.textContent=`Welcome back, ${getWelcomeDisplayName()}`;
+
+  // ✅ Active Employees — من بيانات الموظفين لو موجودة بالفعل
+  const empEl=document.getElementById('homeActiveEmployees');
+  if(empEl)empEl.textContent=allData.length?allData.filter(r=>(r['Status']||'').toLowerCase()==='working').length:'—';
+
+  // ✅ Open IT Tickets
+  const ticketEl=document.getElementById('homeOpenTickets');
+  try{
+    const ticketJson=itTicketsData.length?{itTickets:itTicketsData}:await fetchJsonSafe(APPS_SCRIPT_URL+'?sheet=itTickets');
+    const rows=ticketJson?.itTickets||[];
+    if(!itTicketsData.length&&rows.length)itTicketsData=rows;
+    if(ticketEl)ticketEl.textContent=rows.filter(r=>(r['Status']||'Not Solved')!=='Solved').length;
+  }catch(ex){ if(ticketEl)ticketEl.textContent='—'; }
+
+  // ✅ Violations This Month
+  const violEl=document.getElementById('homeViolationsMonth');
+  try{
+    const violJson=violationData.length?{violation:violationData}:await fetchJsonSafe(APPS_SCRIPT_URL+'?sheet=violation');
+    const rows=violJson?.violation||[];
+    const now=new Date();
+    const count=rows.filter(r=>{
+      const d=new Date(r['Date']);
+      return !isNaN(d)&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();
+    }).length;
+    if(violEl)violEl.textContent=count;
+  }catch(ex){ if(violEl)violEl.textContent='—'; }
+
+  // ✅ Most Active Operations — نفس منطق Operations Activity
+  const topEl=document.getElementById('homeTopOps');
+  try{
+    const lateJson=latenessData.length?{lateness:latenessData}:await fetchJsonSafe(APPS_SCRIPT_URL+'?sheet=lateness');
+    const violRows=violationData.length?violationData:(await fetchJsonSafe(APPS_SCRIPT_URL+'?sheet=violation'))?.violation||[];
+    const ticketRows=itTicketsData;
+    const counts={};
+    violRows.forEach(r=>{const p=(r['OPS Name']||'').trim();if(p)counts[p]=(counts[p]||0)+1;});
+    (lateJson?.lateness||[]).forEach(r=>{const p=(r['Name']||'').trim();if(p)counts[p]=(counts[p]||0)+1;});
+    ticketRows.forEach(r=>{const p=(r['Operations Name']||'').trim();if(p)counts[p]=(counts[p]||0)+1;});
+    const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+    if(topEl)topEl.textContent=top?`${top[0]} (${top[1]})`:'No data yet';
+  }catch(ex){ if(topEl)topEl.textContent='—'; }
 }
 
 async function loadActivityHubData(forceRefresh){
@@ -5143,12 +5224,14 @@ function closeMobileMenu(){
 
 function showView(view){
   if(view!=='biometric'&&typeof stopBioCameras==='function')stopBioCameras(); // ✅ يقفل الكاميرا فعليًا لما تسيب التاب ده لأي تاب تاني
-  ['employees','training','yubikey','violation','lateness','opsreport','itTickets','dailyreport','biometric','activityhub','sheets'].forEach(v=>{
+  ['home','employees','training','yubikey','violation','lateness','opsreport','itTickets','dailyreport','biometric','activityhub','sheets'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
     const btn=document.getElementById('tab'+v[0].toUpperCase()+v.slice(1)+'Btn');
     if(btn)btn.classList.toggle('active',v===view);
   });
+  try{localStorage.setItem('ops_last_view_v1',view);}catch{} // ✅ بيتذكر آخر تاب فتحته
   if(view==='sheets')renderSheets();
+  if(view==='home')loadHomeData();
   if(view==='yubikey'&&yubikeyData.rows.length===0)loadYubikeyData();
   if(view==='yubikey'&&avpData.rows.length===0)loadAvpData();
   if(view==='yubikey'&&mappingData.rows.length===0)loadMappingData();
