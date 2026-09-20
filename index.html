@@ -93,6 +93,8 @@
   .welcome-toast-text { display:flex; flex-direction:column; }
   .welcome-toast-title { font-size:15.5px; font-weight:800; color:var(--text-0); letter-spacing:-0.2px; }
   .welcome-toast-sub { font-size:12px; color:var(--text-1); margin-top:3px; }
+  .ticket-alert-toast { position:fixed; bottom:24px; right:24px; background:linear-gradient(180deg,var(--bg-1) 0%,var(--bg-0) 100%); border:1px solid var(--bad); border-radius:12px; padding:0.9rem 1.2rem; box-shadow:0 20px 50px rgba(0,0,0,0.45), 0 0 0 3px rgba(240,85,107,0.15); display:flex; align-items:center; gap:10px; z-index:600; cursor:pointer; max-width:320px; opacity:0; transform:translateY(20px) scale(0.95); transition:opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1); color:var(--text-0); }
+  .ticket-alert-toast.show { opacity:1; transform:translateY(0) scale(1); }
   nav { background:rgba(12,15,21,0.85); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 2rem; height:70px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
   nav::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px; background:linear-gradient(90deg,transparent,var(--signal-line) 20%,var(--signal-line) 80%,transparent); }
   .nav-brand { display:flex; align-items:center; gap:11px; }
@@ -1387,6 +1389,8 @@
 
       <div class="loading" id="activityhubLoadingState"><div class="spinner"></div>Loading team activity...</div>
 
+      <div id="activityhubMonthlyCompare" style="display:none;margin-bottom:1.5rem"></div>
+
       <div id="activityhubLeaderboard" style="display:none;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));display:grid;gap:14px;margin-bottom:1.5rem"></div>
 
       <div class="ybk-history-card" id="activityhubDetailCard" style="display:none">
@@ -1774,6 +1778,7 @@ async function showDashboard(){
   loadData(!cached);
   startPolling();
   loadItTicketsBadgeOnly(); // ✅ يجيب عدد التذاكر "Not Solved" فورًا، من غير ما تفتح تاب التذاكر أصلاً
+  setInterval(()=>{ if(getSession())loadItTicketsBadgeOnly(true); },60000); // ✅ فحص دوري كل دقيقة عشان يكتشف أي تذكرة جديدة لحظة وصولها
 }
 
 // ✅ بياخد أول اسمين بس من الـ Display Name (زي "Mohamed Kamal")، أو من الإيميل لو الاسم مش متسجل
@@ -2733,7 +2738,49 @@ async function loadItTicketsData(forceRefresh=false){
 }
 
 // ✅ مؤشر تنبيه بعدد التذاكر "Not Solved" — بيتحدث كل ما بيانات التذاكر تتحمّل
+let knownUnsolvedTicketRows=null; // ✅ null = لسه مسجلناش أول قراءة؛ بعد كده أي صف جديد "Not Solved" بيتحسب تذكرة جديدة
+
+function playTicketAlertSound(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const beep=(freq,delay,dur)=>{
+      setTimeout(()=>{
+        const osc=ctx.createOscillator(),gain=ctx.createGain();
+        osc.connect(gain);gain.connect(ctx.destination);
+        osc.type='sine';osc.frequency.setValueAtTime(freq,ctx.currentTime);
+        gain.gain.setValueAtTime(0.16,ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+        osc.start();osc.stop(ctx.currentTime+dur);
+      },delay);
+    };
+    beep(880,0,0.35); beep(1175,140,0.35); // ✅ نغمتين "دينج-دونج" لطيفة
+  }catch(ex){}
+}
+
+function showTicketAlertToast(count){
+  const el=document.createElement('div');
+  el.className='ticket-alert-toast';
+  el.innerHTML=`<span style="font-size:18px">🔔</span><div><div style="font-weight:700">New IT Ticket${count>1?'s':''}</div><div style="font-size:12px;opacity:0.85">${count} unsolved ticket${count>1?'s':''} just came in</div></div>`;
+  el.onclick=()=>{ showView('itTickets'); el.remove(); };
+  document.body.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),400); },6000);
+}
+
+function checkForNewTickets(){
+  const unsolvedRows=new Set(itTicketsData.filter(r=>(r['Status']||'Not Solved')!=='Solved').map(r=>r['_row']));
+  if(knownUnsolvedTicketRows!==null){
+    const newOnes=[...unsolvedRows].filter(rowId=>!knownUnsolvedTicketRows.has(rowId));
+    if(newOnes.length>0){
+      playTicketAlertSound();
+      showTicketAlertToast(newOnes.length);
+    }
+  }
+  knownUnsolvedTicketRows=unsolvedRows;
+}
+
 function updateItTicketsBadge(){
+  checkForNewTickets();
   const count=itTicketsData.filter(r=>(r['Status']||'Not Solved')!=='Solved').length;
   [document.getElementById('itTicketsBadge'),document.getElementById('itTicketsBadgeMobile')].forEach(el=>{
     if(!el)return;
@@ -2742,11 +2789,11 @@ function updateItTicketsBadge(){
   });
 }
 
-async function loadItTicketsBadgeOnly(){
+async function loadItTicketsBadgeOnly(forceRefresh){
   // ✅ نجيب بس عدد الـ "Not Solved" لحظة فتح الداشبورد، من غير ما نفتح تاب التذاكر أصلاً
-  if(itTicketsData.length)return updateItTicketsBadge();
+  if(itTicketsData.length&&!forceRefresh)return updateItTicketsBadge();
   try{
-    const res=await fetch(APPS_SCRIPT_URL+'?sheet=itTickets');
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=itTickets'+(forceRefresh?'&force=1':''));
     const json=await res.json();
     itTicketsData=json.itTickets||[];
     updateItTicketsBadge();
@@ -3294,10 +3341,50 @@ async function loadActivityHubData(forceRefresh){
 
     activityHubRecords=records;
     renderActivityHubLeaderboard();
+    renderMonthlyComparison(violJson?.violation||[]);
   }catch(ex){
     document.getElementById('activityhubLoadingState').style.display='none';
     showError('Failed to load team activity: '+ex.message,'activityhub');
   }
+}
+
+// ✅ مقارنة عدد المخالفات: الشهر ده مقابل الشهر اللي فات
+function renderMonthlyComparison(violationRows){
+  const el=document.getElementById('activityhubMonthlyCompare');
+  if(!el)return;
+  const now=new Date();
+  const thisMonthKey=`${now.getFullYear()}-${now.getMonth()}`;
+  const lastMonthDate=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const lastMonthKey=`${lastMonthDate.getFullYear()}-${lastMonthDate.getMonth()}`;
+
+  let thisCount=0,lastCount=0;
+  violationRows.forEach(r=>{
+    const d=new Date(r['Date']);
+    if(isNaN(d))return;
+    const key=`${d.getFullYear()}-${d.getMonth()}`;
+    if(key===thisMonthKey)thisCount++;
+    else if(key===lastMonthKey)lastCount++;
+  });
+
+  const diff=thisCount-lastCount;
+  const pct=lastCount>0?Math.round((diff/lastCount)*100):(thisCount>0?100:0);
+  const isUp=diff>0, isDown=diff<0;
+  const color=isUp?'var(--bad)':isDown?'var(--ok)':'var(--text-2)';
+  const arrow=isUp?'▲':isDown?'▼':'—';
+  const monthName=now.toLocaleDateString('en-US',{month:'long'});
+  const lastMonthName=lastMonthDate.toLocaleDateString('en-US',{month:'long'});
+
+  el.style.display='block';
+  el.innerHTML=`<div class="ybk-history-card" style="padding:1.2rem 1.5rem">
+    <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700">Violations — Monthly Comparison</div>
+    <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+      <div><div style="font-size:11px;color:var(--text-2)">${esc(monthName)} (this month)</div><div style="font-size:26px;font-weight:800;color:var(--text-0)" class="mono">${thisCount}</div></div>
+      <div><div style="font-size:11px;color:var(--text-2)">${esc(lastMonthName)} (last month)</div><div style="font-size:26px;font-weight:800;color:var(--text-1)" class="mono">${lastCount}</div></div>
+      <div style="display:flex;align-items:center;gap:6px;color:${color};font-weight:700;font-size:14px">
+        <span>${arrow}</span><span>${Math.abs(diff)} (${Math.abs(pct)}%)</span>
+      </div>
+    </div>
+  </div>`;
 }
 
 function renderActivityHubLeaderboard(){
