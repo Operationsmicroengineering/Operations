@@ -386,6 +386,10 @@
   .nav-clock { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; pointer-events:none; user-select:none; }
   .nav-clock-time { font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--text-0); letter-spacing:0.5px; font-variant-numeric:tabular-nums; }
   .nav-clock-date { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-2); letter-spacing:0.8px; text-transform:uppercase; margin-top:1px; }
+  .nav-team-info { display:flex; flex-direction:column; justify-content:center; gap:3px; padding-left:18px; margin-left:18px; border-left:1px solid var(--line); }
+  .nav-team-row { display:flex; align-items:baseline; gap:6px; white-space:nowrap; }
+  .nav-team-role { font-size:9.5px; color:var(--text-2); text-transform:uppercase; letter-spacing:0.6px; font-weight:600; }
+  .nav-team-name { font-size:12px; color:var(--text-0); font-weight:700; }
   .services-menu-btn:hover { border-color:var(--signal-line); color:var(--signal); }
   .services-menu-btn svg:last-child { color:var(--text-2); }
   .mobile-menu-overlay { display:none; position:fixed; inset:0; background:rgba(4,6,9,0.7); backdrop-filter:blur(3px); z-index:150; }
@@ -405,6 +409,7 @@
     .services-menu-btn { padding:8px 10px; }
     .source-badge, .nav-info { display:none; } /* ✅ نص "GOOGLE SHEETS" ووقت آخر تحديث بيختفوا على الموبايل عشان يبقى فيه مساحة كفاية */
     .nav-clock { display:none; }
+    .nav-team-info { display:none; }
   }
 
   /* ✅ نسخة ثابتة بناءً على نوع الجهاز نفسه — شغالة بالطول والعرض، مش متأثرة بعرض الشاشة اللحظي */
@@ -415,6 +420,7 @@
   html.is-mobile-device .services-menu-btn { padding:8px 10px !important; }
   html.is-mobile-device .source-badge, html.is-mobile-device .nav-info { display:none !important; }
   html.is-mobile-device .nav-clock { display:none !important; }
+  html.is-mobile-device .nav-team-info { display:none !important; }
 
   /* ══════════ مؤثرات حركية واحترافية ══════════ */
 
@@ -588,6 +594,10 @@
     <div class="nav-clock" id="navClock">
       <span class="nav-clock-time" id="navClockTime">--:--:--</span>
       <span class="nav-clock-date" id="navClockDate">—</span>
+    </div>
+    <div class="nav-team-info">
+      <div class="nav-team-row"><span class="nav-team-role">Operations Team Lead</span><span class="nav-team-name">Eng. Bishoy</span></div>
+      <div class="nav-team-row"><span class="nav-team-role">Senior Operations</span><span class="nav-team-name">Ahmed Alaa</span></div>
     </div>
     <div class="nav-left">
       <div class="nav-profile" id="navProfileBtn" onclick="openProfileModal()" title="Edit profile">
