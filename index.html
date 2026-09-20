@@ -383,6 +383,9 @@
 
   /* ══════════ قائمة الموبايل (☰) — إضافة مستقلة تمامًا، متأثرش على البي سي ══════════ */
   .services-menu-btn { display:flex; align-items:center; gap:8px; background:var(--bg-2); border:1px solid var(--line); border-radius:8px; padding:8px 14px; color:var(--text-0); font-family:'Inter',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s; flex-shrink:0; }
+  .nav-clock { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; pointer-events:none; user-select:none; }
+  .nav-clock-time { font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--text-0); letter-spacing:0.5px; font-variant-numeric:tabular-nums; }
+  .nav-clock-date { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-2); letter-spacing:0.8px; text-transform:uppercase; margin-top:1px; }
   .services-menu-btn:hover { border-color:var(--signal-line); color:var(--signal); }
   .services-menu-btn svg:last-child { color:var(--text-2); }
   .mobile-menu-overlay { display:none; position:fixed; inset:0; background:rgba(4,6,9,0.7); backdrop-filter:blur(3px); z-index:150; }
@@ -401,6 +404,7 @@
     .services-menu-btn span { display:none; } /* ✅ على الموبايل: أيقونة بس، من غير النص عشان توفّر مساحة */
     .services-menu-btn { padding:8px 10px; }
     .source-badge, .nav-info { display:none; } /* ✅ نص "GOOGLE SHEETS" ووقت آخر تحديث بيختفوا على الموبايل عشان يبقى فيه مساحة كفاية */
+    .nav-clock { display:none; }
   }
 
   /* ✅ نسخة ثابتة بناءً على نوع الجهاز نفسه — شغالة بالطول والعرض، مش متأثرة بعرض الشاشة اللحظي */
@@ -410,6 +414,7 @@
   html.is-mobile-device .services-menu-btn span { display:none !important; }
   html.is-mobile-device .services-menu-btn { padding:8px 10px !important; }
   html.is-mobile-device .source-badge, html.is-mobile-device .nav-info { display:none !important; }
+  html.is-mobile-device .nav-clock { display:none !important; }
 
   /* ══════════ مؤثرات حركية واحترافية ══════════ */
 
@@ -579,6 +584,10 @@
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         <span class="tab-label-full">Sheets</span>
       </button>
+    </div>
+    <div class="nav-clock" id="navClock">
+      <span class="nav-clock-time" id="navClockTime">--:--:--</span>
+      <span class="nav-clock-date" id="navClockDate">—</span>
     </div>
     <div class="nav-left">
       <div class="nav-profile" id="navProfileBtn" onclick="openProfileModal()" title="Edit profile">
@@ -5001,6 +5010,18 @@ function optimisticMoveTrn(id){optimisticDeleteTrn(id);}
 function rollback(prevEmp,prevTrn){if(prevEmp!==undefined){allData=prevEmp;populateFilters();applyFilters();}if(prevTrn!==undefined){trainingData=prevTrn;populateTrainingFilters();renderTrainingStats();renderTrainingTable();}saveCache();}
 
 // ✅ قائمة الموبايل — إضافة مستقلة، بتستخدم showView() الموجودة أصلاً من غير ما تعدّل فيها
+// ✅ ساعة وتاريخ حي في نص الشريط العلوي — بيتحدث كل ثانية، مفيهوش أي طلبات بيانات
+function updateNavClock(){
+  const timeEl=document.getElementById('navClockTime');
+  const dateEl=document.getElementById('navClockDate');
+  if(!timeEl||!dateEl)return;
+  const now=new Date();
+  timeEl.textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  dateEl.textContent=now.toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short'});
+}
+updateNavClock();
+setInterval(updateNavClock,1000);
+
 function toggleMobileMenu(){
   document.getElementById('mobileMenuOverlay').classList.toggle('open');
   document.getElementById('mobileMenuPanel').classList.toggle('open');
