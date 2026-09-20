@@ -95,6 +95,20 @@
   .welcome-toast-sub { font-size:12px; color:var(--text-1); margin-top:3px; }
   .ticket-alert-toast { position:fixed; bottom:24px; right:24px; background:linear-gradient(180deg,var(--bg-1) 0%,var(--bg-0) 100%); border:1px solid var(--bad); border-radius:12px; padding:0.9rem 1.2rem; box-shadow:0 20px 50px rgba(0,0,0,0.45), 0 0 0 3px rgba(240,85,107,0.15); display:flex; align-items:center; gap:10px; z-index:600; cursor:pointer; max-width:320px; opacity:0; transform:translateY(20px) scale(0.95); transition:opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1); color:var(--text-0); }
   .ticket-alert-toast.show { opacity:1; transform:translateY(0) scale(1); }
+
+  /* ══════════ زرار الإضافة السريعة العائم ══════════ */
+  .quick-add-fab { position:fixed; bottom:calc(24px + env(safe-area-inset-bottom,0px)); right:24px; width:54px; height:54px; border-radius:50%; background:linear-gradient(160deg,var(--signal) 0%,#2a8fa8 100%); color:#04181d; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 10px 30px rgba(79,209,232,0.4); z-index:400; transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+  .quick-add-fab:hover { transform:scale(1.08) rotate(90deg); }
+  .quick-add-fab.open { transform:rotate(45deg); }
+  .quick-add-overlay { display:none; position:fixed; inset:0; background:rgba(4,6,9,0.5); z-index:398; }
+  .quick-add-overlay.open { display:block; }
+  .quick-add-menu { position:fixed; bottom:calc(90px + env(safe-area-inset-bottom,0px)); right:24px; display:flex; flex-direction:column; gap:10px; z-index:399; pointer-events:none; }
+  .quick-add-item { display:flex; align-items:center; gap:10px; background:var(--bg-1); border:1px solid var(--line); border-radius:10px; padding:10px 16px 10px 14px; color:var(--text-0); font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; box-shadow:0 10px 26px rgba(0,0,0,0.35); white-space:nowrap; opacity:0; transform:translateY(12px) scale(0.9); transition:opacity 0.25s cubic-bezier(0.16,1,0.3,1), transform 0.25s cubic-bezier(0.16,1,0.3,1), border-color 0.15s; pointer-events:none; }
+  .quick-add-item:hover { border-color:var(--signal-line); color:var(--signal); }
+  .quick-add-menu.open .quick-add-item { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+  .quick-add-menu.open .quick-add-item:nth-child(1) { transition-delay:0.06s; }
+  .quick-add-menu.open .quick-add-item:nth-child(2) { transition-delay:0.03s; }
+  .quick-add-menu.open .quick-add-item:nth-child(3) { transition-delay:0s; }
   nav { background:rgba(12,15,21,0.85); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 2rem; height:70px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
   nav::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px; background:linear-gradient(90deg,transparent,var(--signal-line) 20%,var(--signal-line) 80%,transparent); }
   .nav-brand { display:flex; align-items:center; gap:11px; }
@@ -1441,6 +1455,26 @@
       <div id="sheetsContainer"></div>
     </div>
   </main>
+
+  <!-- QUICK ADD (زرار عائم — وصول سريع لأكتر 3 فورمات بتتسجل كتير) -->
+  <div class="quick-add-menu" id="quickAddMenu">
+    <button class="quick-add-item" onclick="quickAdd('violation')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span>Add Violation</span>
+    </button>
+    <button class="quick-add-item" onclick="quickAdd('lateness')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Add Lateness</span>
+    </button>
+    <button class="quick-add-item" onclick="quickAdd('itticket')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M9 7v10"/><path d="M15 7v10"/></svg>
+      <span>New IT Ticket</span>
+    </button>
+  </div>
+  <div class="quick-add-overlay" id="quickAddOverlay" onclick="closeQuickAdd()"></div>
+  <button class="quick-add-fab" id="quickAddFab" onclick="toggleQuickAdd()" title="Quick Add">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
 </div>
 
 <!-- ADD EMPLOYEE MODAL -->
@@ -5212,6 +5246,24 @@ function updateNavClock(){
 }
 updateNavClock();
 setInterval(updateNavClock,1000);
+
+// ✅ الإضافة السريعة — بتفتح نفس المودالز الأصلية بالظبط، من غير أي منطق جديد
+function toggleQuickAdd(){
+  const isOpen=document.getElementById('quickAddMenu').classList.toggle('open');
+  document.getElementById('quickAddOverlay').classList.toggle('open',isOpen);
+  document.getElementById('quickAddFab').classList.toggle('open',isOpen);
+}
+function closeQuickAdd(){
+  document.getElementById('quickAddMenu').classList.remove('open');
+  document.getElementById('quickAddOverlay').classList.remove('open');
+  document.getElementById('quickAddFab').classList.remove('open');
+}
+function quickAdd(type){
+  closeQuickAdd();
+  if(type==='violation'){ showView('violation'); setTimeout(()=>openAddViolationModal(),150); }
+  else if(type==='lateness'){ showView('lateness'); setTimeout(()=>openAddLatenessModal(),150); }
+  else if(type==='itticket'){ showView('itTickets'); setTimeout(()=>openAddItTicketModal(),150); }
+}
 
 function toggleMobileMenu(){
   document.getElementById('mobileMenuOverlay').classList.toggle('open');
