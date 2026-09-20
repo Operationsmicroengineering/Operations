@@ -490,15 +490,6 @@
 </head>
 <body>
 
-<div id="debugBanner" style="position:fixed;top:0;left:0;right:0;background:#ff3366;color:#fff;font-size:12px;font-weight:700;padding:6px 10px;z-index:99999;text-align:center;font-family:monospace"></div>
-<script>
-  window.addEventListener('DOMContentLoaded', function(){
-    var el = document.getElementById('debugBanner');
-    var hasMobileClass = document.documentElement.classList.contains('is-mobile-device');
-    el.textContent = 'DEBUG: width=' + window.innerWidth + 'px | is-mobile-device=' + hasMobileClass + ' | UA=' + navigator.userAgent.slice(0,60);
-  });
-</script>
-
 <div class="login-container" id="loginSection">
   <div class="login-bg-particle" style="width:180px;height:180px;top:8%;left:10%;animation-duration:9s;"></div>
   <div class="login-bg-particle" style="width:120px;height:120px;top:65%;left:75%;animation-duration:11s;animation-delay:1.5s;"></div>
