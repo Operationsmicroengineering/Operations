@@ -104,10 +104,12 @@
   .nav-brand-text .subtitle2 { font-size:10.5px; color:var(--text-2); margin-top:1px; }
   .nav-left { display:flex; align-items:center; gap:14px; }
   .nav-info { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-1); }
-  .nav-user { font-size:12.5px; color:var(--text-1); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .nav-profile { display:flex; align-items:center; gap:9px; padding-right:14px; border-right:1px solid var(--line); cursor:pointer; border-radius:8px; padding:4px 8px 4px 4px; margin:-4px 0; transition:background 0.15s; }
+  .nav-user { font-size:11px; color:var(--text-2); max-width:190px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .nav-user-text { display:flex; flex-direction:column; gap:1px; min-width:0; }
+  .nav-user-name { font-size:13.5px; font-weight:700; color:var(--text-0); max-width:190px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .nav-profile { display:flex; align-items:center; gap:11px; padding-right:16px; border-right:1px solid var(--line); cursor:pointer; border-radius:9px; padding:5px 10px 5px 5px; margin:-5px 0; transition:background 0.15s; }
   .nav-profile:hover { background:var(--bg-2); }
-  .nav-avatar { width:36px; height:36px; border-radius:50%; background:var(--signal-dim); border:1px solid var(--signal-line); color:var(--signal); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; overflow:hidden; }
+  .nav-avatar { width:44px; height:44px; border-radius:50%; background:var(--signal-dim); border:1.5px solid var(--signal-line); color:var(--signal); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; flex-shrink:0; overflow:hidden; }
   .nav-avatar img { width:100%; height:100%; object-fit:cover; }
   main { padding:2rem; width:100%; margin:0 auto; }
   .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-bottom:2rem; }
@@ -402,7 +404,7 @@
 
   @media (max-width:768px) {
     main { padding:1.25rem; } nav { padding:0 1.25rem; }
-    .nav-brand-text .subtitle { display:none; } .nav-user { display:none; }
+    .nav-brand-text .subtitle { display:none; } .nav-user, .nav-user-name { display:none; }
     .form-row { grid-template-columns:1fr; } .nav-tab span.tab-label-full { display:none; }
     .site-totals { gap:10px; } .site-total-val { font-size:18px; }
     .services-menu-btn span { display:none; } /* ✅ على الموبايل: أيقونة بس، من غير النص عشان توفّر مساحة */
@@ -414,7 +416,7 @@
 
   /* ✅ نسخة ثابتة بناءً على نوع الجهاز نفسه — شغالة بالطول والعرض، مش متأثرة بعرض الشاشة اللحظي */
   html.is-mobile-device .nav-brand-text .subtitle { display:none !important; }
-  html.is-mobile-device .nav-user { display:none !important; }
+  html.is-mobile-device .nav-user, html.is-mobile-device .nav-user-name { display:none !important; }
   html.is-mobile-device .nav-tab span.tab-label-full { display:none !important; }
   html.is-mobile-device .services-menu-btn span { display:none !important; }
   html.is-mobile-device .services-menu-btn { padding:8px 10px !important; }
@@ -602,7 +604,10 @@
     <div class="nav-left">
       <div class="nav-profile" id="navProfileBtn" onclick="openProfileModal()" title="Edit profile">
         <div class="nav-avatar" id="navAvatar">?</div>
-        <span class="nav-user mono" id="navUserEmail"></span>
+        <div class="nav-user-text">
+          <span class="nav-user-name" id="navUserName"></span>
+          <span class="nav-user mono" id="navUserEmail"></span>
+        </div>
       </div>
       <span class="source-badge">GOOGLE SHEETS</span>
       <div class="nav-info mono" id="lastSync"><span class="sync-dot" id="syncDot"></span><span id="syncText">Loading...</span></div>
@@ -1808,9 +1813,17 @@ let pendingAvatarDataUrl=null;
 function renderNavIdentity(){
   const email=currentUserProfile.email||'';
   const name=currentUserProfile.displayName||'';
-  const label=name||email;
-  document.getElementById('navUserEmail').textContent=label;
-  document.getElementById('navUserEmail').title=email;
+  const nameEl=document.getElementById('navUserName');
+  const emailEl=document.getElementById('navUserEmail');
+  if(name){
+    nameEl.textContent=name;
+    nameEl.style.display='';
+    emailEl.textContent=email;
+  }else{
+    nameEl.style.display='none';
+    emailEl.textContent=email;
+  }
+  emailEl.title=email;
   const avatarEl=document.getElementById('navAvatar');
   if(currentUserProfile.avatar){
     avatarEl.innerHTML=`<img src="${currentUserProfile.avatar}" alt="">`;
