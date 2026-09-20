@@ -396,6 +396,7 @@
     .site-totals { gap:10px; } .site-total-val { font-size:18px; }
     .nav-tabs { display:none; } /* ✅ الشريط القديم بيختفي، القائمة الجديدة بتاخد مكانه */
     .mobile-menu-btn { display:flex; align-items:center; justify-content:center; width:38px; height:38px; background:var(--bg-2); border:1px solid var(--line); border-radius:8px; color:var(--text-1); cursor:pointer; flex-shrink:0; }
+    .source-badge, .nav-info { display:none; } /* ✅ نص "GOOGLE SHEETS" ووقت آخر تحديث بيختفوا على الموبايل عشان يبقى فيه مساحة كفاية */
   }
 
   /* ✅ نسخة ثابتة بناءً على نوع الجهاز نفسه — شغالة بالطول والعرض، مش متأثرة بعرض الشاشة اللحظي */
@@ -404,6 +405,7 @@
   html.is-mobile-device .nav-tab span.tab-label-full { display:none !important; }
   html.is-mobile-device .nav-tabs { display:none !important; }
   html.is-mobile-device .mobile-menu-btn { display:flex !important; align-items:center; justify-content:center; width:38px; height:38px; background:var(--bg-2); border:1px solid var(--line); border-radius:8px; color:var(--text-1); cursor:pointer; flex-shrink:0; }
+  html.is-mobile-device .source-badge, html.is-mobile-device .nav-info { display:none !important; }
 
   /* ══════════ مؤثرات حركية واحترافية ══════════ */
 
