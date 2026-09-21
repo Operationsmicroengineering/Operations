@@ -414,6 +414,7 @@
   .mobile-menu-overlay.open { display:block; }
   .mobile-menu-panel { display:none; position:fixed; top:0; right:0; bottom:0; width:280px; max-width:85vw; background:var(--bg-1); border-left:1px solid var(--line); z-index:151; padding:1rem; overflow-y:auto; box-shadow:-10px 0 40px rgba(0,0,0,0.4); }
   .mobile-menu-panel.open { display:block; }
+  #chatPanel.open { display:flex; }
   .mobile-menu-header { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.5rem 1rem; font-size:15px; font-weight:700; color:var(--text-0); border-bottom:1px solid var(--line); margin-bottom:0.5rem; }
   .mobile-menu-item { display:flex; align-items:center; gap:12px; width:100%; padding:12px 14px; background:transparent; border:none; border-radius:8px; color:var(--text-1); font-family:'Inter',sans-serif; font-size:14px; font-weight:600; text-align:left; cursor:pointer; margin-bottom:2px; }
   .mobile-menu-item:active { background:var(--bg-2); }
@@ -720,7 +721,7 @@
 
   <!-- CHAT PANEL -->
   <div class="mobile-menu-overlay" id="chatOverlay" onclick="closeChatPanel()"></div>
-  <div class="mobile-menu-panel" id="chatPanel" style="display:flex;flex-direction:column;padding:0">
+  <div class="mobile-menu-panel" id="chatPanel" style="flex-direction:column;padding:0">
     <div class="mobile-menu-header" style="padding:1rem">
       <span id="chatWithName">Chat</span>
       <button class="modal-close" onclick="closeChatPanel()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
