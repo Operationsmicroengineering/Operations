@@ -630,6 +630,10 @@
       <button class="nav-icon-btn" onclick="openActivityDrawer()" title="Recent Activity">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
       </button>
+      <button class="nav-icon-btn" onclick="toggleOnlinePanel()" title="Team Online" style="position:relative">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="unsolved-badge" id="onlineUnreadBadge" style="display:none;top:-3px;right:-3px">0</span>
+      </button>
       <button class="services-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
         <span>Operations Services</span>
@@ -702,6 +706,30 @@
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       <span>Sheets</span>
     </button>
+  </div>
+
+  <!-- TEAM ONLINE PANEL -->
+  <div class="mobile-menu-overlay" id="onlineOverlay" onclick="closeOnlinePanel()"></div>
+  <div class="mobile-menu-panel" id="onlinePanel">
+    <div class="mobile-menu-header">
+      <span>Team Online</span>
+      <button class="modal-close" onclick="closeOnlinePanel()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div id="onlineUsersList" style="padding:0.5rem 0.2rem"></div>
+  </div>
+
+  <!-- CHAT PANEL -->
+  <div class="mobile-menu-overlay" id="chatOverlay" onclick="closeChatPanel()"></div>
+  <div class="mobile-menu-panel" id="chatPanel" style="display:flex;flex-direction:column;padding:0">
+    <div class="mobile-menu-header" style="padding:1rem">
+      <span id="chatWithName">Chat</span>
+      <button class="modal-close" onclick="closeChatPanel()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div id="chatMessages" style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:8px"></div>
+    <div style="padding:0.8rem;border-top:1px solid var(--line);display:flex;gap:8px">
+      <input type="text" id="chatInput" class="form-control" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChatMessage()">
+      <button class="btn-primary" onclick="sendChatMessage()" style="flex-shrink:0">Send</button>
+    </div>
   </div>
 
   <main>
@@ -1719,6 +1747,7 @@ function loadNightGtCache() {
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
 let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, latenessData=[], itTicketsData=[], avpNightData={dateColumns:[],rows:[]}, mappingNightData={dateColumns:[],rows:[]};
+let currentActiveView='home', onlineUsersCache=[], currentChatWithEmail=null, currentChatWithName='';
 let sortCol='', sortAsc=true, pollTimer=null, session=null, isSyncing=false;
 let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null, selectedAvpNightDate=null, selectedMappingNightDate=null;
 
@@ -1859,6 +1888,9 @@ async function showDashboard(){
   let lastView='home';
   try{ lastView=localStorage.getItem('ops_last_view_v1')||'home'; }catch{}
   showView(lastView);
+
+  sendHeartbeat(); // ✅ نبضة فورية أول ما تفتح الموقع، وبعد كده كل 25 ثانية
+  setInterval(sendHeartbeat,25000);
 }
 
 // ✅ بياخد أول اسمين بس من الـ Display Name (زي "Mohamed Kamal")، أو من الإيميل لو الاسم مش متسجل
@@ -5302,7 +5334,132 @@ function closeMobileMenu(){
   document.getElementById('mobileMenuPanel').classList.remove('open');
 }
 
+// ── مين أونلاين + رسايل ──
+const VIEW_LABELS={home:'Home',employees:'Employees',training:'Training',yubikey:'Yubikeys Report',violation:'Violation Report',lateness:'Lateness',opsreport:'Report Saint Fatima',itTickets:'IT Ticket Support',dailyreport:'Daily Report',biometric:'Face Biometric',activityhub:'Operations Activity',sheets:'Sheets'};
+
+async function sendHeartbeat(){
+  if(!getSession())return;
+  try{
+    const res=await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'heartbeat',data:{view:currentActiveView,'_actor':getSession()?.user?.email||''}})
+    });
+    const json=await res.json();
+    if(json&&json.online){
+      onlineUsersCache=json.online;
+      if(document.getElementById('onlinePanel').classList.contains('open'))renderOnlineUsersList();
+      updateOnlineDot(json.online.length);
+    }
+    if(json&&typeof json.unreadCount==='number'){
+      const badge=document.getElementById('onlineUnreadBadge');
+      if(json.unreadCount>0){badge.textContent=json.unreadCount>9?'9+':json.unreadCount;badge.style.display='flex';}
+      else{badge.style.display='none';}
+    }
+  }catch(ex){ /* ما نزعجش المستخدم لو فشلت نبضة واحدة */ }
+}
+
+function updateOnlineDot(count){
+  const btn=document.querySelector('button[onclick="toggleOnlinePanel()"]');
+  if(btn)btn.title=count>0?`Team Online (${count})`:'Team Online';
+}
+
+function toggleOnlinePanel(){
+  const isOpen=document.getElementById('onlinePanel').classList.toggle('open');
+  document.getElementById('onlineOverlay').classList.toggle('open',isOpen);
+  if(isOpen){ renderOnlineUsersList(); sendHeartbeat(); }
+}
+function closeOnlinePanel(){
+  document.getElementById('onlinePanel').classList.remove('open');
+  document.getElementById('onlineOverlay').classList.remove('open');
+}
+
+function renderOnlineUsersList(){
+  const el=document.getElementById('onlineUsersList');
+  if(!onlineUsersCache.length){
+    el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-2);font-size:13px">No one else is online right now.</div>';
+    return;
+  }
+  el.innerHTML=onlineUsersCache.map(u=>{
+    const viewLabel=VIEW_LABELS[u.view]||u.view||'—';
+    const avatarHtml=u.avatar?`<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:esc((u.name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase());
+    return`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px" onmouseover="this.style.background='var(--bg-2)'" onmouseout="this.style.background='transparent'">
+      <div style="position:relative;flex-shrink:0">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--signal-dim);border:1px solid var(--signal-line);color:var(--signal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;overflow:hidden">${avatarHtml}</div>
+        <span style="position:absolute;bottom:0;right:0;width:9px;height:9px;border-radius:50%;background:var(--ok);border:2px solid var(--bg-1)"></span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:13px;color:var(--text-0);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.name)}</div>
+        <div style="font-size:11px;color:var(--text-2)">on ${esc(viewLabel)}</div>
+      </div>
+      <button class="icon-btn" title="Message" onclick="openChatPanel('${esc(u.email)}','${esc(u.name)}')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+    </div>`;
+  }).join('');
+}
+
+async function openChatPanel(email,name){
+  closeOnlinePanel();
+  currentChatWithEmail=email;
+  currentChatWithName=name;
+  document.getElementById('chatWithName').textContent=name;
+  document.getElementById('chatPanel').classList.add('open');
+  document.getElementById('chatOverlay').classList.add('open');
+  document.getElementById('chatMessages').innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text-2);font-size:13px">Loading...</div>';
+
+  const myEmail=getSession()?.user?.email||'';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=conversation&userA='+encodeURIComponent(myEmail)+'&userB='+encodeURIComponent(email));
+    const json=await res.json();
+    renderChatMessages(json.messages||[],myEmail);
+    callScriptGeneric('markMessagesRead',{from:email},()=>{}).catch(()=>{});
+  }catch(ex){
+    document.getElementById('chatMessages').innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--bad);font-size:13px">Failed to load messages.</div>';
+  }
+}
+
+function renderChatMessages(messages,myEmail){
+  const el=document.getElementById('chatMessages');
+  if(!messages.length){
+    el.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text-2);font-size:13px">No messages yet — say hi 👋</div>';
+    return;
+  }
+  el.innerHTML=messages.map(m=>{
+    const isMine=m.from===myEmail;
+    return`<div style="align-self:${isMine?'flex-end':'flex-start'};max-width:80%">
+      <div style="background:${isMine?'var(--signal)':'var(--bg-2)'};color:${isMine?'#04181d':'var(--text-0)'};padding:8px 12px;border-radius:12px;${isMine?'border-bottom-right-radius:3px':'border-bottom-left-radius:3px'};font-size:13px;word-break:break-word">${esc(m.text)}</div>
+      <div style="font-size:10px;color:var(--text-2);margin-top:2px;text-align:${isMine?'right':'left'}">${esc(m.timestamp)}</div>
+    </div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+function closeChatPanel(){
+  document.getElementById('chatPanel').classList.remove('open');
+  document.getElementById('chatOverlay').classList.remove('open');
+  currentChatWithEmail=null;
+}
+
+async function sendChatMessage(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();
+  if(!text||!currentChatWithEmail)return;
+  input.value='';
+  const myEmail=getSession()?.user?.email||'';
+  const el=document.getElementById('chatMessages');
+  if(el.querySelector('div[style*="text-align:center"]'))el.innerHTML='';
+  el.insertAdjacentHTML('beforeend',`<div style="align-self:flex-end;max-width:80%"><div style="background:var(--signal);color:#04181d;padding:8px 12px;border-radius:12px;border-bottom-right-radius:3px;font-size:13px;word-break:break-word">${esc(text)}</div></div>`);
+  el.scrollTop=el.scrollHeight;
+  try{
+    await fetch(APPS_SCRIPT_URL,{
+      method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'sendMessage',data:{to:currentChatWithEmail,text,'_actor':myEmail}})
+    });
+  }catch(ex){ /* الرسالة اتبعتت أصلاً، ده مجرد تأكيد إضافي */ }
+}
+
 function showView(view){
+  currentActiveView=view; // ✅ يتسجّل مع كل نبضة حضور، عشان باقي الفريق يشوفوا انت فين
   if(view!=='biometric'&&typeof stopBioCameras==='function')stopBioCameras(); // ✅ يقفل الكاميرا فعليًا لما تسيب التاب ده لأي تاب تاني
   ['home','employees','training','yubikey','violation','lateness','opsreport','itTickets','dailyreport','biometric','activityhub','sheets'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
