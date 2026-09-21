@@ -703,6 +703,10 @@
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
       <span>Operations Activity</span>
     </button>
+    <button class="mobile-menu-item" onclick="showView('overtime');closeMobileMenu()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 14.5"/></svg>
+      <span>Overtime</span>
+    </button>
     <button class="mobile-menu-item" onclick="showView('sheets');closeMobileMenu()">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       <span>Sheets</span>
@@ -1489,6 +1493,42 @@
       </div>
     </div>
 
+    <!-- OVERTIME VIEW -->
+    <div id="overtimeView" style="display:none">
+      <div class="error-banner" id="overtimeErrorBanner"></div>
+      <div class="success-banner" id="overtimeSuccessBanner"></div>
+
+      <div class="ybk-history-card" style="padding:1.2rem 1.5rem;margin-bottom:1.5rem">
+        <div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:10px">Pay Basis (fixed for the whole team)</div>
+        <div style="display:flex;gap:28px;flex-wrap:wrap">
+          <div><div style="font-size:11px;color:var(--text-2)">Base Salary</div><div style="font-size:18px;font-weight:800" class="mono">8,000 EGP</div></div>
+          <div><div style="font-size:11px;color:var(--text-2)">KPI</div><div style="font-size:18px;font-weight:800" class="mono">500 EGP</div></div>
+          <div><div style="font-size:11px;color:var(--text-2)">Daily Rate (8000 ÷ 26d)</div><div style="font-size:18px;font-weight:800" class="mono">308 EGP/day</div></div>
+          <div><div style="font-size:11px;color:var(--text-2)">Monthly Hours (8h × 26d)</div><div style="font-size:18px;font-weight:800" class="mono">208h</div></div>
+          <div><div style="font-size:11px;color:var(--text-2)">Regular Rate</div><div style="font-size:18px;font-weight:800" class="mono">38.46 EGP/h</div></div>
+          <div><div style="font-size:11px;color:var(--signal)">Overtime Rate (×2)</div><div style="font-size:18px;font-weight:800;color:var(--signal)" class="mono">76.92 EGP/h</div></div>
+        </div>
+      </div>
+
+      <div id="overtimeSummaryGrid" style="display:none;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));display:grid;gap:14px;margin-bottom:1.5rem"></div>
+
+      <div class="toolbar">
+        <div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="overtimeSearchInput" placeholder="Search by employee name..." oninput="renderOvertimeTable()"></div>
+        <select id="overtimeProjectFilter" onchange="renderOvertimeTable()"><option value="">All projects</option><option value="AVP">AVP</option><option value="GT">GT</option><option value="Mapping">Mapping</option></select>
+        <button class="btn-ghost" onclick="loadOvertimeData(true)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>Refresh</button>
+        <button class="btn-primary" onclick="openAddOvertimeModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Overtime</button>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><span class="table-title">Overtime records</span><span class="table-count" id="overtimeRowCount">—</span></div>
+        <div class="table-wrap">
+          <div class="loading" id="overtimeLoadingState"><div class="spinner"></div>Loading overtime records...</div>
+          <table id="overtimeTable" style="display:none"><thead><tr><th>Date</th><th>Employee Name</th><th>Project</th><th>Shift</th><th>Hours</th><th>Pay (EGP)</th><th>Reason</th><th>Logged By</th><th class="no-sort"></th></tr></thead><tbody id="overtimeTableBody"></tbody></table>
+          <div class="empty" id="overtimeEmptyState" style="display:none"><div>No overtime records found</div></div>
+        </div>
+        <div class="table-footer"><span id="overtimeFooterInfo">—</span><span id="overtimeFooterTime">—</span></div>
+      </div>
+    </div>
+
     <!-- SHEETS VIEW -->
     <div id="sheetsView" style="display:none">
       <div class="sheets-toolbar"><div class="search-wrap"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="sheetsSearchInput" placeholder="Search sheets and forms..." oninput="renderSheets()"></div></div>
@@ -1623,6 +1663,23 @@
 <!-- DELETE FURNITURE ITEM MODAL -->
 <div class="modal-overlay" id="deleteFurnitureItemModalOverlay"><div class="modal-card delete-modal-card ops-ar"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">حذف القطعة</span><button class="modal-close" onclick="closeDeleteFurnitureItemModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>متأكد؟</h3><p>هيتم حذف القطعة دي وصورتها نهائيًا.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteFurnitureItemModal()">إلغاء</button><button type="button" class="btn-confirm-delete" onclick="confirmDeleteFurnitureItem()">حذف</button></div></div></div>
 
+<!-- ADD/EDIT OVERTIME MODAL -->
+<div class="modal-overlay" id="overtimeModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title" id="overtimeModalTitle">Add Overtime</span><button class="modal-close" onclick="closeOvertimeModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<div class="modal-body">
+  <div class="form-error" id="overtimeFormError"></div>
+  <div class="form-group"><label>Employee Name</label><input type="text" id="otEmployeeInput" class="form-control" placeholder="Full name" required></div>
+  <div class="form-row"><div class="form-group"><label>Project</label><select id="otProjectInput" class="form-control"><option value="AVP">AVP</option><option value="GT">GT</option><option value="Mapping">Mapping</option></select></div><div class="form-group"><label>Shift</label><select id="otShiftInput" class="form-control"><option value="Morning">Morning</option><option value="Night">Night</option><option value="Over Night">Over Night</option></select></div></div>
+  <div class="form-row"><div class="form-group"><label>Date</label><input type="date" id="otDateInput" class="form-control" required></div><div class="form-group"><label>Hours</label><select id="otHoursInput" class="form-control" onchange="updateOvertimePayPreview()"><option value="2">2</option><option value="4">4</option><option value="6">6</option><option value="8">8</option></select></div></div>
+  <div class="form-group" style="background:var(--signal-dim);border:1px solid var(--signal-line);border-radius:8px;padding:10px 14px"><span style="font-size:12px;color:var(--text-1)">Pay for this entry: </span><span id="otPayPreview" class="mono" style="font-weight:800;color:var(--signal)">76.92 EGP</span></div>
+  <div class="form-group"><label>Reason</label><input type="text" id="otReasonInput" class="form-control" placeholder="Optional"></div>
+  <div class="form-group"><label>Logged By</label><select id="otLoggedByInput" class="form-control"><option value="Beshoy Eid">Beshoy Eid</option><option value="Ezat Ashraf">Ezat Ashraf</option><option value="Heba Mahmoud">Heba Mahmoud</option><option value="Mohamed Kamal">Mohamed Kamal</option><option value="Mohamed Motaz">Mohamed Motaz</option><option value="Ahmed Alaa">Ahmed Alaa</option><option value="Abdelrahman amin">Abdelrahman amin</option><option value="Abdelrahman Mohamed">Abdelrahman Mohamed</option></select></div>
+</div>
+<div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeOvertimeModal()">Cancel</button><button type="button" class="btn-primary" id="overtimeSaveBtn" onclick="saveOvertime()">Save</button></div>
+</div></div>
+
+<!-- DELETE OVERTIME MODAL -->
+<div class="modal-overlay" id="deleteOvertimeModalOverlay"><div class="modal-card delete-modal-card"><div class="modal-header"><span class="modal-title" style="color:var(--bad)">Delete overtime record</span><button class="modal-close" onclick="closeDeleteOvertimeModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="delete-modal-body"><div class="delete-warning-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><h3>Are you sure?</h3><p>This overtime record will be permanently deleted.</p></div><div class="modal-footer"><button type="button" class="btn-ghost" onclick="closeDeleteOvertimeModal()">Cancel</button><button type="button" class="btn-confirm-delete" onclick="confirmDeleteOvertime()">Delete</button></div></div></div>
+
 <!-- ADD/EDIT IT TICKET MODAL -->
 <div class="modal-overlay" id="itTicketModalOverlay"><div class="modal-card"><div class="modal-header"><span class="modal-title" id="itTicketModalTitle">New Ticket</span><button class="modal-close" onclick="closeItTicketModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
 <div class="modal-body">
@@ -1749,6 +1806,9 @@ const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@met
 
 let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, latenessData=[], itTicketsData=[], avpNightData={dateColumns:[],rows:[]}, mappingNightData={dateColumns:[],rows:[]};
 let currentActiveView='home', onlineUsersCache=[], currentChatWithEmail=null, currentChatWithName='';
+let overtimeData=[];
+const OT_REGULAR_HOURLY_RATE=8000/208; // ✅ 38.46 جنيه/ساعة — من مرتب 8000 ÷ 208 ساعة شهرية (8×26)
+const OT_OVERTIME_HOURLY_RATE=OT_REGULAR_HOURLY_RATE*2; // ✅ 76.92 جنيه/ساعة — مضاعف الأوفر تايم
 let sortCol='', sortAsc=true, pollTimer=null, session=null, isSyncing=false;
 let deleteTargetId=null, deleteTargetName=null, deleteTraineeTargetId=null, deleteTraineeTargetName=null, moveTargetId=null, moveTargetName=null, selectedYbkDate=null, selectedAvpDate=null, selectedMappingDate=null, selectedNightDate=null, selectedAvpNightDate=null, selectedMappingNightDate=null;
 
@@ -3483,6 +3543,162 @@ async function loadHomeData(){
     const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
     if(topEl)topEl.textContent=top?`${top[0]} (${top[1]})`:'No data yet';
   }catch(ex){ if(topEl)topEl.textContent='—'; }
+}
+
+// ── Overtime — تسجيل الساعات + حساب الأجر تلقائي ──
+function otPayFor(hours){ return (parseFloat(hours)||0)*OT_OVERTIME_HOURLY_RATE; }
+
+async function loadOvertimeData(forceRefresh){
+  if(!getSession())return;
+  document.getElementById('overtimeLoadingState').style.display=(overtimeData.length>0)?'none':'block';
+  document.getElementById('overtimeErrorBanner').style.display='none';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?sheet=overtime'+(forceRefresh?'&force=1':''));
+    if(!res.ok)throw new Error('Failed to fetch overtime data');
+    const json=await res.json();
+    if(json.error)throw new Error(json.error);
+    overtimeData=json.overtime||[];
+    renderOvertimeTable();
+    renderOvertimeSummary();
+  }catch(ex){
+    document.getElementById('overtimeLoadingState').style.display='none';
+    if(!overtimeData.length){const b=document.getElementById('overtimeErrorBanner');b.style.display='block';b.textContent='Failed: '+ex.message;}
+  }
+}
+
+function renderOvertimeSummary(){
+  const el=document.getElementById('overtimeSummaryGrid');
+  const now=new Date();
+  const thisMonth=overtimeData.filter(r=>{
+    const d=new Date(r['Date']);
+    return !isNaN(d)&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();
+  });
+  const byPerson={};
+  thisMonth.forEach(r=>{
+    const name=(r['Employee Name']||'').trim();
+    if(!name)return;
+    if(!byPerson[name])byPerson[name]={hours:0,pay:0};
+    byPerson[name].hours+=parseFloat(r['Hours'])||0;
+    byPerson[name].pay+=otPayFor(r['Hours']);
+  });
+  const entries=Object.entries(byPerson).sort((a,b)=>b[1].pay-a[1].pay);
+  if(!entries.length){el.style.display='none';return;}
+  el.style.display='grid';
+  el.innerHTML=entries.map(([name,d])=>`
+    <div class="ybk-history-card" style="padding:1.1rem 1.3rem">
+      <div style="font-weight:700;font-size:13px;color:var(--text-0);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(name)}</div>
+      <div style="font-size:11px;color:var(--text-2)">${d.hours}h this month</div>
+      <div style="font-size:20px;font-weight:800;color:var(--signal)" class="mono">${d.pay.toLocaleString('en-US',{maximumFractionDigits:2})} EGP</div>
+    </div>`).join('');
+}
+
+function renderOvertimeTable(){
+  const search=(document.getElementById('overtimeSearchInput').value||'').toLowerCase();
+  const projectFilter=document.getElementById('overtimeProjectFilter').value;
+  const data=[...overtimeData].filter(r=>{
+    const ms=!search||(r['Employee Name']||'').toLowerCase().includes(search);
+    const mp=!projectFilter||(r['Project']||'')===projectFilter;
+    return ms&&mp;
+  }).sort((a,b)=>(b['Date']||'').localeCompare(a['Date']||''));
+
+  document.getElementById('overtimeLoadingState').style.display='none';
+  document.getElementById('overtimeRowCount').textContent=data.length+' records';
+  document.getElementById('overtimeFooterInfo').textContent=`Showing ${data.length} of ${overtimeData.length} records`;
+  document.getElementById('overtimeFooterTime').textContent=new Date().toLocaleDateString('en-US');
+
+  if(!data.length){
+    document.getElementById('overtimeTable').style.display='none';
+    document.getElementById('overtimeEmptyState').style.display='block';
+    return;
+  }
+  document.getElementById('overtimeEmptyState').style.display='none';
+  document.getElementById('overtimeTable').style.display='table';
+  document.getElementById('overtimeTableBody').innerHTML=data.map(r=>{
+    const pay=otPayFor(r['Hours']);
+    return`<tr><td class="mono" style="color:var(--text-1);font-size:12px">${esc(r['Date']||'—')}</td><td style="font-weight:600">${esc(r['Employee Name']||'—')}</td><td>${esc(r['Project']||'—')}</td><td><span class="badge badge-shift">${esc(r['Shift']||'—')}</span></td><td class="mono" style="color:var(--warn);font-weight:700">${esc(r['Hours']||'—')}h</td><td class="mono" style="color:var(--signal);font-weight:700">${pay.toLocaleString('en-US',{maximumFractionDigits:2})}</td><td style="color:var(--text-1)">${esc(r['Reason']||'—')}</td><td style="color:var(--text-1)">${esc(r['Logged By']||'—')}</td><td><div class="action-cell"><button class="icon-btn" title="Edit" onclick="openEditOvertimeModal(${r['_row']})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-btn danger" title="Delete" onclick="openDeleteOvertimeModal(${r['_row']})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div></td></tr>`;
+  }).join('');
+}
+
+function updateOvertimePayPreview(){
+  const hours=document.getElementById('otHoursInput').value;
+  document.getElementById('otPayPreview').textContent=otPayFor(hours).toLocaleString('en-US',{maximumFractionDigits:2})+' EGP';
+}
+
+function openAddOvertimeModal(){
+  document.getElementById('overtimeModalTitle').textContent='Add Overtime';
+  document.getElementById('overtimeFormError').style.display='none';
+  document.getElementById('otEmployeeInput').value='';
+  document.getElementById('otProjectInput').value='AVP';
+  document.getElementById('otShiftInput').value='Morning';
+  document.getElementById('otDateInput').value=new Date().toISOString().slice(0,10);
+  document.getElementById('otHoursInput').value='2';
+  document.getElementById('otReasonInput').value='';
+  document.getElementById('otLoggedByInput').value='Mohamed Kamal';
+  document.getElementById('overtimeModalOverlay').dataset.row='';
+  document.getElementById('overtimeModalOverlay').style.display='flex';
+  updateOvertimePayPreview();
+}
+
+function openEditOvertimeModal(rowNum){
+  const rec=overtimeData.find(r=>r['_row']===rowNum);
+  if(!rec)return;
+  document.getElementById('overtimeModalTitle').textContent='Edit Overtime';
+  document.getElementById('overtimeFormError').style.display='none';
+  document.getElementById('otEmployeeInput').value=rec['Employee Name']||'';
+  document.getElementById('otProjectInput').value=rec['Project']||'AVP';
+  document.getElementById('otShiftInput').value=rec['Shift']||'Morning';
+  document.getElementById('otDateInput').value=rec['Date']||'';
+  document.getElementById('otHoursInput').value=rec['Hours']||'2';
+  document.getElementById('otReasonInput').value=rec['Reason']||'';
+  document.getElementById('otLoggedByInput').value=rec['Logged By']||'Mohamed Kamal';
+  document.getElementById('overtimeModalOverlay').dataset.row=rowNum;
+  document.getElementById('overtimeModalOverlay').style.display='flex';
+  updateOvertimePayPreview();
+}
+
+function closeOvertimeModal(){document.getElementById('overtimeModalOverlay').style.display='none';}
+document.getElementById('overtimeModalOverlay').addEventListener('click',e=>{if(e.target.id==='overtimeModalOverlay')closeOvertimeModal();});
+
+async function saveOvertime(){
+  if(!getSession()){showError('Session expired.','overtime');closeOvertimeModal();return;}
+  const errDiv=document.getElementById('overtimeFormError'),btn=document.getElementById('overtimeSaveBtn');
+  errDiv.style.display='none';
+  const rowNum=document.getElementById('overtimeModalOverlay').dataset.row;
+  const payload={
+    'Employee Name':document.getElementById('otEmployeeInput').value.trim(),
+    'Project':document.getElementById('otProjectInput').value,
+    'Shift':document.getElementById('otShiftInput').value,
+    'Date':document.getElementById('otDateInput').value,
+    'Hours':document.getElementById('otHoursInput').value,
+    'Reason':document.getElementById('otReasonInput').value.trim(),
+    'Logged By':document.getElementById('otLoggedByInput').value
+  };
+  if(!payload['Employee Name']||!payload['Date']){errDiv.textContent='Employee name and date are required.';errDiv.style.display='block';return;}
+  const isEdit=rowNum&&rowNum!=='';
+  if(isEdit)payload['_row']=parseInt(rowNum,10);
+  closeOvertimeModal();
+  btn.disabled=true;
+  callScriptGeneric(isEdit?'editOvertime':'addOvertime',payload,()=>loadOvertimeData(true))
+    .then(()=>showSuccess(isEdit?'Overtime updated.':'Overtime added.','overtime'))
+    .catch(ex=>showError('Save failed: '+ex.message,'overtime'))
+    .finally(()=>{btn.disabled=false;});
+}
+
+let deleteOvertimeTargetRow=null;
+function openDeleteOvertimeModal(rowNum){
+  deleteOvertimeTargetRow=rowNum;
+  document.getElementById('deleteOvertimeModalOverlay').style.display='flex';
+}
+function closeDeleteOvertimeModal(){document.getElementById('deleteOvertimeModalOverlay').style.display='none';deleteOvertimeTargetRow=null;}
+document.getElementById('deleteOvertimeModalOverlay').addEventListener('click',e=>{if(e.target.id==='deleteOvertimeModalOverlay')closeDeleteOvertimeModal();});
+
+async function confirmDeleteOvertime(){
+  if(!deleteOvertimeTargetRow||!getSession()){closeDeleteOvertimeModal();return;}
+  const rowNum=deleteOvertimeTargetRow;
+  closeDeleteOvertimeModal();
+  callScriptGeneric('deleteOvertime',{'_row':rowNum},()=>loadOvertimeData(true))
+    .then(()=>showSuccess('Overtime record deleted.','overtime'))
+    .catch(ex=>showError('Delete failed: '+ex.message,'overtime'));
 }
 
 async function loadActivityHubData(forceRefresh){
@@ -5462,7 +5678,7 @@ async function sendChatMessage(){
 function showView(view){
   currentActiveView=view; // ✅ يتسجّل مع كل نبضة حضور، عشان باقي الفريق يشوفوا انت فين
   if(view!=='biometric'&&typeof stopBioCameras==='function')stopBioCameras(); // ✅ يقفل الكاميرا فعليًا لما تسيب التاب ده لأي تاب تاني
-  ['home','employees','training','yubikey','violation','lateness','opsreport','itTickets','dailyreport','biometric','activityhub','sheets'].forEach(v=>{
+  ['home','employees','training','yubikey','violation','lateness','opsreport','itTickets','dailyreport','biometric','activityhub','overtime','sheets'].forEach(v=>{
     document.getElementById(v+'View').style.display=v===view?'block':'none';
     const btn=document.getElementById('tab'+v[0].toUpperCase()+v.slice(1)+'Btn');
     if(btn)btn.classList.toggle('active',v===view);
@@ -5481,12 +5697,14 @@ function showView(view){
   if(view==='dailyreport'&&!dailyReportInitialized)initDailyReportForm();
   if(view==='biometric')initBiometricTab();
   if(view==='activityhub')loadActivityHubData();
+  if(view==='overtime'&&overtimeData.length===0)loadOvertimeData();
 }
 
 function bannerIds(scope){
   if(scope==='training')return{err:'trainingErrorBanner',ok:'trainingSuccessBanner'};
   if(scope==='violation')return{err:'violationErrorBanner',ok:'violationSuccessBanner'};
   if(scope==='lateness')return{err:'latenessErrorBanner',ok:'latenessSuccessBanner'};
+  if(scope==='overtime')return{err:'overtimeErrorBanner',ok:'overtimeSuccessBanner'};
   if(scope==='opsreport')return{err:'opsReportErrorBanner',ok:'opsReportSuccessBanner'};
   if(scope==='ittickets')return{err:'itTicketsErrorBanner',ok:'itTicketsSuccessBanner'};
   if(scope==='biometric')return{err:'biometricErrorBanner',ok:'biometricSuccessBanner'};
