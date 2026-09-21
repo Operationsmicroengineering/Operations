@@ -418,7 +418,6 @@
   .mobile-menu-overlay.open { display:block; }
   .mobile-menu-panel { display:none; position:fixed; top:0; right:0; bottom:0; width:280px; max-width:85vw; background:var(--bg-1); border-left:1px solid var(--line); z-index:151; padding:1rem; overflow-y:auto; box-shadow:-10px 0 40px rgba(0,0,0,0.4); }
   .mobile-menu-panel.open { display:block; }
-  #chatPanel.open { display:flex; }
   .mobile-menu-header { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.5rem 1rem; font-size:15px; font-weight:700; color:var(--text-0); border-bottom:1px solid var(--line); margin-bottom:0.5rem; }
   .mobile-menu-item { display:flex; align-items:center; gap:12px; width:100%; padding:12px 14px; background:transparent; border:none; border-radius:8px; color:var(--text-1); font-family:'Inter',sans-serif; font-size:14px; font-weight:600; text-align:left; cursor:pointer; margin-bottom:2px; }
   .mobile-menu-item:active { background:var(--bg-2); }
@@ -635,9 +634,8 @@
       <button class="nav-icon-btn" onclick="openActivityDrawer()" title="Recent Activity">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
       </button>
-      <button class="nav-icon-btn" onclick="toggleOnlinePanel()" title="Team Online" style="position:relative">
+      <button class="nav-icon-btn" onclick="toggleOnlinePanel()" title="Team Online">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span class="unsolved-badge" id="onlineUnreadBadge" style="display:none;top:-3px;right:-3px">0</span>
       </button>
       <button class="services-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
@@ -725,20 +723,6 @@
       <button class="modal-close" onclick="closeOnlinePanel()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div id="onlineUsersList" style="padding:0.5rem 0.2rem"></div>
-  </div>
-
-  <!-- CHAT PANEL -->
-  <div class="mobile-menu-overlay" id="chatOverlay" onclick="closeChatPanel()"></div>
-  <div class="mobile-menu-panel" id="chatPanel" style="flex-direction:column;padding:0">
-    <div class="mobile-menu-header" style="padding:1rem">
-      <span id="chatWithName">Chat</span>
-      <button class="modal-close" onclick="closeChatPanel()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div id="chatMessages" style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:8px"></div>
-    <div style="padding:0.8rem;border-top:1px solid var(--line);display:flex;gap:8px">
-      <input type="text" id="chatInput" class="form-control" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChatMessage()">
-      <button class="btn-primary" onclick="sendChatMessage()" style="flex-shrink:0">Send</button>
-    </div>
   </div>
 
   <main>
@@ -1741,7 +1725,7 @@
 const SUPABASE_URL      = 'https://dibhtnnkhakcygzpenwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpYmh0bm5raGFrY3lnenBlbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjIxMTYsImV4cCI6MjA5NzM5ODExNn0.XUHnSsMV4nY3lknsVms_BjhAoEf2Riy0jDAdoezfszo';
 const SESSION_KEY       = 'supabaseSession';
-const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwjsZJadC1GhjvL_Og-kZUFuJQqrucDEYcf-4kMcXgAd90PGXSs1v6_1p5E41hC3fKCRQ/exec';
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbygvV0H-HJwdPsexCxLZKAfX7YKHXqyRaw_aPsBWU9uYi1wYOJ2UVXhn6wRaaEbTAjaug/exec';
 
 const CACHE_KEY     = 'ops_cache_v3';
 const CACHE_MAX_AGE = 30 * 60 * 1000;
@@ -1821,7 +1805,7 @@ function loadNightGtCache() {
 const METI_EMAILS = new Set(['me490776@meti.ai','me708281@meti.ai','me685792@meti.ai','me234966@meti.ai','me991360@meti.ai','me938197@meti.ai','me121993@meti.ai','me281142@meti.ai','me408308@meti.ai','me692665@meti.ai','me635877@meti.ai','me153386@meti.ai','me569672@meti.ai','me822230@meti.ai','me622777@meti.ai','me409105@meti.ai','me254089@meti.ai','me584500@meti.ai','me583427@meti.ai']);
 
 let allData=[], trainingData=[], yubikeyData={dateColumns:[],rows:[]}, avpData={dateColumns:[],rows:[]}, mappingData={dateColumns:[],rows:[]}, violationData=[], nightGtData={dateColumns:[],rows:[]}, latenessData=[], itTicketsData=[], avpNightData={dateColumns:[],rows:[]}, mappingNightData={dateColumns:[],rows:[]};
-let currentActiveView='home', onlineUsersCache=[], currentChatWithEmail=null, currentChatWithName='', activeMeetingInfo=null;
+let currentActiveView='home', onlineUsersCache=[], activeMeetingInfo=null;
 let overtimeData=[];
 const OT_REGULAR_HOURLY_RATE=8000/208; // ✅ 38.46 جنيه/ساعة — من مرتب 8000 ÷ 208 ساعة شهرية (8×26)
 const OT_OVERTIME_HOURLY_RATE=OT_REGULAR_HOURLY_RATE*2; // ✅ 76.92 جنيه/ساعة — مضاعف الأوفر تايم
@@ -5628,11 +5612,6 @@ async function sendHeartbeat(){
       if(document.getElementById('onlinePanel').classList.contains('open'))renderOnlineUsersList();
       updateOnlineDot(json.online.length);
     }
-    if(json&&typeof json.unreadCount==='number'){
-      const badge=document.getElementById('onlineUnreadBadge');
-      if(json.unreadCount>0){badge.textContent=json.unreadCount>9?'9+':json.unreadCount;badge.style.display='flex';}
-      else{badge.style.display='none';}
-    }
     activeMeetingInfo=json&&json.activeMeeting?json.activeMeeting:null;
     updateMeetingFab();
   }catch(ex){ /* ما نزعجش المستخدم لو فشلت نبضة واحدة */ }
@@ -5684,16 +5663,6 @@ function closeOnlinePanel(){
   document.getElementById('onlineOverlay').classList.remove('open');
 }
 
-// ✅ يفتح اجتماع Google Meet جديد، وبيجهزلك رسالة جاهزة في الشات عشان تبعت اللينك للشخص التاني بضغطة واحدة
-async function startMeeting(email,name){
-  window.open('https://meet.google.com/new','_blank');
-  await openChatPanel(email,name);
-  const input=document.getElementById('chatInput');
-  input.value='📞 Starting a Google Meet call — paste the link Google just gave you here and hit Send: ';
-  input.focus();
-  input.setSelectionRange(input.value.length,input.value.length);
-}
-
 function renderOnlineUsersList(){
   const el=document.getElementById('onlineUsersList');
   if(!onlineUsersCache.length){
@@ -5712,75 +5681,9 @@ function renderOnlineUsersList(){
         <div style="font-weight:700;font-size:13px;color:var(--text-0);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.name)}</div>
         <div style="font-size:11px;color:var(--text-2)">on ${esc(viewLabel)}</div>
       </div>
-      <button class="icon-btn" title="Message" onclick="openChatPanel('${esc(u.email)}','${esc(u.name)}')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-      <button class="icon-btn" title="Start a Meeting" onclick="startMeeting('${esc(u.email)}','${esc(u.name)}')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></button>
+      <button class="icon-btn" title="Start a Meeting" onclick="handleMeetingFabClick()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></button>
     </div>`;
   }).join('');
-}
-
-async function openChatPanel(email,name){
-  closeOnlinePanel();
-  currentChatWithEmail=email;
-  currentChatWithName=name;
-  document.getElementById('chatWithName').textContent=name;
-  document.getElementById('chatPanel').classList.add('open');
-  document.getElementById('chatOverlay').classList.add('open');
-  document.getElementById('chatMessages').innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text-2);font-size:13px">Loading...</div>';
-
-  const myEmail=getSession()?.user?.email||'';
-  try{
-    const res=await fetch(APPS_SCRIPT_URL+'?sheet=conversation&userA='+encodeURIComponent(myEmail)+'&userB='+encodeURIComponent(email));
-    const json=await res.json();
-    renderChatMessages(json.messages||[],myEmail);
-    callScriptGeneric('markMessagesRead',{from:email},()=>{}).catch(()=>{});
-  }catch(ex){
-    document.getElementById('chatMessages').innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--bad);font-size:13px">Failed to load messages.</div>';
-  }
-}
-
-function linkifyText(text){
-  return esc(text).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">$1</a>');
-}
-
-function renderChatMessages(messages,myEmail){
-  const el=document.getElementById('chatMessages');
-  if(!messages.length){
-    el.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text-2);font-size:13px">No messages yet — say hi 👋</div>';
-    return;
-  }
-  el.innerHTML=messages.map(m=>{
-    const isMine=m.from===myEmail;
-    return`<div style="align-self:${isMine?'flex-end':'flex-start'};max-width:80%">
-      <div style="background:${isMine?'var(--signal)':'var(--bg-2)'};color:${isMine?'#04181d':'var(--text-0)'};padding:8px 12px;border-radius:12px;${isMine?'border-bottom-right-radius:3px':'border-bottom-left-radius:3px'};font-size:13px;word-break:break-word">${linkifyText(m.text)}</div>
-      <div style="font-size:10px;color:var(--text-2);margin-top:2px;text-align:${isMine?'right':'left'}">${esc(m.timestamp)}</div>
-    </div>`;
-  }).join('');
-  el.scrollTop=el.scrollHeight;
-}
-
-function closeChatPanel(){
-  document.getElementById('chatPanel').classList.remove('open');
-  document.getElementById('chatOverlay').classList.remove('open');
-  currentChatWithEmail=null;
-}
-
-async function sendChatMessage(){
-  const input=document.getElementById('chatInput');
-  const text=input.value.trim();
-  if(!text||!currentChatWithEmail)return;
-  input.value='';
-  const myEmail=getSession()?.user?.email||'';
-  const el=document.getElementById('chatMessages');
-  if(el.querySelector('div[style*="text-align:center"]'))el.innerHTML='';
-  el.insertAdjacentHTML('beforeend',`<div style="align-self:flex-end;max-width:80%"><div style="background:var(--signal);color:#04181d;padding:8px 12px;border-radius:12px;border-bottom-right-radius:3px;font-size:13px;word-break:break-word">${linkifyText(text)}</div></div>`);
-  el.scrollTop=el.scrollHeight;
-  try{
-    await fetch(APPS_SCRIPT_URL,{
-      method:'POST',mode:'no-cors',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({action:'sendMessage',data:{to:currentChatWithEmail,text,'_actor':myEmail}})
-    });
-  }catch(ex){ /* الرسالة اتبعتت أصلاً، ده مجرد تأكيد إضافي */ }
 }
 
 function showView(view){
