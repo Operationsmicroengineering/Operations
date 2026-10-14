@@ -36,7 +36,7 @@
 
   const violEl=document.getElementById("homeViolationsMonth");
   const now=new Date();
-  const monthMatch=d=>!isNaN(d)&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();
+  const monthMatch=d=>!isNaN(d)&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();const otMatch=d=>!isNaN(d)&&otPeriodKey(d)===otPeriodKey(now);
   if(violEl)violEl.textContent=violRows.filter(r=>monthMatch(new Date(r["Date"]))).length;
 
   const topEl=document.getElementById("homeTopOps");
@@ -48,11 +48,17 @@
   if(topEl)topEl.textContent=top?`${top[0]} (${top[1]})`:"No data yet";
 
   const costEl=document.getElementById("homeOvertimeCost");
-  const totalCost=otRows.filter(r=>monthMatch(new Date(r["Date"]))).reduce((s,r)=>s+otPayFor(r["Hours"],r["_double"]),0);
+  const totalCost=otRows.filter(r=>otMatch(new Date(r["Date"]))).reduce((s,r)=>s+otPayFor(r["Hours"],r["_double"]),0);
   if(costEl)costEl.textContent=totalCost.toLocaleString("en-US",{maximumFractionDigits:0})+" EGP";
 }
 
-function otPayFor(hours,isDouble){return(parseFloat(hours)||0)*(isDouble?OT_RATE_DOUBLE:OT_RATE_1_5)}async function loadOvertimeData(forceRefresh){if(!getSession())return;document.getElementById("overtimeLoadingState").style.display=overtimeData.length>0?"none":"block";document.getElementById("overtimeErrorBanner").style.display="none";try{const[res1,res2]=await Promise.all([fetch(APPS_SCRIPT_URL+"?sheet=overtime"+(forceRefresh?"&force=1":"")),fetch(APPS_SCRIPT_URL+"?sheet=externalOvertime"+(forceRefresh?"&force=1":""))]);if(!res1.ok)throw new Error("Failed to fetch overtime data");const json1=await res1.json();if(json1.error)throw new Error(json1.error);const manualEntries=json1.overtime||[];let externalEntries=[];try{const json2=await res2.json();externalEntries=(json2.records||[]).map((r,i)=>({"Employee Name":r.name,Project:"—",Shift:"—",Date:r.date,Hours:r.hours,Reason:"—","Logged By":"Team Overtime Sheet",_row:null,_external:true,_double:!!r.double,_key:"ext_"+i}))}catch(ex2){}overtimeData=[...manualEntries,...externalEntries];renderOvertimeTable();renderOvertimeSummary()}catch(ex){document.getElementById("overtimeLoadingState").style.display="none";if(!overtimeData.length){const b=document.getElementById("overtimeErrorBanner");b.style.display="block";b.textContent="Failed: "+ex.message}}}function renderOvertimeSummary(){const el=document.getElementById("overtimeSummaryGrid");const byPerson={};overtimeData.forEach(r=>{const name=(r["Employee Name"]||"").trim();if(!name)return;if(!byPerson[name])byPerson[name]={hours:0,pay:0};byPerson[name].hours+=parseFloat(r["Hours"])||0;byPerson[name].pay+=otPayFor(r["Hours"],r["_double"])});const entries=Object.entries(byPerson).sort((a,b)=>b[1].pay-a[1].pay);if(!entries.length){el.style.display="none";return}el.style.display="grid";el.innerHTML=entries.map(([name,d])=>`\n    <div class="ybk-history-card" style="padding:1.1rem 1.3rem;cursor:pointer" onclick="openOvertimeDetail('${esc(name)}')">\n      <div style="font-weight:700;font-size:13px;color:var(--text-0);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(name)}</div>\n      <div style="font-size:11px;color:var(--text-2)">${d.hours}h total</div>\n      <div style="font-size:20px;font-weight:800;color:var(--signal)" class="mono">${d.pay.toLocaleString("en-US",{maximumFractionDigits:2})} EGP</div>\n    </div>`).join("")}function openOvertimeDetail(name){
+function otPayFor(hours,isDouble){return(parseFloat(hours)||0)*(isDouble?OT_RATE_DOUBLE:OT_RATE_1_5)}async function loadOvertimeData(forceRefresh){if(!getSession())return;document.getElementById("overtimeLoadingState").style.display=overtimeData.length>0?"none":"block";document.getElementById("overtimeErrorBanner").style.display="none";try{const[res1,res2]=await Promise.all([fetch(APPS_SCRIPT_URL+"?sheet=overtime"+(forceRefresh?"&force=1":"")),fetch(APPS_SCRIPT_URL+"?sheet=externalOvertime"+(forceRefresh?"&force=1":""))]);if(!res1.ok)throw new Error("Failed to fetch overtime data");const json1=await res1.json();if(json1.error)throw new Error(json1.error);const manualEntries=json1.overtime||[];let externalEntries=[];try{const json2=await res2.json();externalEntries=(json2.records||[]).map((r,i)=>({"Employee Name":r.name,Project:"—",Shift:"—",Date:r.date,Hours:r.hours,Reason:"—","Logged By":"Team Overtime Sheet",_row:null,_external:true,_double:!!r.double,_key:"ext_"+i}))}catch(ex2){}overtimeData=[...manualEntries,...externalEntries];renderOvertimeTable();renderOvertimeSummary()}catch(ex){document.getElementById("overtimeLoadingState").style.display="none";if(!overtimeData.length){const b=document.getElementById("overtimeErrorBanner");b.style.display="block";b.textContent="Failed: "+ex.message}}}var otSelPeriod="";
+function otPeriodKey(d){let y=d.getFullYear(),m=d.getMonth();if(d.getDate()>=25){m++;if(m>11){m=0;y++}}return y+"-"+String(m+1).padStart(2,"0")}
+function otPeriodLabel(key){const[y,m]=key.split("-").map(Number);const e=new Date(y,m-1,24),st=new Date(y,m-2,25);const f=d=>d.toLocaleDateString("en-GB",{day:"numeric",month:"short"});return f(st)+" → "+f(e)+" "+e.getFullYear()}
+function otInPeriod(r,key){if(key==="all")return true;const d=new Date(r["Date"]);return !isNaN(d)&&otPeriodKey(d)===key}
+function onOtPeriodChange(v){otSelPeriod=v;renderOvertimeSummary()}
+function otPeriodSelectHtml(){const keys=new Set([otPeriodKey(new Date())]);overtimeData.forEach(r=>{const d=new Date(r["Date"]);if(!isNaN(d))keys.add(otPeriodKey(d))});const sel=otSelPeriod||otPeriodKey(new Date());return'<select class="input" style="max-width:260px" onchange="onOtPeriodChange(this.value)">'+[...keys].sort().reverse().map(k=>`<option value="${k}"${k===sel?" selected":""}>${otPeriodLabel(k)}</option>`).join("")+`<option value="all"${sel==="all"?" selected":""}>All periods</option></select>`}
+function renderOvertimeSummary(){const el=document.getElementById("overtimeSummaryGrid");let pb=document.getElementById("otPeriodBar");if(!pb){pb=document.createElement("div");pb.id="otPeriodBar";pb.style.cssText="margin-bottom:12px";el.parentNode.insertBefore(pb,el)}pb.innerHTML=otPeriodSelectHtml();const selP=otSelPeriod||otPeriodKey(new Date());const byPerson={};overtimeData.filter(r=>otInPeriod(r,selP)).forEach(r=>{const name=(r["Employee Name"]||"").trim();if(!name)return;if(!byPerson[name])byPerson[name]={hours:0,pay:0};byPerson[name].hours+=parseFloat(r["Hours"])||0;byPerson[name].pay+=otPayFor(r["Hours"],r["_double"])});const entries=Object.entries(byPerson).sort((a,b)=>b[1].pay-a[1].pay);if(!entries.length){el.style.display="grid";el.innerHTML='<div style="color:var(--text-2);font-size:13px;padding:1rem">No overtime in this period</div>';return}el.style.display="grid";el.innerHTML=entries.map(([name,d])=>`\n    <div class="ybk-history-card" style="padding:1.1rem 1.3rem;cursor:pointer" onclick="openOvertimeDetail('${esc(name)}')">\n      <div style="font-weight:700;font-size:13px;color:var(--text-0);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(name)}</div>\n      <div style="font-size:11px;color:var(--text-2)">${d.hours}h</div>\n      <div style="font-size:20px;font-weight:800;color:var(--signal)" class="mono">${d.pay.toLocaleString("en-US",{maximumFractionDigits:2})} EGP</div>\n    </div>`).join("")}function openOvertimeDetail(name){
   const rows=overtimeData.filter(r=>(r["Employee Name"]||"").trim()===name).sort((a,b)=>String(b["Date"]).localeCompare(String(a["Date"])));
   const totalHours=rows.reduce((s,r)=>s+(parseFloat(r["Hours"])||0),0);
   const totalPay=rows.reduce((s,r)=>s+otPayFor(r["Hours"],r["_double"]),0);
@@ -62,7 +68,7 @@ function otPayFor(hours,isDouble){return(parseFloat(hours)||0)*(isDouble?OT_RATE
   const byMonth=new Map();
   rows.forEach(r=>{
     const d=new Date(r["Date"]);
-    const key=isNaN(d)?"unknown":`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+    const key=isNaN(d)?"unknown":otPeriodKey(d);
     if(!byMonth.has(key))byMonth.set(key,[]);
     byMonth.get(key).push(r);
   });
@@ -72,8 +78,7 @@ function otPayFor(hours,isDouble){return(parseFloat(hours)||0)*(isDouble?OT_RATE
     const mPay=monthRows.reduce((s,r)=>s+otPayFor(r["Hours"],r["_double"]),0);
     let label="Unknown date";
     if(key!=="unknown"){
-      const [y,m]=key.split("-");
-      label=new Date(Number(y),Number(m)-1,1).toLocaleDateString("en-US",{month:"long",year:"numeric"});
+      label=otPeriodLabel(key);
     }
     const header=`<tr style="background:var(--bg-2)"><td colspan="2" style="font-weight:800;color:var(--text-0)">${esc(label)}</td><td class="mono" style="color:var(--warn);font-weight:800">${mHours}h</td><td class="mono" style="color:var(--signal);font-weight:800">${mPay.toLocaleString("en-US",{maximumFractionDigits:2})}</td></tr>`;
     const dayRows=monthRows.map(r=>{
